@@ -31,7 +31,7 @@ Quando e onde os voos domésticos atrasam mais, e **quanto do que o painel diz d
 - A "verdade simulada" só existe em simulação.
 - O fato é mensal: o dia não pode ir num eixo (ver `guia/01-modelo.md`).
 - **As medidas DAX não foram executadas no Power BI Desktop** (a sessão não tem Windows). Também não foram testados os scripts Power Query. O que foi conferido: nomes de colunas e tipos dos scripts M contra os cabeçalhos dos CSV (`scripts/validar_m.py`), JSON do tema, e os números esperados das medidas por duas vias.
-- Não foi gerado projeto `.pbip`.
+- Projeto `.pbip` gerado em `pbip/` (NÃO TESTADO no Power BI Desktop; ver `pbip/README-PBIP.md`).
 
 ## O que foi comprovado (comandos e resultados, 06/11/2026)
 
