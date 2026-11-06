@@ -1,0 +1,64 @@
+# Evolution API v2 self-hosted (WhatsApp via Baileys, NÃO OFICIAL) + Postgres + Redis.
+# Estrutura e nomes de variáveis conferidos no docker-compose.yaml e no .env.example do repositório
+# oficial EvolutionAPI/evolution-api (branch main, lido em 2026-11-06). A documentação em
+# doc.evolution-api.com não abriu a partir do ambiente de construção (proxy 403).
+# Uso: cp .env.exemplo .env  (preencha os valores)  &&  docker compose up -d
+services:
+  api:
+    image: evoapicloud/evolution-api:${EVOLUTION_TAG:-latest}   # fixe uma versão 2.x quando funcionar
+    container_name: evolution_api
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - evolution-postgres
+    ports:
+      - "127.0.0.1:8080:8080"   # só local: nunca exponha a Evolution à internet
+    volumes:
+      - evolution_instances:/evolution/instances
+    environment:
+      SERVER_TYPE: http
+      SERVER_PORT: "8080"
+      SERVER_URL: ${SERVER_URL:-http://localhost:8080}
+      AUTHENTICATION_API_KEY: ${AUTHENTICATION_API_KEY:?defina AUTHENTICATION_API_KEY no .env}
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@evolution-postgres:5432/${POSTGRES_DATABASE}?schema=evolution_api
+      DATABASE_SAVE_DATA_INSTANCE: "true"
+      DATABASE_SAVE_DATA_NEW_MESSAGE: "true"   # necessário para whatsapp_ultimas_mensagens
+      DATABASE_SAVE_DATA_CONTACTS: "true"      # necessário para whatsapp_buscar_contatos
+      DATABASE_SAVE_DATA_CHATS: "true"
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://redis:6379/6
+      CACHE_REDIS_PREFIX_KEY: evolution
+      CACHE_REDIS_SAVE_INSTANCES: "false"
+      CACHE_LOCAL_ENABLED: "false"
+    networks: [evolution-net]
+
+  redis:
+    image: redis:7
+    container_name: evolution_redis
+    restart: unless-stopped
+    command: redis-server --port 6379 --appendonly yes
+    volumes:
+      - evolution_redis:/data
+    networks: [evolution-net]
+
+  evolution-postgres:
+    image: postgres:15
+    container_name: evolution_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE:?defina POSTGRES_DATABASE no .env}
+      POSTGRES_USER: ${POSTGRES_USERNAME:?defina POSTGRES_USERNAME no .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [evolution-net]
+
+volumes:
+  evolution_instances:
+  evolution_redis:
+  postgres_data:
+
+networks:
+  evolution-net:
+    driver: bridge
