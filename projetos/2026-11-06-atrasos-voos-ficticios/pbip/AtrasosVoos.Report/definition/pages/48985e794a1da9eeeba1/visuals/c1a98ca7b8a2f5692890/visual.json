@@ -1,0 +1,45 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "c1a98ca7b8a2f5692890",
+  "position": {
+    "x": 200,
+    "y": 636,
+    "z": 10,
+    "height": 44,
+    "width": 1064,
+    "tabOrder": 10
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Não concluir: ",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#F4B24A",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "a faixa de horário não é a causa sozinha; aeroporto e companhia também mudam a taxa. Os degraus 4 e 5 do funil são subconjuntos dos voos com horário, não do total programado.",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#F4B24A"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

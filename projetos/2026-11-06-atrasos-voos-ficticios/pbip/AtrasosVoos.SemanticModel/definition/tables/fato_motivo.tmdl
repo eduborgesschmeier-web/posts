@@ -1,0 +1,67 @@
+table fato_motivo
+	lineageTag: c5982621-094d-5290-86aa-5df83715f22a
+
+	column data_mes
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		isHidden
+		lineageTag: 1d741b4e-c853-5e62-acd4-2559caf7a30d
+		summarizeBy: none
+		sourceColumn: data_mes
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column origem_sk
+		dataType: int64
+		isHidden
+		lineageTag: f269c4d1-3f63-5f91-9f11-983b9ff548e9
+		summarizeBy: none
+		sourceColumn: origem_sk
+
+	column cia_sk
+		dataType: int64
+		isHidden
+		lineageTag: 3cf91c5e-4b62-531f-a311-56798c49befc
+		summarizeBy: none
+		sourceColumn: cia_sk
+
+	column motivo_sk
+		dataType: int64
+		isHidden
+		lineageTag: 48bf3bcb-7046-53c6-ae64-92481e78d8b7
+		summarizeBy: none
+		sourceColumn: motivo_sk
+
+	column voos_atrasados_15
+		dataType: int64
+		isHidden
+		lineageTag: b0861723-4e30-5ab2-9192-798db6c421ac
+		summarizeBy: none
+		sourceColumn: voos_atrasados_15
+
+	column minutos_atraso
+		dataType: int64
+		isHidden
+		lineageTag: 8ebe63ec-f1f9-5b4c-97df-36cd08a34b23
+		summarizeBy: none
+		sourceColumn: minutos_atraso
+
+	partition fato_motivo = m
+		mode: import
+		source =
+			let
+			    Fonte = fnCarregarCsv(
+			        "fato_motivo.csv",
+			        {
+			        {"data_mes", type date},
+			        {"origem_sk", Int64.Type},
+			        {"cia_sk", Int64.Type},
+			        {"motivo_sk", Int64.Type},
+			        {"voos_atrasados_15", Int64.Type},
+			        {"minutos_atraso", Int64.Type}
+			        }
+			    )
+			in
+			    Fonte
+
+	annotation PBI_ResultType = Table

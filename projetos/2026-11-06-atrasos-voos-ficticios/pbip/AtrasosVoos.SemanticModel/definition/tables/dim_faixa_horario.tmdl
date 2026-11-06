@@ -1,0 +1,39 @@
+table dim_faixa_horario
+	lineageTag: 844ea185-292d-5a20-8e1b-f28a1448b8d2
+
+	column faixa_sk
+		dataType: int64
+		isHidden
+		lineageTag: 6bf4414b-e453-52d5-a545-359a73b9d713
+		summarizeBy: none
+		sourceColumn: faixa_sk
+
+	column faixa
+		dataType: string
+		lineageTag: 31e8683f-10f6-550b-8a8e-755025fda15e
+		sortByColumn: faixa_sk
+		summarizeBy: none
+		sourceColumn: faixa
+
+	column intervalo
+		dataType: string
+		lineageTag: 25ea1801-47a2-59a5-abb0-2265ae348222
+		summarizeBy: none
+		sourceColumn: intervalo
+
+	partition dim_faixa_horario = m
+		mode: import
+		source =
+			let
+			    Fonte = fnCarregarCsv(
+			        "dim_faixa_horario.csv",
+			        {
+			        {"faixa_sk", Int64.Type},
+			        {"faixa", type text},
+			        {"intervalo", type text}
+			        }
+			    )
+			in
+			    Fonte
+
+	annotation PBI_ResultType = Table

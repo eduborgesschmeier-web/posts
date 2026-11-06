@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "d802518ea7d6ca8cb173",
+  "position": {
+    "x": 200,
+    "y": 16,
+    "z": 6,
+    "height": 32,
+    "width": 820,
+    "tabOrder": 6
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Quando: a taxa de atraso mês a mês",
+                    "textStyle": {
+                      "fontSize": "16pt",
+                      "color": "#F4F7F8",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

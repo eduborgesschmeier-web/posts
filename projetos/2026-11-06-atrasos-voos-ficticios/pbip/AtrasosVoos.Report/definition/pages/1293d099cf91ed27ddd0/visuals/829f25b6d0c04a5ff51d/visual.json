@@ -1,0 +1,132 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "829f25b6d0c04a5ff51d",
+  "position": {
+    "x": 736,
+    "y": 336,
+    "z": 9,
+    "height": 290,
+    "width": 528,
+    "tabOrder": 9
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_aeroporto"
+                    }
+                  },
+                  "Property": "iata"
+                }
+              },
+              "queryRef": "dim_aeroporto.iata",
+              "nativeQueryRef": "iata",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_aeroporto"
+                    }
+                  },
+                  "Property": "regiao"
+                }
+              },
+              "queryRef": "dim_aeroporto.regiao",
+              "nativeQueryRef": "regiao",
+              "active": true
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Voos Realizados"
+                }
+              },
+              "queryRef": "_Medidas.Voos Realizados",
+              "nativeQueryRef": "Voos Realizados"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Taxa de Atraso 15"
+                }
+              },
+              "queryRef": "_Medidas.Taxa de Atraso 15",
+              "nativeQueryRef": "Taxa de Atraso 15"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Diferença para a Rede (p.p.)"
+                }
+              },
+              "queryRef": "_Medidas.Diferença para a Rede (p.p.)",
+              "nativeQueryRef": "Diferença para a Rede (p.p.)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Ranking de Aeroporto"
+                }
+              },
+              "queryRef": "_Medidas.Ranking de Aeroporto",
+              "nativeQueryRef": "Ranking de Aeroporto"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Aeroportos: taxa, diferença para a rede e posição'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

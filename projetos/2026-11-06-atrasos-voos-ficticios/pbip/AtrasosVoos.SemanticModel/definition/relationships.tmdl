@@ -1,0 +1,40 @@
+relationship adcae56a-026a-59a7-ade1-4a584f0fea31
+	fromColumn: fato_operacao.data_mes
+	toColumn: dim_calendario.data
+
+relationship 690252f6-2e16-5a6a-9c96-5b9f7b5b55e3
+	fromColumn: fato_motivo.data_mes
+	toColumn: dim_calendario.data
+
+relationship d0b56d61-3d22-5e1b-b6d1-1cfa8ec7e8d0
+	fromColumn: fato_operacao.origem_sk
+	toColumn: dim_aeroporto.aeroporto_sk
+
+relationship d3e38028-2bbd-53da-bd6f-e06aef8a32b6
+	isActive: false
+	fromColumn: fato_operacao.destino_sk
+	toColumn: dim_aeroporto.aeroporto_sk
+
+relationship ad759b76-4201-579c-8685-7e77f03386e6
+	fromColumn: fato_motivo.origem_sk
+	toColumn: dim_aeroporto.aeroporto_sk
+
+relationship af5d9ef1-3f00-528f-92af-286d29c76dd6
+	fromColumn: fato_operacao.cia_sk
+	toColumn: dim_companhia.cia_sk
+
+relationship 9e04a93e-b3cc-57d7-8a84-f04d5a680e61
+	fromColumn: fato_motivo.cia_sk
+	toColumn: dim_companhia.cia_sk
+
+relationship 28ead12d-76cb-520d-829e-7f4227cccecc
+	fromColumn: fato_operacao.faixa_sk
+	toColumn: dim_faixa_horario.faixa_sk
+
+relationship 64e93d60-ab5c-5fef-8276-f2899cf82781
+	fromColumn: fato_operacao.rota_sk
+	toColumn: dim_rota.rota_sk
+
+relationship 730ee046-eeb0-52ae-ac1b-435aebdb89e7
+	fromColumn: fato_motivo.motivo_sk
+	toColumn: dim_motivo.motivo_sk

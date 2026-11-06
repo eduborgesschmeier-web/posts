@@ -1,0 +1,123 @@
+table fato_operacao
+	lineageTag: 6a9652ba-924c-53cd-a51e-c81ad6caa89e
+
+	column data_mes
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		isHidden
+		lineageTag: 85f638e5-e479-5caa-a2f1-45ba8d03de3d
+		summarizeBy: none
+		sourceColumn: data_mes
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column origem_sk
+		dataType: int64
+		isHidden
+		lineageTag: a06d4b5d-f58e-570f-9355-c9ffad4e4a81
+		summarizeBy: none
+		sourceColumn: origem_sk
+
+	column destino_sk
+		dataType: int64
+		isHidden
+		lineageTag: 9915e79b-a2a3-5980-a4cc-1418050eefe7
+		summarizeBy: none
+		sourceColumn: destino_sk
+
+	column rota_sk
+		dataType: int64
+		isHidden
+		lineageTag: b6e41c50-d7a5-5536-9635-8cf9c3643f28
+		summarizeBy: none
+		sourceColumn: rota_sk
+
+	column cia_sk
+		dataType: int64
+		isHidden
+		lineageTag: 1bbc426a-5185-583a-a8d8-730961736607
+		summarizeBy: none
+		sourceColumn: cia_sk
+
+	column faixa_sk
+		dataType: int64
+		isHidden
+		lineageTag: e8d53988-6150-5c72-993e-65b55668c0c8
+		summarizeBy: none
+		sourceColumn: faixa_sk
+
+	column voos_programados
+		dataType: int64
+		isHidden
+		lineageTag: bff026c3-6e46-522a-8ead-cae8de893929
+		summarizeBy: none
+		sourceColumn: voos_programados
+
+	column voos_cancelados
+		dataType: int64
+		isHidden
+		lineageTag: a516dbe0-3c3e-5409-9bb0-5383e7be4f9a
+		summarizeBy: none
+		sourceColumn: voos_cancelados
+
+	column voos_realizados
+		dataType: int64
+		isHidden
+		lineageTag: 097980cd-0dd9-593b-96a1-691b30893df3
+		summarizeBy: none
+		sourceColumn: voos_realizados
+
+	column voos_sem_horario
+		dataType: int64
+		isHidden
+		lineageTag: 12d3f9c7-69aa-55f8-8166-e6136479636e
+		summarizeBy: none
+		sourceColumn: voos_sem_horario
+
+	column voos_atrasados_15
+		dataType: int64
+		isHidden
+		lineageTag: 71179f28-d09f-5304-89bb-40d0ae022494
+		summarizeBy: none
+		sourceColumn: voos_atrasados_15
+
+	column voos_atrasados_60
+		dataType: int64
+		isHidden
+		lineageTag: 8e0c6dc5-e0fc-56bf-9579-6880f4b4eacd
+		summarizeBy: none
+		sourceColumn: voos_atrasados_60
+
+	column minutos_atraso
+		dataType: int64
+		isHidden
+		lineageTag: ca78a975-ab5f-5f37-9faa-1be5faa472a0
+		summarizeBy: none
+		sourceColumn: minutos_atraso
+
+	partition fato_operacao = m
+		mode: import
+		source =
+			let
+			    Fonte = fnCarregarCsv(
+			        "fato_operacao.csv",
+			        {
+			        {"data_mes", type date},
+			        {"origem_sk", Int64.Type},
+			        {"destino_sk", Int64.Type},
+			        {"rota_sk", Int64.Type},
+			        {"cia_sk", Int64.Type},
+			        {"faixa_sk", Int64.Type},
+			        {"voos_programados", Int64.Type},
+			        {"voos_cancelados", Int64.Type},
+			        {"voos_realizados", Int64.Type},
+			        {"voos_sem_horario", Int64.Type},
+			        {"voos_atrasados_15", Int64.Type},
+			        {"voos_atrasados_60", Int64.Type},
+			        {"minutos_atraso", Int64.Type}
+			        }
+			    )
+			in
+			    Fonte
+
+	annotation PBI_ResultType = Table

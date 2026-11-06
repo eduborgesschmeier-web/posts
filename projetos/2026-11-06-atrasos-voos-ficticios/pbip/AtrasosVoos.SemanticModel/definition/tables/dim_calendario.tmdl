@@ -1,0 +1,82 @@
+table dim_calendario
+	dataCategory: Time
+	lineageTag: 64f76461-ea7f-5cdb-80b3-568bd91c6244
+
+	column data
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		isKey
+		lineageTag: c2f046b8-415e-5fe3-af5c-6d04c6b03c1c
+		summarizeBy: none
+		sourceColumn: data
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ano
+		dataType: int64
+		lineageTag: 0b78fb98-2bc5-5326-b1a3-2377bc7f4b42
+		summarizeBy: none
+		sourceColumn: ano
+
+	column trimestre
+		dataType: string
+		lineageTag: c14549c7-e2f9-5a44-9ae2-32bd5f3b60da
+		summarizeBy: none
+		sourceColumn: trimestre
+
+	column mes_num
+		dataType: int64
+		lineageTag: ffa67b61-4227-5675-8c06-4b498d204229
+		summarizeBy: none
+		sourceColumn: mes_num
+
+	column mes_abrev
+		dataType: string
+		lineageTag: 15bc306f-78db-5547-917d-218893039f06
+		sortByColumn: mes_num
+		summarizeBy: none
+		sourceColumn: mes_abrev
+
+	column mes_ano
+		dataType: string
+		lineageTag: a4026c64-22f7-5911-9bee-f7ce690707b0
+		sortByColumn: inicio_mes
+		summarizeBy: none
+		sourceColumn: mes_ano
+
+	column ano_mes
+		dataType: string
+		lineageTag: d5ae0648-1e2f-5195-a8ec-7d2416ec7a57
+		summarizeBy: none
+		sourceColumn: ano_mes
+
+	column inicio_mes
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: f4e3d390-2b86-53c0-b5dd-ca5e5f5151fe
+		summarizeBy: none
+		sourceColumn: inicio_mes
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition dim_calendario = m
+		mode: import
+		source =
+			let
+			    Fonte = fnCarregarCsv(
+			        "dim_calendario.csv",
+			        {
+			        {"data", type date},
+			        {"ano", Int64.Type},
+			        {"trimestre", type text},
+			        {"mes_num", Int64.Type},
+			        {"mes_abrev", type text},
+			        {"mes_ano", type text},
+			        {"ano_mes", type text},
+			        {"inicio_mes", type date}
+			        }
+			    )
+			in
+			    Fonte
+
+	annotation PBI_ResultType = Table

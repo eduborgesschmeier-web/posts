@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "3dd3b98ae93b7857fd15",
+  "position": {
+    "x": 200,
+    "y": 636,
+    "z": 11,
+    "height": 44,
+    "width": 1064,
+    "tabOrder": 11
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Marcadores de evento: a série Marcador de Evento (série) só tem valor nos meses com evento operacional; formate-a com marcador âmbar e linha de largura 0 (ver guia/04-montagem.md).",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#8A949B"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "15c5b5130401a069f4ed",
+  "position": {
+    "x": 1036,
+    "y": 360,
+    "z": 10,
+    "height": 270,
+    "width": 228,
+    "tabOrder": 10
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Ler com cuidado",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#F4F7F8",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Os picos de jan, jul e dez se repetem todo ano: é sazonalidade, não evento.",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#B7C0C6"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Não concluir: coincidir no tempo com um evento não prova que ele causou a alta.",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#F4B24A"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

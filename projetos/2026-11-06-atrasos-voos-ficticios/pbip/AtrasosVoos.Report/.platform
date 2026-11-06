@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "AtrasosVoos"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "122ccb09-55fb-5d79-a425-316888f56a67"
+  }
+}

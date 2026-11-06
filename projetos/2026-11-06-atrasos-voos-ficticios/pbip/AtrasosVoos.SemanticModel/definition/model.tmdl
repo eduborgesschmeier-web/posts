@@ -1,0 +1,24 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	discourageImplicitMeasures
+
+ref table fato_operacao
+ref table fato_motivo
+ref table dim_calendario
+ref table dim_aeroporto
+ref table dim_companhia
+ref table dim_faixa_horario
+ref table dim_rota
+ref table dim_motivo
+ref table dim_evento
+ref table 'Param Volume Minimo'
+ref table Etapas
+ref table _Medidas
+
+ref cultureInfo pt-BR
+
+annotation PBI_QueryOrder = ["PastaDados", "fnCarregarCsv", "fato_operacao", "fato_motivo", "dim_calendario", "dim_aeroporto", "dim_companhia", "dim_faixa_horario", "dim_rota", "dim_motivo", "dim_evento", "_Medidas"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0

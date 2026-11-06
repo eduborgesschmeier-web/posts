@@ -1,0 +1,38 @@
+table dim_companhia
+	lineageTag: d337ed47-5497-5218-9c2e-2ad63d1e8ede
+
+	column cia_sk
+		dataType: int64
+		isHidden
+		lineageTag: ec2ce08e-bcb4-530e-a147-aee175f7bf84
+		summarizeBy: none
+		sourceColumn: cia_sk
+
+	column companhia
+		dataType: string
+		lineageTag: cd0c49cb-c55f-5554-ba39-7844980f0a2f
+		summarizeBy: none
+		sourceColumn: companhia
+
+	column sigla
+		dataType: string
+		lineageTag: 58f3278b-07e9-5a38-a049-1fcd48ffdcb9
+		summarizeBy: none
+		sourceColumn: sigla
+
+	partition dim_companhia = m
+		mode: import
+		source =
+			let
+			    Fonte = fnCarregarCsv(
+			        "dim_companhia.csv",
+			        {
+			        {"cia_sk", Int64.Type},
+			        {"companhia", type text},
+			        {"sigla", type text}
+			        }
+			    )
+			in
+			    Fonte
+
+	annotation PBI_ResultType = Table

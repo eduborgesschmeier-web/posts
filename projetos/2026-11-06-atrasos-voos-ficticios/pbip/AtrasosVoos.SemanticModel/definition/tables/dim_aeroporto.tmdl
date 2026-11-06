@@ -1,0 +1,59 @@
+table dim_aeroporto
+	lineageTag: 200e2d89-1347-5121-b2fc-ef7bb344c044
+
+	column aeroporto_sk
+		dataType: int64
+		isHidden
+		lineageTag: 4b9b92e7-4304-58b4-b3b9-9b781c9b189c
+		summarizeBy: none
+		sourceColumn: aeroporto_sk
+
+	column iata
+		dataType: string
+		lineageTag: 0bd27359-dfe7-5683-ba81-532627813b23
+		summarizeBy: none
+		sourceColumn: iata
+
+	column cidade
+		dataType: string
+		lineageTag: dd9d22a0-bdce-56fb-904f-72765dccd959
+		summarizeBy: none
+		sourceColumn: cidade
+
+	column uf
+		dataType: string
+		lineageTag: b61f17f6-4168-516a-ab6e-ee8089006349
+		summarizeBy: none
+		sourceColumn: uf
+
+	column regiao
+		dataType: string
+		lineageTag: 2ba0b80c-3bc6-5737-82af-12b9291a492a
+		summarizeBy: none
+		sourceColumn: regiao
+
+	column hub
+		dataType: string
+		lineageTag: 2cbee8f2-5a53-5a48-9e49-3987c7fdbdcf
+		summarizeBy: none
+		sourceColumn: hub
+
+	partition dim_aeroporto = m
+		mode: import
+		source =
+			let
+			    Fonte = fnCarregarCsv(
+			        "dim_aeroporto.csv",
+			        {
+			        {"aeroporto_sk", Int64.Type},
+			        {"iata", type text},
+			        {"cidade", type text},
+			        {"uf", type text},
+			        {"regiao", type text},
+			        {"hub", type text}
+			        }
+			    )
+			in
+			    Fonte
+
+	annotation PBI_ResultType = Table

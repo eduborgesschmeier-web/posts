@@ -1,0 +1,14 @@
+table 'Param Volume Minimo'
+	lineageTag: c81a5fbd-b8fc-513f-86ef-18384a10d730
+
+	column Value
+		dataType: int64
+		formatString: #,0
+		isNameInferred
+		lineageTag: 584211e0-9eb1-5bc0-b747-770c421c1970
+		summarizeBy: none
+		sourceColumn: [Value]
+
+	partition 'Param Volume Minimo' = calculated
+		mode: import
+		source = GENERATESERIES ( 0, 30000, 1000 )

@@ -1,0 +1,116 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "da8ae4ee28414de4156d",
+  "position": {
+    "x": 856,
+    "y": 372,
+    "z": 10,
+    "height": 300,
+    "width": 408,
+    "tabOrder": 10
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Voos Programados"
+                }
+              },
+              "queryRef": "_Medidas.Voos Programados",
+              "nativeQueryRef": "Voos Programados"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Voos Cancelados"
+                }
+              },
+              "queryRef": "_Medidas.Voos Cancelados",
+              "nativeQueryRef": "Voos Cancelados"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Voos Realizados"
+                }
+              },
+              "queryRef": "_Medidas.Voos Realizados",
+              "nativeQueryRef": "Voos Realizados"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Voos Sem Horário"
+                }
+              },
+              "queryRef": "_Medidas.Voos Sem Horário",
+              "nativeQueryRef": "Voos Sem Horário"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Voos Com Horário"
+                }
+              },
+              "queryRef": "_Medidas.Voos Com Horário",
+              "nativeQueryRef": "Voos Com Horário"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Conferência de totais (programados - cancelados = realizados)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

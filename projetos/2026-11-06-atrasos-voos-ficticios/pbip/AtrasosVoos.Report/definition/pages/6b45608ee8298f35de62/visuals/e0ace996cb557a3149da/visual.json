@@ -1,0 +1,104 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "e0ace996cb557a3149da",
+  "position": {
+    "x": 200,
+    "y": 372,
+    "z": 9,
+    "height": 300,
+    "width": 640,
+    "tabOrder": 9
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "O que este painel não diz",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#F4F7F8",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "1. A frase de abertura fala de voos com horário registrado, não de todos os voos.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#B7C0C6"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "2. A faixa de horário não é a causa: aeroporto e companhia também mudam a taxa.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#B7C0C6"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "3. A posição no ranking não é culpa do aeroporto: hub tem mais conexão.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#B7C0C6"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "4. Coincidir no tempo com um evento não prova que ele causou a alta.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#B7C0C6"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "5. 0,3% de voos sem horário fora da falha é o normal simulado, não uma garantia.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#B7C0C6"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "6. Os dados são fictícios: nada aqui descreve a aviação brasileira real.",
+                    "textStyle": {
+                      "fontSize": "11pt",
+                      "color": "#B7C0C6"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

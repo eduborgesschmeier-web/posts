@@ -1,0 +1,32 @@
+table Etapas
+	lineageTag: 798aec0a-f02d-507b-9ba8-9995734c075a
+
+	column Etapa
+		dataType: string
+		lineageTag: bc0691f1-428a-545b-9441-be138f0f9d91
+		sortByColumn: Ordem
+		summarizeBy: none
+		sourceColumn: Etapa
+
+	column Ordem
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 30e3df83-a70b-56a4-b249-c7ea1cff1e87
+		summarizeBy: none
+		sourceColumn: Ordem
+
+	partition Etapas = calculated
+		mode: import
+		source =
+			DATATABLE (
+			    "Etapa", STRING,
+			    "Ordem", INTEGER,
+			    {
+			        { "Voos programados", 1 },
+			        { "Voos realizados", 2 },
+			        { "Com horário registrado", 3 },
+			        { "Atrasados > 15 min", 4 },
+			        { "Atrasados > 60 min", 5 }
+			    }
+			)

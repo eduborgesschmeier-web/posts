@@ -1,0 +1,85 @@
+table dim_evento
+	lineageTag: 70f7f1ab-fee7-5f28-b545-4894a749970c
+
+	column evento_sk
+		dataType: int64
+		isHidden
+		lineageTag: f55a2259-ecaf-5548-9ad6-68ace01cfc59
+		summarizeBy: none
+		sourceColumn: evento_sk
+
+	column rotulo
+		dataType: string
+		lineageTag: df12295c-1d67-57d1-a3b2-fbd28d3f5f02
+		summarizeBy: none
+		sourceColumn: rotulo
+
+	column rotulo_curto
+		dataType: string
+		lineageTag: 12cc127d-45c5-53f3-96ff-1ee0d54b3e04
+		summarizeBy: none
+		sourceColumn: rotulo_curto
+
+	column tipo
+		dataType: string
+		lineageTag: 16e00a3d-4792-5904-8852-b3fc5aa91e7a
+		summarizeBy: none
+		sourceColumn: tipo
+
+	column inicio
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 983a028e-9e48-5397-b1d5-cd8bcdf0a77a
+		summarizeBy: none
+		sourceColumn: inicio
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column fim
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 0c1dae4f-819a-5110-9f5a-c7dbaab482a7
+		summarizeBy: none
+		sourceColumn: fim
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column mes_inicio
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: c7ee9b71-d7d6-5429-8419-ee87dad609d8
+		summarizeBy: none
+		sourceColumn: mes_inicio
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column mes_fim
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: b41d6924-6bb4-5812-8f7a-46bd46cc67f5
+		summarizeBy: none
+		sourceColumn: mes_fim
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition dim_evento = m
+		mode: import
+		source =
+			let
+			    Fonte = fnCarregarCsv(
+			        "dim_evento.csv",
+			        {
+			        {"evento_sk", Int64.Type},
+			        {"rotulo", type text},
+			        {"rotulo_curto", type text},
+			        {"tipo", type text},
+			        {"inicio", type date},
+			        {"fim", type date},
+			        {"mes_inicio", type date},
+			        {"mes_fim", type date}
+			        }
+			    )
+			in
+			    Fonte
+
+	annotation PBI_ResultType = Table

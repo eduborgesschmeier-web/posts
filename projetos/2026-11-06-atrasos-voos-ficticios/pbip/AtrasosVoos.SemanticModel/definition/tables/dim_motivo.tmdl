@@ -1,0 +1,31 @@
+table dim_motivo
+	lineageTag: 34ef2aee-eb8e-5488-a37c-ba4743ae9c0e
+
+	column motivo_sk
+		dataType: int64
+		isHidden
+		lineageTag: dab6fc45-ba11-5cef-b25f-8bcd72804bdc
+		summarizeBy: none
+		sourceColumn: motivo_sk
+
+	column motivo
+		dataType: string
+		lineageTag: 5d18e40a-71d3-5d24-944b-d587aa89ddfb
+		summarizeBy: none
+		sourceColumn: motivo
+
+	partition dim_motivo = m
+		mode: import
+		source =
+			let
+			    Fonte = fnCarregarCsv(
+			        "dim_motivo.csv",
+			        {
+			        {"motivo_sk", Int64.Type},
+			        {"motivo", type text}
+			        }
+			    )
+			in
+			    Fonte
+
+	annotation PBI_ResultType = Table

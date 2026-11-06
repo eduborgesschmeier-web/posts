@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "2f49c9c6c3e09ad427bc",
+  "position": {
+    "x": 200,
+    "y": 16,
+    "z": 6,
+    "height": 32,
+    "width": 1064,
+    "tabOrder": 6
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Qualidade e limites: quanto do que o painel diz dá para acreditar?",
+                    "textStyle": {
+                      "fontSize": "16pt",
+                      "color": "#F4F7F8",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

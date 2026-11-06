@@ -1,0 +1,20 @@
+expression PastaDados = "C:\caminho\para\a\pasta\dados" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: a67fa4f7-82f2-531c-abac-d06b0311c315
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+expression fnCarregarCsv =
+		(arquivo as text, tipos as list) as table =>
+		let
+		    Caminho = Text.TrimEnd(PastaDados, "\") & "\" & arquivo,
+		    Bruto = Csv.Document(File.Contents(Caminho), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+		    Cabecalho = Table.PromoteHeaders(Bruto, [PromoteAllScalars = true]),
+		    // "en-US" porque os números do CSV usam ponto decimal e datas ISO (AAAA-MM-DD), independente da região do Windows
+		    Tipado = Table.TransformColumnTypes(Cabecalho, tipos, "en-US")
+		in
+		    Tipado
+	lineageTag: 05e2f732-4bbd-595f-a79d-631ef016fa11
+
+	annotation PBI_ResultType = Function

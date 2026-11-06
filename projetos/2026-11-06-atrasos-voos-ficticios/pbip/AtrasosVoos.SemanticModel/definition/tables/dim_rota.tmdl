@@ -1,0 +1,59 @@
+table dim_rota
+	lineageTag: 202f4acf-6e14-5fcf-922f-be25779eba49
+
+	column rota_sk
+		dataType: int64
+		isHidden
+		lineageTag: 27b5c51c-c83d-582b-840b-8b2fe781025d
+		summarizeBy: none
+		sourceColumn: rota_sk
+
+	column rota
+		dataType: string
+		lineageTag: 028dd7da-6353-5085-ab1c-32146d213892
+		summarizeBy: none
+		sourceColumn: rota
+
+	column origem
+		dataType: string
+		lineageTag: 2381757e-bd7c-5605-bddc-ed1bb837a6e3
+		summarizeBy: none
+		sourceColumn: origem
+
+	column destino
+		dataType: string
+		lineageTag: a8e5f4e3-9406-5c95-aa06-ba6f487bc695
+		summarizeBy: none
+		sourceColumn: destino
+
+	column distancia_km
+		dataType: int64
+		lineageTag: 00789b9e-a6aa-55c6-9952-cd7390e82b77
+		summarizeBy: none
+		sourceColumn: distancia_km
+
+	column faixa_distancia
+		dataType: string
+		lineageTag: 00465c45-a91d-5e7f-8119-153fd319cc75
+		summarizeBy: none
+		sourceColumn: faixa_distancia
+
+	partition dim_rota = m
+		mode: import
+		source =
+			let
+			    Fonte = fnCarregarCsv(
+			        "dim_rota.csv",
+			        {
+			        {"rota_sk", Int64.Type},
+			        {"rota", type text},
+			        {"origem", type text},
+			        {"destino", type text},
+			        {"distancia_km", Int64.Type},
+			        {"faixa_distancia", type text}
+			        }
+			    )
+			in
+			    Fonte
+
+	annotation PBI_ResultType = Table
