@@ -1,0 +1,20 @@
+{
+ "voos_simulados": 6207271,
+ "linhas_fato_operacao": 93597,
+ "taxa_madrugada_2025": 0.102707328638009,
+ "taxa_noite_2025": 0.3243875105319558,
+ "planalto_aparente": 0.16055149866361207,
+ "planalto_limite_inferior": 0.12239672165445474,
+ "planalto_limite_superior": 0.36004493625691897,
+ "planalto_verdade_simulada": 0.2710866114514684,
+ "planalto_pct_sem_horario": 0.23764821460246421,
+ "outras_companhias_mesmo_periodo": 0.21923935930167002,
+ "aparente_por_companhia_abr_set_2024": {
+  "Planalto Air": 0.16055149866361207,
+  "Litoral Linhas": 0.2016890641894683,
+  "Aérea Cerrado": 0.2247071321164468,
+  "Pampa Regional": 0.2251162619708472,
+  "Sul Asas": 0.24394605740980674
+ },
+ "conferencias_dax": true
+}

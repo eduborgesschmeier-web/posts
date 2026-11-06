@@ -1,0 +1,25 @@
+aeroporto_sk,iata,cidade,uf,regiao,hub
+1,GRU,Guarulhos,SP,Sudeste,Sim
+2,CGH,São Paulo (Congonhas),SP,Sudeste,Sim
+3,GIG,Rio de Janeiro (Galeão),RJ,Sudeste,Não
+4,SDU,Rio de Janeiro (Santos Dumont),RJ,Sudeste,Não
+5,BSB,Brasília,DF,Centro-Oeste,Sim
+6,CNF,Belo Horizonte (Confins),MG,Sudeste,Não
+7,SSA,Salvador,BA,Nordeste,Não
+8,REC,Recife,PE,Nordeste,Não
+9,FOR,Fortaleza,CE,Nordeste,Não
+10,POA,Porto Alegre,RS,Sul,Não
+11,CWB,Curitiba,PR,Sul,Não
+12,FLN,Florianópolis,SC,Sul,Não
+13,VCP,Campinas (Viracopos),SP,Sudeste,Sim
+14,BEL,Belém,PA,Norte,Não
+15,MAO,Manaus,AM,Norte,Não
+16,GYN,Goiânia,GO,Centro-Oeste,Não
+17,CGB,Cuiabá,MT,Centro-Oeste,Não
+18,NAT,Natal,RN,Nordeste,Não
+19,MCZ,Maceió,AL,Nordeste,Não
+20,VIX,Vitória,ES,Sudeste,Não
+21,SLZ,São Luís,MA,Nordeste,Não
+22,THE,Teresina,PI,Nordeste,Não
+23,CGR,Campo Grande,MS,Centro-Oeste,Não
+24,JPA,João Pessoa,PB,Nordeste,Não

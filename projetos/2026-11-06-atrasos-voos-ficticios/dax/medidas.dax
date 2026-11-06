@@ -1,0 +1,203 @@
+// Fábrica de dados: DADOS FICTÍCIOS. 25 medidas do modelo estrela (tabela de medidas: _Medidas).
+// Como usar: Dados > Inserir dados (tabela vazia chamada _Medidas) > Nova medida, uma por vez, colando o bloco.
+// A 'Pasta de exibição' de cada uma está no comentário (Visão de modelo > Propriedades > Pasta de exibição).
+// STATUS: fórmulas NÃO testadas no Power BI Desktop (sem Windows na sessão). Valores esperados: guia/02-medidas.md.
+
+// Pasta de exibição: 1 Volume | Formato: #,0
+// O que mede: Voos que constavam na malha, cancelados ou não.
+// Por que assim: Soma simples da coluna do fato. É o denominador da taxa de cancelamento: cancelado faz parte do que foi programado.
+Voos Programados = SUM ( fato_operacao[voos_programados] )
+
+// Pasta de exibição: 1 Volume | Formato: #,0
+// O que mede: Voos programados que não decolaram.
+// Por que assim: Soma simples; existe separada para a taxa e para o funil.
+Voos Cancelados = SUM ( fato_operacao[voos_cancelados] )
+
+// Pasta de exibição: 1 Volume | Formato: #,0
+// O que mede: Voos que decolaram (programados menos cancelados).
+// Por que assim: Vem pronta do fato (programados - cancelados). O script confere a identidade nos 93.597 registros do fato: ela vale em todos.
+Voos Realizados = SUM ( fato_operacao[voos_realizados] )
+
+// Pasta de exibição: 1 Volume | Formato: #,0
+// O que mede: Voos realizados cujo horário real de saída foi registrado.
+// Por que assim: ARMADILHA: o atraso só pode ser medido onde há horário. Dividir atrasos por Voos Realizados misturaria voo sem medida no denominador.
+Voos Com Horário = [Voos Realizados] - [Voos Sem Horário]
+
+// Pasta de exibição: 1 Volume | Formato: #,0
+// O que mede: Voos com horário registrado que saíram mais de 15 min depois do previsto.
+// Por que assim: Corte de 15 min = convenção comum de pontualidade; ele está no gerador, não no DAX, por isso a soma é simples.
+Voos Atrasados 15 = SUM ( fato_operacao[voos_atrasados_15] )
+
+// Pasta de exibição: 1 Volume | Formato: #,0
+// O que mede: Voos com horário registrado que saíram mais de 60 min depois do previsto (atraso grave).
+// Por que assim: Subconjunto dos atrasados de 15: a coluna do fato já respeita atraso60 <= atraso15.
+Voos Atrasados 60 = SUM ( fato_operacao[voos_atrasados_60] )
+
+// Pasta de exibição: 1 Volume | Formato: #,0
+// O que mede: Soma dos minutos de atraso dos voos atrasados (mais de 15 min).
+// Por que assim: Guardamos a SOMA, não a média: média de médias de grupos de tamanhos diferentes dá resposta errada; a média é calculada depois, na medida.
+Minutos de Atraso = SUM ( fato_operacao[minutos_atraso] )
+
+// Pasta de exibição: 3 Comparação | Formato: 0.0%
+// O que mede: Parte dos voos programados que foi cancelada.
+// Por que assim: DIVIDE evita erro de divisão por zero e devolve vazio onde não há voo.
+Taxa de Cancelamento = DIVIDE ( [Voos Cancelados], [Voos Programados] )
+
+// Pasta de exibição: 3 Comparação | Formato: 0.0%
+// O que mede: Parte dos voos com horário registrado que atrasou mais de 15 min.
+// Por que assim: Razão de somas, nunca média de taxas: ao somar ou filtrar, a taxa é recalculada com os totais do contexto (Simpson). O denominador exclui voo sem horário.
+Taxa de Atraso 15 = DIVIDE ( [Voos Atrasados 15], [Voos Com Horário] )
+
+// Pasta de exibição: 3 Comparação | Formato: 0.0%
+// O que mede: Parte dos voos com horário que atrasou mais de 60 min.
+// Por que assim: Mesmo desenho da taxa de 15 min, para o botão que alterna a visão.
+Taxa de Atraso 60 = DIVIDE ( [Voos Atrasados 60], [Voos Com Horário] )
+
+// Pasta de exibição: 3 Comparação | Formato: 0.0
+// O que mede: Quantos minutos, em média, atrasa um voo que atrasou.
+// Por que assim: Média ponderada pelo contexto (soma de minutos / soma de voos). Não é o atraso médio de todos os voos: só entra quem passou de 15 min.
+Atraso Médio dos Atrasados (min) = DIVIDE ( [Minutos de Atraso], [Voos Atrasados 15] )
+
+// Pasta de exibição: 3 Comparação | Formato: 0.0%
+// O que mede: Taxa de atraso de todos os aeroportos, no mesmo período, companhia e faixa de horário.
+// Por que assim: Referência justa para comparar um aeroporto: tira só o filtro de aeroporto/rota e mantém tempo, companhia e faixa. Comparar com a rede de OUTRO período seria enganoso.
+Taxa de Atraso na Rede =
+CALCULATE (
+    [Taxa de Atraso 15],
+    REMOVEFILTERS ( dim_aeroporto ),
+    REMOVEFILTERS ( dim_rota )
+)
+
+// Pasta de exibição: 3 Comparação | Formato: +0.0;-0.0;0.0
+// O que mede: Quantos pontos percentuais um aeroporto está acima (+) ou abaixo (-) da rede.
+// Por que assim: Diferença em pontos percentuais, não em %: 'atrasa 30% mais' e '30 p.p. a mais' são coisas diferentes. O IF mantém vazio onde não há dado.
+Diferença para a Rede (p.p.) =
+VAR t = [Taxa de Atraso 15]
+VAR r = [Taxa de Atraso na Rede]
+RETURN
+    IF ( NOT ISBLANK ( t ), ( t - r ) * 100 )
+
+// Pasta de exibição: 3 Comparação | Formato: 0.0%
+// O que mede: A taxa de atraso, mas só onde há volume suficiente para ela significar algo.
+// Por que assim: Ranking com aeroporto pequeno premia o acaso: 3 voos atrasados em 10 dá 30%. O limite é um parâmetro que o leitor muda, e o padrão (10.000 voos) está escrito na tela.
+Taxa de Atraso (volume mínimo) =
+VAR minimo = SELECTEDVALUE ( 'Param Volume Minimo'[Value], 10000 )
+RETURN
+    IF ( [Voos Realizados] >= minimo, [Taxa de Atraso 15] )
+
+// Pasta de exibição: 3 Comparação | Formato: 0
+// O que mede: Posição do aeroporto entre os que têm volume mínimo (1 = maior taxa de atraso).
+// Por que assim: ALLSELECTED respeita os filtros do leitor (ano, companhia) mas ignora o recorte do próprio visual; o FILTER tira da disputa quem não tem volume, senão eles entrariam no ranking com vazio.
+Ranking de Aeroporto =
+IF (
+    NOT ISBLANK ( [Taxa de Atraso (volume mínimo)] ),
+    RANKX (
+        FILTER (
+            ALLSELECTED ( dim_aeroporto[iata] ),
+            NOT ISBLANK ( [Taxa de Atraso (volume mínimo)] )
+        ),
+        [Taxa de Atraso (volume mínimo)],
+        ,
+        DESC,
+        DENSE
+    )
+)
+
+// Pasta de exibição: 2 Tempo | Formato: +0.0%;-0.0%;0.0%
+// O que mede: Crescimento do número de voos realizados contra o mesmo período do ano anterior.
+// Por que assim: O calendário é diário e o fato é mensal (cai no dia 1): SAMEPERIODLASTYEAR desloca os dias e acha o mês certo. Sem ano anterior (2023) devolve vazio, não 0%.
+Variação de Voos vs Ano Anterior (%) =
+VAR atual = [Voos Realizados]
+VAR anterior =
+    CALCULATE ( [Voos Realizados], SAMEPERIODLASTYEAR ( dim_calendario[data] ) )
+RETURN
+    IF ( NOT ISBLANK ( anterior ), DIVIDE ( atual - anterior, anterior ) )
+
+// Pasta de exibição: 2 Tempo | Formato: +0.0;-0.0;0.0
+// O que mede: Quantos pontos percentuais a taxa de atraso subiu ou caiu contra o mesmo período do ano anterior.
+// Por que assim: Compara o mesmo período (jul com jul): comparar com o mês anterior misturaria sazonalidade com mudança real.
+Variação da Taxa de Atraso vs Ano Anterior (p.p.) =
+VAR atual = [Taxa de Atraso 15]
+VAR anterior =
+    CALCULATE ( [Taxa de Atraso 15], SAMEPERIODLASTYEAR ( dim_calendario[data] ) )
+RETURN
+    IF ( NOT ISBLANK ( anterior ), ( atual - anterior ) * 100 )
+
+// Pasta de exibição: 2 Tempo | Formato: 0.0%
+// O que mede: Taxa de atraso dos 3 meses que terminam no mês do contexto.
+// Por que assim: ARMADILHA: média das três taxas mensais pesa igual um mês de 130 mil e um de 190 mil voos. Aqui soma-se numerador e denominador da janela e divide-se uma vez. A janela é montada por datas (mês atual e 2 anteriores) para não depender de DATESINPERIOD em fato mensal.
+Taxa de Atraso (média móvel 3M) =
+VAR fim = MAX ( dim_calendario[inicio_mes] )
+VAR janela =
+    FILTER (
+        ALL ( dim_calendario ),
+        dim_calendario[data] >= EDATE ( fim, -2 )
+            && dim_calendario[data] <= EOMONTH ( fim, 0 )
+    )
+RETURN
+    CALCULATE ( DIVIDE ( [Voos Atrasados 15], [Voos Com Horário] ), janela )
+
+// Pasta de exibição: 2 Tempo | Formato: 0.0%
+// O que mede: Devolve a taxa de atraso só nos meses que têm um evento operacional; nos outros fica vazio.
+// Por que assim: Serve para desenhar marcadores sobre a MESMA linha e o MESMO eixo (sem eixo duplo). dim_evento não tem relação com o resto: a medida lê as datas direto. Falha de dado fica de fora de propósito (vai na página de qualidade).
+Marcador de Evento (série) =
+VAR m = MAX ( dim_calendario[inicio_mes] )
+VAR temEvento =
+    COUNTROWS (
+        FILTER (
+            dim_evento,
+            dim_evento[tipo] = "Operacional"
+                && dim_evento[mes_inicio] <= m
+                && dim_evento[mes_fim] >= m
+        )
+    ) > 0
+RETURN
+    IF ( temEvento, [Taxa de Atraso 15] )
+
+// Pasta de exibição: 4 Qualidade do dado | Formato: #,0
+// O que mede: Voos realizados sem horário real registrado (atraso desconhecido).
+// Por que assim: Base da qualidade do dado e da correção do denominador da taxa.
+Voos Sem Horário = SUM ( fato_operacao[voos_sem_horario] )
+
+// Pasta de exibição: 4 Qualidade do dado | Formato: 0.0%
+// O que mede: Parte dos voos realizados sem horário registrado.
+// Por que assim: Alerta de cobertura: quando passa de uns 5%, a taxa de atraso do grupo deixa de ser confiável.
+% de Voos Sem Horário = DIVIDE ( [Voos Sem Horário], [Voos Realizados] )
+
+// Pasta de exibição: 4 Qualidade do dado | Formato: 0.0%
+// O que mede: Taxa de atraso se TODO voo sem horário tivesse saído no prazo.
+// Por que assim: Um extremo do intervalo honesto: o valor real está entre este e o limite superior.
+Taxa de Atraso (limite inferior) = DIVIDE ( [Voos Atrasados 15], [Voos Realizados] )
+
+// Pasta de exibição: 4 Qualidade do dado | Formato: 0.0%
+// O que mede: Taxa de atraso se TODO voo sem horário tivesse atrasado.
+// Por que assim: O outro extremo. Quando o intervalo é largo, o painel diz que não sabe, em vez de fingir precisão com a taxa 'aparente'.
+Taxa de Atraso (limite superior) =
+DIVIDE ( [Voos Atrasados 15] + [Voos Sem Horário], [Voos Realizados] )
+
+// Pasta de exibição: 3 Comparação | Formato: @
+// O que mede: Frase de abertura da página 1, que muda com os filtros.
+// Por que assim: Texto vem de medida: número escrito à mão em caixa de texto envelhece e mente quando o filtro muda. FORMAT usa a configuração regional do relatório (vírgula decimal no pt-BR).
+Narrativa =
+VAR t = [Taxa de Atraso 15]
+VAR noite = CALCULATE ( [Taxa de Atraso 15], dim_faixa_horario[faixa] = "Noite" )
+VAR manha = CALCULATE ( [Taxa de Atraso 15], dim_faixa_horario[faixa] = "Manhã" )
+VAR canc = [Taxa de Cancelamento]
+RETURN
+    "De cada 100 voos com horário registrado, " & FORMAT ( t * 100, "0.0" )
+        & " saíram mais de 15 min depois do previsto. De manhã são "
+        & FORMAT ( manha * 100, "0.0" ) & "; à noite, " & FORMAT ( noite * 100, "0.0" )
+        & ". Cancelamos " & FORMAT ( canc * 100, "0.0" ) & "% dos voos programados."
+
+// Pasta de exibição: 3 Comparação | Formato: #,0
+// O que mede: Valor de cada degrau do funil (programados até atrasados graves).
+// Por que assim: Tabela desconectada 'Etapas' (DATATABLE, em dax/auxiliares) escolhe qual medida mostrar: o funil vira uma barra com base zero, sem 3 visuais.
+Valor da Etapa =
+SWITCH (
+    SELECTEDVALUE ( Etapas[Ordem] ),
+    1, [Voos Programados],
+    2, [Voos Realizados],
+    3, [Voos Com Horário],
+    4, [Voos Atrasados 15],
+    5, [Voos Atrasados 60]
+)

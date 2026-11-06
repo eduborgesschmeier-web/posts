@@ -1,0 +1,3 @@
+# Dado grande fica fora do Git: recrie com scripts/gerar_dados.py
+*
+!.gitignore

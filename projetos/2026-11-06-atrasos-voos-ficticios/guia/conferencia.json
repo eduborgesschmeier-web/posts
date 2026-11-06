@@ -1,0 +1,309 @@
+{
+ "identidades": {
+  "realizados_igual_programados_menos_cancelados": true,
+  "atrasados60_menor_igual_atrasados15": true,
+  "atrasados15_mais_sem_horario_menor_igual_realizados": true,
+  "fato_motivo_atrasados15_igual_fato_operacao": true,
+  "linhas_fato_operacao": 93597,
+  "linhas_fato_motivo": 22150
+ },
+ "linhas": [
+  {
+   "medida": "Voos Programados",
+   "contexto": "todos os filtros limpos",
+   "esperado": "6.207.271",
+   "independente": "6.207.271",
+   "ok": true,
+   "bruto_a": 6207271
+  },
+  {
+   "medida": "Voos Cancelados",
+   "contexto": "todos os filtros limpos",
+   "esperado": "122.400",
+   "independente": "122.400",
+   "ok": true,
+   "bruto_a": 122400
+  },
+  {
+   "medida": "Voos Realizados",
+   "contexto": "ano 2025",
+   "esperado": "2.188.195",
+   "independente": "2.188.195",
+   "ok": true,
+   "bruto_a": 2188195
+  },
+  {
+   "medida": "Voos Com Horário",
+   "contexto": "ano 2024",
+   "esperado": "1.965.203",
+   "independente": "1.965.203",
+   "ok": true,
+   "bruto_a": 1965203
+  },
+  {
+   "medida": "Voos Atrasados 15",
+   "contexto": "todos os filtros limpos",
+   "esperado": "1.369.463",
+   "independente": "1.369.463",
+   "ok": true,
+   "bruto_a": 1369463
+  },
+  {
+   "medida": "Voos Atrasados 60",
+   "contexto": "ano 2025",
+   "esperado": "166.174",
+   "independente": "166.174",
+   "ok": true,
+   "bruto_a": 166174
+  },
+  {
+   "medida": "Minutos de Atraso",
+   "contexto": "ano 2025, faixa Noite",
+   "esperado": "11.767.133",
+   "independente": "11.767.133",
+   "ok": true,
+   "bruto_a": 11767133
+  },
+  {
+   "medida": "Taxa de Cancelamento",
+   "contexto": "mai/2024, região Sul",
+   "esperado": "13,52%",
+   "independente": "13,52%",
+   "ok": true,
+   "bruto_a": 0.13523394512352746
+  },
+  {
+   "medida": "Taxa de Atraso 15",
+   "contexto": "todos os filtros limpos",
+   "esperado": "22,77%",
+   "independente": "22,77%",
+   "ok": true,
+   "bruto_a": 0.22767188361637505
+  },
+  {
+   "medida": "Taxa de Atraso 15",
+   "contexto": "ano 2025, faixa Noite",
+   "esperado": "32,44%",
+   "independente": "32,44%",
+   "ok": true,
+   "bruto_a": 0.3243875105319558
+  },
+  {
+   "medida": "Taxa de Atraso 15",
+   "contexto": "ano 2025, faixa Madrugada",
+   "esperado": "10,27%",
+   "independente": "10,27%",
+   "ok": true,
+   "bruto_a": 0.102707328638009
+  },
+  {
+   "medida": "Taxa de Atraso 60",
+   "contexto": "ano 2025",
+   "esperado": "7,62%",
+   "independente": "7,62%",
+   "ok": true,
+   "bruto_a": 0.07616797712586366
+  },
+  {
+   "medida": "Atraso Médio dos Atrasados (min)",
+   "contexto": "ano 2025, aeroporto GRU",
+   "esperado": "59,35",
+   "independente": "59,35",
+   "ok": true,
+   "bruto_a": 59.34821114702047
+  },
+  {
+   "medida": "Taxa de Atraso na Rede",
+   "contexto": "abr/2025, aeroporto CNF no contexto",
+   "esperado": "23,07%",
+   "independente": "23,07%",
+   "ok": true,
+   "bruto_a": 0.23068810967571843
+  },
+  {
+   "medida": "Taxa de Atraso 15",
+   "contexto": "abr/2025, aeroporto CNF",
+   "esperado": "31,70%",
+   "independente": "31,70%",
+   "ok": true,
+   "bruto_a": 0.31703481842006737
+  },
+  {
+   "medida": "Diferença para a Rede (p.p.)",
+   "contexto": "abr/2025, aeroporto CNF",
+   "esperado": "+8,63 p.p.",
+   "independente": "+8,63 p.p.",
+   "ok": true,
+   "bruto_a": 8.634670874434894
+  },
+  {
+   "medida": "Taxa de Atraso (volume mínimo)",
+   "contexto": "ano 2025, GRU (volume mínimo 10.000)",
+   "esperado": "30,62%",
+   "independente": "30,62%",
+   "ok": true,
+   "bruto_a": 0.30620642240062224
+  },
+  {
+   "medida": "Taxa de Atraso (volume mínimo)",
+   "contexto": "ano 2025, JPA (abaixo do mínimo: deve ficar vazio)",
+   "esperado": "(vazio)",
+   "independente": "(vazio)",
+   "ok": true,
+   "bruto_a": null
+  },
+  {
+   "medida": "Ranking de Aeroporto",
+   "contexto": "ano 2025, aeroporto CNF",
+   "esperado": "9",
+   "independente": "9",
+   "ok": true,
+   "bruto_a": 9
+  },
+  {
+   "medida": "Ranking de Aeroporto",
+   "contexto": "ano 2025, aeroporto GRU",
+   "esperado": "1",
+   "independente": "1",
+   "ok": true,
+   "bruto_a": 1
+  },
+  {
+   "medida": "Variação de Voos vs Ano Anterior (%)",
+   "contexto": "ano 2025",
+   "esperado": "8,17%",
+   "independente": "8,17%",
+   "ok": true,
+   "bruto_a": 0.08174505323708572
+  },
+  {
+   "medida": "Variação da Taxa de Atraso vs Ano Anterior (p.p.)",
+   "contexto": "ano 2025",
+   "esperado": "+1,00 p.p.",
+   "independente": "+1,00 p.p.",
+   "ok": true,
+   "bruto_a": 0.9969629223320869
+  },
+  {
+   "medida": "Taxa de Atraso (média móvel 3M)",
+   "contexto": "jun/2024 (abr+mai+jun)",
+   "esperado": "21,12%",
+   "independente": "21,12%",
+   "ok": true,
+   "bruto_a": 0.2112269677003821
+  },
+  {
+   "medida": "Taxa de Atraso (média móvel 3M)",
+   "contexto": "jun/2024: média simples das 3 taxas mensais (a ERRADA, só para mostrar a diferença)",
+   "esperado": "21,14%",
+   "independente": "21,14%",
+   "ok": true,
+   "bruto_a": 0.21143819445144818
+  },
+  {
+   "medida": "Marcador de Evento (série)",
+   "contexto": "mai/2024 (tem evento operacional)",
+   "esperado": "23,77%",
+   "independente": "23,77%",
+   "ok": true,
+   "bruto_a": 0.2376627167898515
+  },
+  {
+   "medida": "Marcador de Evento (série)",
+   "contexto": "jun/2024 (sem evento: deve ficar vazio)",
+   "esperado": "(vazio)",
+   "independente": "(vazio)",
+   "ok": true,
+   "bruto_a": null
+  },
+  {
+   "medida": "Voos Sem Horário",
+   "contexto": "Planalto Air, abr a set/2024",
+   "esperado": "52.251",
+   "independente": "52.251",
+   "ok": true,
+   "bruto_a": 52251
+  },
+  {
+   "medida": "% de Voos Sem Horário",
+   "contexto": "Planalto Air, abr a set/2024",
+   "esperado": "23,76%",
+   "independente": "23,76%",
+   "ok": true,
+   "bruto_a": 0.23764821460246421
+  },
+  {
+   "medida": "Taxa de Atraso 15",
+   "contexto": "Planalto Air, abr a set/2024 (taxa 'aparente')",
+   "esperado": "16,06%",
+   "independente": "16,06%",
+   "ok": true,
+   "bruto_a": 0.16055149866361207
+  },
+  {
+   "medida": "Taxa de Atraso (limite inferior)",
+   "contexto": "Planalto Air, abr a set/2024",
+   "esperado": "12,24%",
+   "independente": "12,24%",
+   "ok": true,
+   "bruto_a": 0.12239672165445474
+  },
+  {
+   "medida": "Taxa de Atraso (limite superior)",
+   "contexto": "Planalto Air, abr a set/2024",
+   "esperado": "36,00%",
+   "independente": "36,00%",
+   "ok": true,
+   "bruto_a": 0.36004493625691897
+  },
+  {
+   "medida": "Valor da Etapa",
+   "contexto": "ano 2025, etapa 1 (Voos programados)",
+   "esperado": "2.230.213",
+   "independente": "2.230.213",
+   "ok": true,
+   "bruto_a": 2230213
+  },
+  {
+   "medida": "Valor da Etapa",
+   "contexto": "ano 2025, etapa 2 (Voos realizados)",
+   "esperado": "2.188.195",
+   "independente": "2.188.195",
+   "ok": true,
+   "bruto_a": 2188195
+  },
+  {
+   "medida": "Valor da Etapa",
+   "contexto": "ano 2025, etapa 3 (Com horário registrado)",
+   "esperado": "2.181.678",
+   "independente": "2.181.678",
+   "ok": true,
+   "bruto_a": 2181678
+  },
+  {
+   "medida": "Valor da Etapa",
+   "contexto": "ano 2025, etapa 4 (Atrasados > 15 min)",
+   "esperado": "503.463",
+   "independente": "503.463",
+   "ok": true,
+   "bruto_a": 503463
+  },
+  {
+   "medida": "Valor da Etapa",
+   "contexto": "ano 2025, etapa 5 (Atrasados > 60 min)",
+   "esperado": "166.174",
+   "independente": "166.174",
+   "ok": true,
+   "bruto_a": 166174
+  },
+  {
+   "medida": "Narrativa",
+   "contexto": "ano 2025",
+   "esperado": "De cada 100 voos com horário registrado, 23,1 saíram mais de 15 min depois do previsto. De manhã são 15,5; à noite, 32,4. Cancelamos 1,9% dos voos programados.",
+   "independente": "De cada 100 voos com horário registrado, 23,1 saíram mais de 15 min depois do previsto. De manhã são 15,5; à noite, 32,4. Cancelamos 1,9% dos voos programados.",
+   "ok": true,
+   "bruto_a": "De cada 100 voos com horário registrado, 23,1 saíram mais de 15 min depois do previsto. De manhã são 15,5; à noite, 32,4. Cancelamos 1,9% dos voos programados."
+  }
+ ],
+ "tudo_ok": true
+}

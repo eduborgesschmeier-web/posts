@@ -1,0 +1,17 @@
+// ---------- Tabelas auxiliares (Modelagem > Nova tabela) ----------
+// Parâmetro do limite de volume (segmentação "Volume mínimo"). Padrão usado nas medidas: 10000.
+Param Volume Minimo = GENERATESERIES ( 0, 30000, 1000 )
+
+// Degraus do funil da página 1 (sem relação com nenhuma outra tabela).
+Etapas =
+DATATABLE (
+    "Etapa", STRING,
+    "Ordem", INTEGER,
+    {
+        { "Voos programados", 1 },
+        { "Voos realizados", 2 },
+        { "Com horário registrado", 3 },
+        { "Atrasados > 15 min", 4 },
+        { "Atrasados > 60 min", 5 }
+    }
+)
