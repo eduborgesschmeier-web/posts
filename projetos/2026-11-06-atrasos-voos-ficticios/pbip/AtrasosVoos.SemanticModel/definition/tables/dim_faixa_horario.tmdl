@@ -17,6 +17,7 @@ table dim_faixa_horario
 
 	column intervalo
 		dataType: string
+		isHidden
 		lineageTag: 25ea1801-47a2-59a5-abb0-2265ae348222
 		summarizeBy: none
 		sourceColumn: intervalo

@@ -16,24 +16,28 @@ table dim_aeroporto
 
 	column cidade
 		dataType: string
+		isHidden
 		lineageTag: dd9d22a0-bdce-56fb-904f-72765dccd959
 		summarizeBy: none
 		sourceColumn: cidade
 
 	column uf
 		dataType: string
+		isHidden
 		lineageTag: b61f17f6-4168-516a-ab6e-ee8089006349
 		summarizeBy: none
 		sourceColumn: uf
 
 	column regiao
 		dataType: string
+		isHidden
 		lineageTag: 2ba0b80c-3bc6-5737-82af-12b9291a492a
 		summarizeBy: none
 		sourceColumn: regiao
 
 	column hub
 		dataType: string
+		isHidden
 		lineageTag: 2cbee8f2-5a53-5a48-9e49-3987c7fdbdcf
 		summarizeBy: none
 		sourceColumn: hub

@@ -1,8 +1,53 @@
 # Projeto Power BI (PBIP): Atrasos de voo (dados fictícios)
 
-> **NÃO TESTADO no Power BI Desktop.** Quem gerou este projeto não tem Windows e nunca abriu, carregou nem validou nada no Power BI. Um `.pbix` é um binário proprietário que não dá para produzir de forma confiável aqui; o **PBIP** é um projeto em texto que o Power BI Desktop abre direto e depois permite **Salvar como .pbix**. Tudo abaixo foi conferido só por scripts (JSON, TMDL, nomes e esquemas oficiais), e isso **não prova** que o Desktop abre o projeto.
+> **Testado no Power BI Desktop 2.159 (Microsoft Store) em 06 e 09/11/2026.** O projeto abriu de primeira, sem erro de TMDL nem de PBIR, e carregou os dados reais. Os números conferem (ver "Teste real no Power BI Desktop" abaixo). Os erros e defeitos de acabamento achados no teste estão registrados lá, cada um com a correção feita no gerador. Capturas reais em `../previas-reais/` e arquivo `../AtrasosVoos.pbix`.
 >
 > **Dados fictícios** (semente 20261106). Nenhum número descreve a aviação real.
+
+## Teste real no Power BI Desktop
+
+Feito no Power BI Desktop 2.159.1231.0 (Windows 11), em 06 e 09/11/2026.
+
+**O que passou**
+
+- `AtrasosVoos.pbip` abriu direto: 4 páginas, 12 tabelas, 10 relações, sem "Failed to load TMDL" e sem "Property is not allowed" (os riscos 2 e 5 abaixo não ocorreram).
+- Os recursos de visualização PBIP, TMDL e PBIR **não existem mais em Opções** nesta versão (já vêm ativos); não foi preciso ligar nada.
+- Com `PastaDados` = `C:\powerbi-posts\projetos\2026-11-06-atrasos-voos-ficticios\dados` (sem barra no fim), "Aplicar alterações" carregou tudo. Linhas conferidas por `COUNTROWS`: fato_operacao 93.597, fato_motivo 22.150, dim_calendario 1.096, dim_aeroporto 24, dim_companhia 5, dim_rota 150, dim_evento 4.
+- **37 de 37 conferências de `guia/02-medidas.md` batem no Desktop** (consultas DAX na exibição de consulta DAX; a conferência #19, ranking do CNF, só fecha com todos os aeroportos no contexto: GRU = 1 e CNF = 9). Totais: programados 6.207.271 - cancelados 122.400 = realizados 6.084.871.
+
+**O que deu errado no teste e como foi corrigido** (sempre no gerador `scripts/gerar_pbip.py`, depois `gerar_pbip.py` e os dois validadores)
+
+| # | Problema visto no Desktop | Correção |
+|---|---|---|
+| 1 | Caixas de texto de 32 e 24 px cortavam título, rodapé e notas (barra de rolagem interna). | Alturas maiores (título 42, rodapé 32, nota 50) e fonte 14pt. |
+| 2 | `tableEx` com dimensão + medidas não mostrava as colunas de medida (tabela de aeroportos e lista de eventos). | Trocado por `pivotTable` (linhas = aeroporto / evento, valores = medidas), com `displayName` curto. |
+| 3 | Funil em ordem alfabética (a coluna de ordenação não valeu). | Ordenado pela medida `Valor da Etapa`, decrescente. |
+| 4 | Matriz faixa x mês cortada em "dez" (12 colunas); cobertura da página 4 igual. | Meses nas linhas, faixas / companhias nas colunas. |
+| 5 | Card de voos mostrava "6 Mi". | `labelDisplayUnits` = nenhum (6.084.871). |
+| 6 | Narrativa truncada com reticências. | Fonte 10 no card (não quebra linha; `tableEx` não serviu, ver #2). |
+| 7 | Série de marcador de evento sem formatação. | Ponto âmbar, linha de largura 0, via `dataPoint` e `lineStyles` no JSON do visual. |
+| 8 | O gerador apagava `pbip/README-PBIP.md` ao regenerar (a pasta `pbip/` é recriada). | O gerador preserva esse arquivo. |
+| 9 | Visual genérico (preto puro, sem hierarquia). | Novo tema azul-petróleo com destaque ciano, cartões com borda suave, faixa de 4 KPIs, matriz com listras sutis e segmentações limpas. |
+
+**Pegadinhas do fluxo (não são defeitos do projeto)**
+
+- Toda vez que o Desktop recarrega o projeto do disco ("Aplicar alterações externas"), `PastaDados` volta ao valor de exemplo e as tabelas ficam vazias: reaplique o parâmetro (Transformar dados > Editar parâmetros) e "Aplicar alterações".
+- Não clique em **Salvar** no PBIP depois de apontar `PastaDados`: o Desktop gravaria o seu caminho local nos arquivos. Para o `.pbix`, use Arquivo > Salvar como > tipo `.pbix`.
+- `scripts/validar_pbip.py` chama `validar_m.py`, que precisa de `pandas`; sem ele o único "erro" do validador é esse.
+
+## Design no padrão Genesis (09/11/2026)
+
+O painel foi redesenhado com o padrão visual da Genesis Innovation (tokens lidos de genesisinnovation.io): fundo `#05070C`, texto `#F4F7F8`, ciano `#35C6F4` como cor principal, verde `#3BE38B`, roxo `#8C7BFF` e âmbar `#F4B24A` só para alertas, cartões com borda suave e cantos arredondados. As fontes da marca (Sora e Manrope) não vêm no Windows, então o painel usa Segoe UI; se Sora estiver instalada, troque `FONTE` e `fontFamily` no gerador.
+
+Menos números, mais gráfico (a regra foi "só o que importa"):
+
+- **Panorama:** 4 números (taxa de atraso, voos realizados, taxa de cancelamento, voos sem horário), a frase do dia, atraso por faixa de horário e o funil. A matriz de 60 células (mês x faixa) saiu.
+- **Onde:** ranking de taxa e diferença para a média da rede, lado a lado. A tabela de 3 colunas saiu.
+- **Quando:** série mensal com média móvel e meses com evento, volume mensal e lista de eventos.
+- **Qualidade:** % sem horário por companhia (a Planalto Air aparece com 12,0% contra 0,3% das outras) e a faixa possível da Planalto Air. Os 4 cartões de conferência de totais e a matriz 12 x 5 saíram; a conferência continua em `guia/02-medidas.md`.
+- **Painel Dados enxuto:** o gerador esconde (`isHidden`) toda coluna e toda medida que nenhum visual usa. Ficam visíveis só `dim_aeroporto`, `dim_calendario`, `dim_companhia`, `dim_evento`, `dim_faixa_horario`, `Etapas`, `Param Volume Minimo` e as medidas usadas nos visuais; `dim_rota`, `dim_motivo` e os fatos somem da lista, mas continuam no modelo e nas medidas.
+
+Isso substitui os itens 2, 4 e 6 da tabela acima (tabelas em matriz, meses nas linhas, card com fonte 10), que eram a primeira rodada de correção.
 
 ## De onde vieram os formatos
 

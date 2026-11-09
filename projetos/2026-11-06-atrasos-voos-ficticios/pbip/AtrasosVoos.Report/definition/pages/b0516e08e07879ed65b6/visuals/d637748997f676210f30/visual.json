@@ -3,17 +3,17 @@
   "name": "d637748997f676210f30",
   "position": {
     "x": 1036,
-    "y": 52,
-    "z": 9,
-    "height": 300,
+    "y": 84,
+    "z": 22,
+    "height": 200,
     "width": 228,
-    "tabOrder": 9
+    "tabOrder": 22
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "pivotTable",
     "query": {
       "queryState": {
-        "Values": {
+        "Rows": {
           "projections": [
             {
               "field": {
@@ -28,37 +28,8 @@
               },
               "queryRef": "dim_evento.rotulo",
               "nativeQueryRef": "rotulo",
-              "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "dim_evento"
-                    }
-                  },
-                  "Property": "inicio"
-                }
-              },
-              "queryRef": "dim_evento.inicio",
-              "nativeQueryRef": "inicio",
-              "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "dim_evento"
-                    }
-                  },
-                  "Property": "fim"
-                }
-              },
-              "queryRef": "dim_evento.fim",
-              "nativeQueryRef": "fim",
-              "active": true
+              "active": true,
+              "displayName": "Evento"
             }
           ]
         }

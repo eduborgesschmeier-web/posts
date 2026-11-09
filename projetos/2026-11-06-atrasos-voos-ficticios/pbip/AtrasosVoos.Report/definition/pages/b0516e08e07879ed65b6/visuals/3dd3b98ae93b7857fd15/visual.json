@@ -3,11 +3,11 @@
   "name": "3dd3b98ae93b7857fd15",
   "position": {
     "x": 200,
-    "y": 636,
-    "z": 11,
-    "height": 44,
+    "y": 640,
+    "z": 24,
+    "height": 42,
     "width": 1064,
-    "tabOrder": 11
+    "tabOrder": 24
   },
   "visual": {
     "visualType": "textbox",
@@ -19,10 +19,20 @@
               {
                 "textRuns": [
                   {
-                    "value": "Marcadores de evento: a série Marcador de Evento (série) só tem valor nos meses com evento operacional; formate-a com marcador âmbar e linha de largura 0 (ver guia/04-montagem.md).",
+                    "value": "Pontos âmbar  ",
                     "textStyle": {
-                      "fontSize": "10pt",
-                      "color": "#8A949B"
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
+                      "color": "#F4B24A",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "meses com evento operacional (fictício).",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
+                      "color": "#9AA3AB"
                     }
                   }
                 ]

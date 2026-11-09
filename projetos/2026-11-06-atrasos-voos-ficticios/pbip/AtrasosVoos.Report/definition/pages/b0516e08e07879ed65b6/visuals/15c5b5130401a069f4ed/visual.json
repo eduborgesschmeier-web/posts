@@ -3,11 +3,11 @@
   "name": "15c5b5130401a069f4ed",
   "position": {
     "x": 1036,
-    "y": 360,
-    "z": 10,
-    "height": 270,
+    "y": 294,
+    "z": 23,
+    "height": 338,
     "width": 228,
-    "tabOrder": 10
+    "tabOrder": 23
   },
   "visual": {
     "visualType": "textbox",
@@ -21,7 +21,8 @@
                   {
                     "value": "Ler com cuidado",
                     "textStyle": {
-                      "fontSize": "10pt",
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
                       "color": "#F4F7F8",
                       "fontWeight": "bold"
                     }
@@ -31,10 +32,11 @@
               {
                 "textRuns": [
                   {
-                    "value": "Os picos de jan, jul e dez se repetem todo ano: é sazonalidade, não evento.",
+                    "value": "Picos de jan, jul e dez se repetem todo ano: é sazonalidade, não evento.",
                     "textStyle": {
-                      "fontSize": "10pt",
-                      "color": "#B7C0C6"
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
+                      "color": "#9AA3AB"
                     }
                   }
                 ]
@@ -42,10 +44,20 @@
               {
                 "textRuns": [
                   {
-                    "value": "Não concluir: coincidir no tempo com um evento não prova que ele causou a alta.",
+                    "value": "Não concluir  ",
                     "textStyle": {
-                      "fontSize": "10pt",
-                      "color": "#F4B24A"
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
+                      "color": "#F4B24A",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "coincidir no tempo com um evento não prova que ele causou a alta.",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
+                      "color": "#9AA3AB"
                     }
                   }
                 ]

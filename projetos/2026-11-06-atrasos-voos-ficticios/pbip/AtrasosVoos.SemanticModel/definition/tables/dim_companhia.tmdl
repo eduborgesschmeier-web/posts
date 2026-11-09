@@ -16,6 +16,7 @@ table dim_companhia
 
 	column sigla
 		dataType: string
+		isHidden
 		lineageTag: 58f3278b-07e9-5a38-a049-1fcd48ffdcb9
 		summarizeBy: none
 		sourceColumn: sigla

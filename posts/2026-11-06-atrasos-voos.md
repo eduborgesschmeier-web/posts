@@ -6,9 +6,9 @@ Na simulação, uma companhia deixou de registrar o horário real em 23,8% dos v
 
 Por isso o painel mostra o intervalo, não só a taxa.
 
-Método: 6,2 milhões de voos simulados (2023 a 2025), modelo estrela, 25 medidas DAX conferidas contra o cálculo direto nos voos brutos (37 de 37 conferências batem) e um guia página a página.
+Método: 6,2 milhões de voos simulados (2023 a 2025), modelo estrela, 25 medidas DAX conferidas contra o cálculo direto nos voos brutos (37 de 37 conferências batem, também rodadas dentro do Power BI Desktop), relatório de 4 páginas e um guia página a página.
 
-Limite: essa "verdade" só existe porque os dados são simulados; em dado real ela nunca se conhece. E o que mostro são prévias desenhadas, não capturas do Power BI.
+Limite: essa "verdade" só existe porque os dados são simulados; em dado real ela nunca se conhece. As imagens do painel são capturas reais do Power BI Desktop, com esses dados fictícios.
 
 #PowerBI #DAX #AnaliseDeDados #BI
 
@@ -19,5 +19,5 @@ Limite: essa "verdade" só existe porque os dados são simulados; em dado real e
  - 12,2% e 36,0% = planalto_limite_inferior (0,12240) e planalto_limite_superior (0,36004): medidas "Taxa de Atraso (limite inferior/superior)" em dax/medidas.dax.
  - 27,1%  = planalto_verdade_simulada (0,27109): usa atraso_real_min antes do apagamento, que só existe na simulação.
  - 6,2 milhões = voos_simulados (6.207.271). 25 medidas = dax/medidas.dax. 37 de 37 = guia/conferencia.json (tudo_ok = true), tabela em guia/02-medidas.md.
- - NOTA PARA O EDU ANTES DE POSTAR: o DAX ainda não foi executado no Power BI Desktop. Se você montar o relatório antes de publicar, troque a última frase por "montei no Power BI" e anexe capturas reais; senão, mantenha o aviso de prévia desenhada.
- - Imagens sugeridas: projetos/2026-11-06-atrasos-voos-ficticios/linkedin/carrossel.pdf (6 páginas, 1080x1350) ou só a capa linkedin/capa-linkedin-1080x1350.png. -->
+ - Atualizado em 09/11/2026: o projeto foi aberto no Power BI Desktop 2.159 e as 37 conferências de guia/02-medidas.md foram rodadas lá (todas batem). Capturas reais das 4 páginas em projetos/2026-11-06-atrasos-voos-ficticios/previas-reais/ (1280x720). ATENÇÃO: o carrossel (linkedin/carrossel.pdf) usa gráficos desenhados e o slide 6 ainda diz "As prévias são desenhos, não capturas do Power BI"; se usar o carrossel, mantenha esse aviso ou prefira postar as 4 capturas reais.
+ - Imagens sugeridas: as 4 capturas reais em projetos/2026-11-06-atrasos-voos-ficticios/previas-reais/ (pagina-01-Panorama.png a pagina-04-Qualidade.png), ou o carrossel linkedin/carrossel.pdf (6 páginas, 1080x1350) com o aviso do slide 6. -->

@@ -3,17 +3,17 @@
   "name": "e5788c6abc51c152af43",
   "position": {
     "x": 200,
-    "y": 56,
-    "z": 7,
-    "height": 300,
-    "width": 640,
-    "tabOrder": 7
+    "y": 84,
+    "z": 20,
+    "height": 380,
+    "width": 440,
+    "tabOrder": 20
   },
   "visual": {
-    "visualType": "pivotTable",
+    "visualType": "barChart",
     "query": {
       "queryState": {
-        "Rows": {
+        "Category": {
           "projections": [
             {
               "field": {
@@ -32,26 +32,7 @@
             }
           ]
         },
-        "Columns": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "dim_calendario"
-                    }
-                  },
-                  "Property": "mes_abrev"
-                }
-              },
-              "queryRef": "dim_calendario.mes_abrev",
-              "nativeQueryRef": "mes_abrev",
-              "active": true
-            }
-          ]
-        },
-        "Values": {
+        "Y": {
           "projections": [
             {
               "field": {
@@ -69,7 +50,70 @@
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Medidas"
+                  }
+                },
+                "Property": "% de Voos Sem Horário"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": false
       }
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F4B24A'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "drillFilterOtherVisuals": true,
     "visualContainerObjects": {
@@ -86,7 +130,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Cobertura do horário: % de voos sem horário (2024)'"
+                  "Value": "'Voos sem horário registrado, por companhia (2024)'"
                 }
               }
             }

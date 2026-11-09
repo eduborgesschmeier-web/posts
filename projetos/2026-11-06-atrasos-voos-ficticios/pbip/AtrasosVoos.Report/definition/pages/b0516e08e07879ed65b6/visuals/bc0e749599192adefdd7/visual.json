@@ -3,11 +3,11 @@
   "name": "bc0e749599192adefdd7",
   "position": {
     "x": 200,
-    "y": 52,
-    "z": 7,
-    "height": 300,
+    "y": 84,
+    "z": 20,
+    "height": 290,
     "width": 820,
-    "tabOrder": 7
+    "tabOrder": 20
   },
   "visual": {
     "visualType": "lineChart",
@@ -46,7 +46,8 @@
                 }
               },
               "queryRef": "_Medidas.Taxa de Atraso 15",
-              "nativeQueryRef": "Taxa de Atraso 15"
+              "nativeQueryRef": "Taxa de Atraso 15",
+              "displayName": "Taxa de atraso"
             },
             {
               "field": {
@@ -60,7 +61,8 @@
                 }
               },
               "queryRef": "_Medidas.Taxa de Atraso (média móvel 3M)",
-              "nativeQueryRef": "Taxa de Atraso (média móvel 3M)"
+              "nativeQueryRef": "Taxa de Atraso (média móvel 3M)",
+              "displayName": "Média móvel 3M"
             },
             {
               "field": {
@@ -74,7 +76,8 @@
                 }
               },
               "queryRef": "_Medidas.Marcador de Evento (série)",
-              "nativeQueryRef": "Marcador de Evento (série)"
+              "nativeQueryRef": "Marcador de Evento (série)",
+              "displayName": "Mês com evento"
             }
           ]
         }
@@ -100,6 +103,99 @@
             }
           }
         }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#35C6F4'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Medidas.Taxa de Atraso 15"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#8C7BFF'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Medidas.Taxa de Atraso (média móvel 3M)"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F4B24A'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Medidas.Marcador de Evento (série)"
+          }
+        }
+      ],
+      "lineStyles": [
+        {
+          "properties": {
+            "strokeWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "showMarker": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "markerShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'circle'"
+                }
+              }
+            },
+            "markerSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Medidas.Marcador de Evento (série)"
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true,
@@ -117,7 +213,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Taxa de atraso, média móvel 3M e meses com evento'"
+                  "Value": "'Taxa de atraso, média móvel de 3 meses e meses com evento'"
                 }
               }
             }

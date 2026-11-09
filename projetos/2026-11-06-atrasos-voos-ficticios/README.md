@@ -30,8 +30,8 @@ Quando e onde os voos domésticos atrasam mais, e **quanto do que o painel diz d
 - Dados simulados: nada aqui descreve a aviação brasileira real.
 - A "verdade simulada" só existe em simulação.
 - O fato é mensal: o dia não pode ir num eixo (ver `guia/01-modelo.md`).
-- **As medidas DAX não foram executadas no Power BI Desktop** (a sessão não tem Windows). Também não foram testados os scripts Power Query. O que foi conferido: nomes de colunas e tipos dos scripts M contra os cabeçalhos dos CSV (`scripts/validar_m.py`), JSON do tema, e os números esperados das medidas por duas vias.
-- Projeto `.pbip` gerado em `pbip/` (NÃO TESTADO no Power BI Desktop; ver `pbip/README-PBIP.md`).
+- As 25 medidas DAX **foram executadas no Power BI Desktop 2.159 (06 e 09/11/2026)** e as 37 conferências de `guia/02-medidas.md` batem. Os scripts Power Query soltos (`powerquery/*.m`) não foram testados um a um; o carregamento testado foi o das partições do PBIP, que usam o mesmo M.
+- Projeto `.pbip` em `pbip/`, aberto e testado no Power BI Desktop (ver "Teste real" em `pbip/README-PBIP.md`). Capturas reais das 4 páginas em `previas-reais/` e arquivo `AtrasosVoos.pbix` (aponte o parâmetro `PastaDados` para a pasta `dados/` se abrir o `.pbip`).
 
 ## O que foi comprovado (comandos e resultados, 06/11/2026)
 

@@ -143,7 +143,7 @@ def tmdl_coluna(tabela, col, tipo_m, oculta, bloco_extra=""):
     return "\n".join(l)
 
 
-def tabela_importada(arq_m, tab):
+def tabela_importada(arq_m, tab, usados=frozenset()):
     m = ler_m(arq_m)
     cols = colunas_m(m)
     fato = tab.startswith("fato_")
@@ -153,14 +153,14 @@ def tabela_importada(arq_m, tab):
     cab.append("")
     partes = ["\n".join(cab)]
     for c, t in cols:
-        oculta = fato or c.endswith("_sk") or c == "data_mes"
+        oculta = fato or c.endswith("_sk") or c == "data_mes" or bool(usados and (tab, c) not in usados)
         partes.append(tmdl_coluna(tab, c, t, oculta))
     partes.append(f"\tpartition {nome(tab)} = m\n\t\tmode: import\n\t\tsource =\n{corpo(m, 3)}\n")
     partes.append("\tannotation PBI_ResultType = Table\n")
     return "\n".join(partes), [c for c, _ in cols]
 
 
-def medidas_tmdl(medidas):
+def medidas_tmdl(medidas, usados=frozenset()):
     out = []
     for me in medidas:
         n = nome(me["nome"])
@@ -172,15 +172,22 @@ def medidas_tmdl(medidas):
             out.append(f"\tmeasure {n} = {dax.strip()}")
         if me["formato"] != "@":
             out.append(f"\t\tformatString: {me['formato']}")
+        if usados and ("_Medidas", me["nome"]) not in usados:
+            out.append("\t\tisHidden")  # só aparece no painel Dados o que algum visual usa
         out.append(f"\t\tdisplayFolder: {me['pasta']}")
         out.append(f"\t\tlineageTag: {guid('medida', me['nome'])}")
         out.append("")
     return "\n".join(out)
 
 
-def gerar_modelo():
+def gerar_modelo(usados=frozenset()):
+    readme = OUT / "README-PBIP.md"
+    readme_txt = readme.read_bytes() if readme.exists() else None  # não é gerado: preservar
     if OUT.exists():
         shutil.rmtree(OUT)
+    if readme_txt is not None:
+        OUT.mkdir(parents=True, exist_ok=True)
+        readme.write_bytes(readme_txt)
     escrever_json(OUT / f"{NOME}.pbip", {"$schema": SCH_PBIP, "version": "1.0",
                                          "artifacts": [{"report": {"path": f"{NOME}.Report"}}],
                                          "settings": {"enableAutoRecovery": True}})
@@ -197,7 +204,7 @@ def gerar_modelo():
     arquivos = {p.stem.split("-", 1)[1]: p for p in sorted((R / "powerquery").glob("[0-9][0-9]-*.m"))}
     for tab in ORDEM:
         if tab in arquivos and tab not in ("PastaDados", "fnCarregarCsv"):
-            txt, cols = tabela_importada(arquivos[tab], tab)
+            txt, cols = tabela_importada(arquivos[tab], tab, usados)
             escrever(D / "tables" / f"{tab}.tmdl", txt)
             colunas[tab] = cols
 
@@ -223,7 +230,7 @@ def gerar_modelo():
     # _Medidas
     medidas = ler_medidas()
     escrever(D / "tables" / "_Medidas.tmdl",
-             f"table _Medidas\n\tlineageTag: {guid('_Medidas')}\n\n{medidas_tmdl(medidas)}\n"
+             f"table _Medidas\n\tlineageTag: {guid('_Medidas')}\n\n{medidas_tmdl(medidas, usados)}\n"
              f"\tcolumn Coluna\n\t\tdataType: string\n\t\tisHidden\n\t\tlineageTag: {guid('_Medidas', 'Coluna')}\n"
              f"\t\tsummarizeBy: none\n\t\tsourceColumn: Coluna\n\n"
              f"\tpartition _Medidas = m\n\t\tmode: import\n\t\tsource =\n"
@@ -271,13 +278,15 @@ def mea(m):
     return {"Measure": {"Expression": {"SourceRef": {"Entity": "_Medidas"}}, "Property": m}}
 
 
-def proj(campo, ativo=False):
+def proj(campo, ativo=False, nome=None):
     k = "Column" if "Column" in campo else "Measure"
     ent = campo[k]["Expression"]["SourceRef"]["Entity"]
     prop = campo[k]["Property"]
     p = {"field": campo, "queryRef": f"{ent}.{prop}", "nativeQueryRef": prop}
     if ativo:
         p["active"] = True
+    if nome:
+        p["displayName"] = nome
     return p
 
 
@@ -300,20 +309,38 @@ def visual(pagina, chave, posicao, vis, filtros=None):
     return chave, v
 
 
+# padrão visual Genesis (genesisinnovation.io): preto #05070C, texto #F4F7F8, ciano #35C6F4, verde #3BE38B, roxo #8C7BFF
+BG, CARD, LINHA = "#05070C", "#0A0F16", "#232A31"
+CIANO, VERDE, ROXO, AMBAR = "#35C6F4", "#3BE38B", "#8C7BFF", "#F4B24A"
+TEXTO, MUDO = "#F4F7F8", "#9AA3AB"
+FONTE = "Segoe UI"
+
+
 def titulo(vis, texto):
     vis["visualContainerObjects"] = {"title": [{"properties": {"show": lit("true"), "text": texto_lit(texto)}}]}
     return vis
 
 
-def caixa_texto(pagina, chave, posicao, runs, tam="11pt", cor="#B7C0C6", negrito=False):
-    """runs: lista de parágrafos; cada um é lista de (texto, cor|None, negrito|None)."""
+def cor_lit(c):
+    return {"solid": {"color": texto_lit(c)}}
+
+
+def caixa_texto(pagina, chave, posicao, runs, tam="10pt", cor=MUDO, negrito=False, align=None):
+    """runs: lista de parágrafos; cada um é str ou lista de (texto, cor|None, negrito|None[, tamanho])."""
     pars = []
     for par in runs:
         if isinstance(par, str):
             par = [(par, None, None)]
-        pars.append({"textRuns": [{"value": t, "textStyle": {"fontSize": tam, "color": c or cor,
-                                                             **({"fontWeight": "bold"} if (b if b is not None else negrito) else {})}}
-                                  for t, c, b in par]})
+        tr = []
+        for it in par:
+            t, c, b = it[0], it[1], it[2]
+            tm = it[3] if len(it) > 3 else tam
+            tr.append({"value": t, "textStyle": {"fontFamily": FONTE, "fontSize": tm, "color": c or cor,
+                                                 **({"fontWeight": "bold"} if (b if b is not None else negrito) else {})}})
+        pp = {"textRuns": tr}
+        if align:
+            pp["horizontalTextAlignment"] = align
+        pars.append(pp)
     return visual(pagina, chave, posicao,
                   {"visualType": "textbox", "objects": {"general": [{"properties": {"paragraphs": pars}}]},
                    "drillFilterOtherVisuals": True})
@@ -327,26 +354,55 @@ def filtro_cat(nome_f, ent, prop, valor_lit):
                                                        "Values": [[{"Literal": {"Value": valor_lit}}]]}}}]}}
 
 
+def cabecalho(pg, n, nome_pagina, pergunta):
+    vs = [caixa_texto(pg, "marca", pos(16, 10, 168, 68, 1, 1),
+                      [[("GENESIS", CIANO, True, "13pt")], [("Innovation", MUDO, False, "9pt")]])]
+    vs.append(caixa_texto(pg, "titulo", pos(200, 8, 860, 74, 2, 2),
+                          [[("Atraso de voo  ", TEXTO, True, "16pt"), ("/  " + nome_pagina, CIANO, True, "16pt")],
+                           [(pergunta, MUDO, False, "9pt")]]))
+    vs.append(caixa_texto(pg, "selo", pos(1076, 10, 188, 68, 3, 3),
+                          [[("DADOS FICTÍCIOS", AMBAR, True, "9pt")], [(f"Página {n} de 4", MUDO, False, "9pt")]], align="right"))
+    return vs
+
+
 def coluna_filtros(pg, n_pagina):
-    """Coluna esquerda: 3 segmentações sincronizadas entre as páginas + título e rodapé."""
+    """Coluna esquerda: 3 segmentações sincronizadas entre as páginas + rodapé."""
     sync = lambda g: {"groupName": g, "fieldChanges": True, "filterChanges": True}
-    vs = [caixa_texto(pg, "filtros-titulo", pos(16, 16, 168, 28, 1, 1), ["Filtros (sincronizados)"], "12pt", "#F4F7F8", True)]
-    vs.append(visual(pg, "seg-ano", pos(16, 52, 168, 100, 2, 2),
+    vs = []
+    vs.append(visual(pg, "seg-ano", pos(16, 84, 168, 104, 9, 9),
                      {"visualType": "slicer", "query": {"queryState": {"Values": {"projections": [proj(col("dim_calendario", "ano"), True)]}}},
                       "syncGroup": sync("Ano"), "drillFilterOtherVisuals": True,
                       "visualContainerObjects": {"title": [{"properties": {"show": lit("true"), "text": texto_lit("Ano")}}]}}))
-    vs.append(visual(pg, "seg-companhia", pos(16, 160, 168, 200, 3, 3),
+    vs.append(visual(pg, "seg-companhia", pos(16, 198, 168, 200, 10, 10),
                      {"visualType": "slicer", "query": {"queryState": {"Values": {"projections": [proj(col("dim_companhia", "companhia"), True)]}}},
                       "syncGroup": sync("Companhia"), "drillFilterOtherVisuals": True,
                       "visualContainerObjects": {"title": [{"properties": {"show": lit("true"), "text": texto_lit("Companhia")}}]}}))
-    vs.append(visual(pg, "seg-volume", pos(16, 368, 168, 96, 4, 4),
+    vs.append(visual(pg, "seg-volume", pos(16, 408, 168, 96, 11, 11),
                      {"visualType": "slicer", "query": {"queryState": {"Values": {"projections": [proj(col("Param Volume Minimo", "Value"), True)]}}},
                       "objects": {"data": [{"properties": {"mode": texto_lit("Dropdown")}}]},
                       "syncGroup": sync("VolumeMinimo"), "drillFilterOtherVisuals": True,
                       "visualContainerObjects": {"title": [{"properties": {"show": lit("true"), "text": texto_lit("Volume mínimo (voos)")}}]}}))
-    vs.append(caixa_texto(pg, "rodape", pos(16, 690, 1248, 24, 5, 5),
-                          [f"Dados fictícios (semente 20261106), não são dados reais de voos · Página {n_pagina} de 4"], "9pt", "#8A949B"))
     return vs
+
+
+def nota(pg, texto, z, y=640, h=42):
+    return caixa_texto(pg, "nota", pos(200, y, 1064, h, z, z),
+                       [[("Não concluir  ", AMBAR, True), (texto, MUDO, False)]], "9pt")
+
+
+def kpi(pg, chave, med, tit, cor, x, z, unidade_nenhuma=False):
+    props = {"color": cor_lit(cor)}
+    if unidade_nenhuma:
+        props["labelDisplayUnits"] = lit("1D")
+    return visual(pg, chave, pos(x, 84, 257, 88, z, z),
+                  titulo({"visualType": "card",
+                          "query": {"queryState": {"Values": {"projections": [proj(mea(med))]}}},
+                          "objects": {"labels": [{"properties": props}]},
+                          "drillFilterOtherVisuals": True}, tit))
+
+
+def fill(cor):
+    return {"dataPoint": [{"properties": {"fill": cor_lit(cor)}}]}
 
 
 def paginas():
@@ -354,144 +410,164 @@ def paginas():
 
     # ---- Página 1: Panorama
     pg = "Panorama"
-    vs = coluna_filtros(pg, 1)
-    vs.append(caixa_texto(pg, "titulo", pos(200, 16, 1064, 32, 6, 6),
-                          ["Panorama: o atraso é do sistema inteiro ou de alguns pontos?"], "16pt", "#F4F7F8", True))
-    vs.append(visual(pg, "narrativa", pos(200, 52, 1064, 100, 7, 7),
+    vs = cabecalho(pg, 1, "Panorama", "O atraso é do sistema inteiro ou de alguns pontos?") + coluna_filtros(pg, 1)
+    vs.append(kpi(pg, "kpi-atraso", "Taxa de Atraso 15", "Taxa de atraso (mais de 15 min)", CIANO, 200, 20))
+    vs.append(kpi(pg, "kpi-voos", "Voos Realizados", "Voos realizados", TEXTO, 469, 21, True))
+    vs.append(kpi(pg, "kpi-cancel", "Taxa de Cancelamento", "Taxa de cancelamento", ROXO, 738, 22))
+    vs.append(kpi(pg, "kpi-semhorario", "% de Voos Sem Horário", "Voos sem horário registrado", AMBAR, 1007, 23))
+    vs.append(visual(pg, "narrativa", pos(200, 182, 1064, 64, 24, 24),
                      titulo({"visualType": "card",
                              "query": {"queryState": {"Values": {"projections": [proj(mea("Narrativa"))]}}},
                              "objects": {"categoryLabels": [{"properties": {"show": lit("false")}}],
-                                         "labels": [{"properties": {"fontSize": lit("16D")}}]},
-                             "drillFilterOtherVisuals": True}, "Narrativa (muda com os filtros)")))
-    vs.append(visual(pg, "matriz-faixa-mes", pos(200, 160, 640, 470, 8, 8),
-                     titulo({"visualType": "pivotTable",
-                             "query": {"queryState": {
-                                 "Rows": {"projections": [proj(col("dim_faixa_horario", "faixa"), True)]},
-                                 "Columns": {"projections": [proj(col("dim_calendario", "mes_abrev"), True)]},
-                                 "Values": {"projections": [proj(mea("Taxa de Atraso 15"))]}}},
-                             "drillFilterOtherVisuals": True}, "Taxa de atraso por faixa de horário e mês")))
-    vs.append(visual(pg, "funil-etapas", pos(856, 160, 408, 470, 9, 9),
-                     titulo({"visualType": "barChart",
-                             "query": {"queryState": {
-                                 "Category": {"projections": [proj(col("Etapas", "Etapa"), True)]},
-                                 "Y": {"projections": [proj(mea("Valor da Etapa"))]}},
-                                 "sortDefinition": {"sort": [{"field": col("Etapas", "Etapa"), "direction": "Ascending"}],
-                                                    "isDefaultSort": False}},
-                             "objects": {"labels": [{"properties": {"show": lit("true")}}]},
-                             "drillFilterOtherVisuals": True}, "Do programado ao atraso grave")))
-    vs.append(caixa_texto(pg, "nota", pos(200, 636, 1064, 44, 10, 10),
-                          [[("Não concluir: ", "#F4B24A", True),
-                            ("a faixa de horário não é a causa sozinha; aeroporto e companhia também mudam a taxa. Os degraus 4 e 5 do funil são subconjuntos dos voos com horário, não do total programado.", "#F4B24A", False)]], "10pt"))
-    P.append((pg, "Panorama", vs))
-
-    # ---- Página 2: Onde
-    pg = "Onde"
-    vs = coluna_filtros(pg, 2)
-    vs.append(caixa_texto(pg, "titulo", pos(200, 16, 1064, 32, 6, 6),
-                          ["Onde: quais aeroportos de origem atrasam mais?"], "16pt", "#F4F7F8", True))
-    vs.append(visual(pg, "ranking", pos(200, 56, 520, 570, 7, 7),
-                     titulo({"visualType": "barChart",
-                             "query": {"queryState": {
-                                 "Category": {"projections": [proj(col("dim_aeroporto", "iata"), True)]},
-                                 "Y": {"projections": [proj(mea("Taxa de Atraso (volume mínimo)"))]}},
-                                 "sortDefinition": {"sort": [{"field": mea("Taxa de Atraso (volume mínimo)"), "direction": "Descending"}],
-                                                    "isDefaultSort": False}},
-                             "objects": {"labels": [{"properties": {"show": lit("true")}}]},
-                             "drillFilterOtherVisuals": True}, "Ranking de aeroportos de origem (só com volume mínimo)")))
-    vs.append(visual(pg, "faixa-taxa", pos(736, 56, 528, 270, 8, 8),
+                                         "labels": [{"properties": {"fontSize": lit("10D"), "color": cor_lit(TEXTO)}}]},
+                             "drillFilterOtherVisuals": True}, "Em uma frase (muda com os filtros)")))
+    vs.append(visual(pg, "faixa-taxa", pos(200, 256, 420, 376, 25, 25),
                      titulo({"visualType": "columnChart",
                              "query": {"queryState": {
                                  "Category": {"projections": [proj(col("dim_faixa_horario", "faixa"), True)]},
                                  "Y": {"projections": [proj(mea("Taxa de Atraso 15"))]}}},
                              "objects": {"labels": [{"properties": {"show": lit("true")}}],
-                                         "valueAxis": [{"properties": {"start": lit("0D"), "end": lit("0.4D")}}]},
-                             "drillFilterOtherVisuals": True}, "Taxa de atraso por faixa de horário (eixo 0% a 40%)")))
-    vs.append(visual(pg, "tabela-aeroportos", pos(736, 336, 528, 290, 9, 9),
-                     titulo({"visualType": "tableEx",
-                             "query": {"queryState": {"Values": {"projections": [
-                                 proj(col("dim_aeroporto", "iata"), True), proj(col("dim_aeroporto", "regiao"), True),
-                                 proj(mea("Voos Realizados")), proj(mea("Taxa de Atraso 15")),
-                                 proj(mea("Diferença para a Rede (p.p.)")), proj(mea("Ranking de Aeroporto"))]}}},
-                             "drillFilterOtherVisuals": True}, "Aeroportos: taxa, diferença para a rede e posição")))
-    vs.append(caixa_texto(pg, "nota", pos(200, 636, 1064, 44, 10, 10),
-                          [[("Não concluir: ", "#F4B24A", True),
-                            ("posição não é culpa do aeroporto (hub tem mais conexão); quem está abaixo do volume mínimo some do ranking; região é recorte do aeroporto de origem.", "#F4B24A", False)]], "10pt"))
+                                         "valueAxis": [{"properties": {"start": lit("0D"), "end": lit("0.4D"), "show": lit("false")}}],
+                                         **fill(CIANO)},
+                             "drillFilterOtherVisuals": True}, "Atraso por faixa de horário")))
+    vs.append(visual(pg, "funil-etapas", pos(636, 256, 628, 376, 26, 26),
+                     titulo({"visualType": "barChart",
+                             "query": {"queryState": {
+                                 "Category": {"projections": [proj(col("Etapas", "Etapa"), True)]},
+                                 "Y": {"projections": [proj(mea("Valor da Etapa"))]}},
+                                 "sortDefinition": {"sort": [{"field": mea("Valor da Etapa"), "direction": "Descending"}],
+                                                    "isDefaultSort": False}},
+                             "objects": {"labels": [{"properties": {"show": lit("true")}}],
+                                         "valueAxis": [{"properties": {"show": lit("false")}}], **fill(CIANO)},
+                             "drillFilterOtherVisuals": True}, "Do programado ao atraso grave")))
+    vs.append(nota(pg, "a faixa de horário não é a causa sozinha: aeroporto e companhia também mudam a taxa. Os dois últimos degraus são subconjuntos dos voos com horário.", 27))
+    P.append((pg, "Panorama", vs))
+
+    # ---- Página 2: Onde
+    pg = "Onde"
+    vs = cabecalho(pg, 2, "Onde", "Quais aeroportos de origem atrasam mais?") + coluna_filtros(pg, 2)
+    vs.append(visual(pg, "ranking", pos(200, 84, 520, 548, 20, 20),
+                     titulo({"visualType": "barChart",
+                             "query": {"queryState": {
+                                 "Category": {"projections": [proj(col("dim_aeroporto", "iata"), True, "Aeroporto")]},
+                                 "Y": {"projections": [proj(mea("Taxa de Atraso (volume mínimo)"))]}},
+                                 "sortDefinition": {"sort": [{"field": mea("Taxa de Atraso (volume mínimo)"), "direction": "Descending"}],
+                                                    "isDefaultSort": False}},
+                             "objects": {"labels": [{"properties": {"show": lit("true")}}],
+                                         "valueAxis": [{"properties": {"show": lit("false")}}], **fill(CIANO)},
+                             "drillFilterOtherVisuals": True}, "Taxa de atraso (só aeroportos com volume mínimo)")))
+    vs.append(visual(pg, "dif-rede", pos(736, 84, 528, 548, 21, 21),
+                     titulo({"visualType": "barChart",
+                             "query": {"queryState": {
+                                 "Category": {"projections": [proj(col("dim_aeroporto", "iata"), True, "Aeroporto")]},
+                                 "Y": {"projections": [proj(mea("Diferença para a Rede (p.p.)"))]}},
+                                 "sortDefinition": {"sort": [{"field": mea("Diferença para a Rede (p.p.)"), "direction": "Descending"}],
+                                                    "isDefaultSort": False}},
+                             "objects": {"labels": [{"properties": {"show": lit("true")}}],
+                                         "valueAxis": [{"properties": {"show": lit("false")}}], **fill(ROXO)},
+                             "drillFilterOtherVisuals": True}, "Diferença para a média da rede (pontos percentuais)")))
+    vs.append(nota(pg, "posição não é culpa do aeroporto (hub tem mais conexão); quem está abaixo do volume mínimo some do ranking.", 22))
     P.append((pg, "Onde", vs))
 
     # ---- Página 3: Quando
     pg = "Quando"
-    vs = coluna_filtros(pg, 3)
-    vs.append(caixa_texto(pg, "titulo", pos(200, 16, 820, 32, 6, 6),
-                          ["Quando: a taxa de atraso mês a mês"], "16pt", "#F4F7F8", True))
-    vs.append(visual(pg, "serie-mensal", pos(200, 52, 820, 300, 7, 7),
+    vs = cabecalho(pg, 3, "Quando", "A taxa de atraso, mês a mês") + coluna_filtros(pg, 3)
+    vs.append(visual(pg, "serie-mensal", pos(200, 84, 820, 290, 20, 20),
                      titulo({"visualType": "lineChart",
                              "query": {"queryState": {
                                  "Category": {"projections": [proj(col("dim_calendario", "mes_ano"), True)]},
-                                 "Y": {"projections": [proj(mea("Taxa de Atraso 15")), proj(mea("Taxa de Atraso (média móvel 3M)")),
-                                                       proj(mea("Marcador de Evento (série)"))]}}},
-                             "objects": {"valueAxis": [{"properties": {"start": lit("0D"), "end": lit("0.35D")}}]},
-                             "drillFilterOtherVisuals": True}, "Taxa de atraso, média móvel 3M e meses com evento")))
-    vs.append(visual(pg, "volume-mensal", pos(200, 360, 820, 270, 8, 8),
+                                 "Y": {"projections": [proj(mea("Taxa de Atraso 15"), nome="Taxa de atraso"), proj(mea("Taxa de Atraso (média móvel 3M)"), nome="Média móvel 3M"),
+                                                       proj(mea("Marcador de Evento (série)"), nome="Mês com evento")]}}},
+                             "objects": {"valueAxis": [{"properties": {"start": lit("0D"), "end": lit("0.35D")}}],
+                                         "dataPoint": [
+                                             {"properties": {"fill": cor_lit(CIANO)}, "selector": {"metadata": "_Medidas.Taxa de Atraso 15"}},
+                                             {"properties": {"fill": cor_lit(ROXO)}, "selector": {"metadata": "_Medidas.Taxa de Atraso (média móvel 3M)"}},
+                                             {"properties": {"fill": cor_lit(AMBAR)}, "selector": {"metadata": "_Medidas.Marcador de Evento (série)"}}],
+                                         "lineStyles": [{"properties": {"strokeWidth": lit("0D"), "showMarker": lit("true"), "markerShape": texto_lit("circle"), "markerSize": lit("9D")},
+                                                         "selector": {"metadata": "_Medidas.Marcador de Evento (série)"}}]},
+                             "drillFilterOtherVisuals": True}, "Taxa de atraso, média móvel de 3 meses e meses com evento")))
+    vs.append(visual(pg, "volume-mensal", pos(200, 384, 820, 248, 21, 21),
                      titulo({"visualType": "columnChart",
                              "query": {"queryState": {
                                  "Category": {"projections": [proj(col("dim_calendario", "mes_ano"), True)]},
                                  "Y": {"projections": [proj(mea("Voos Realizados"))]}}},
-                             "drillFilterOtherVisuals": True}, "Voos realizados por mês (mesmo eixo de tempo)")))
-    vs.append(visual(pg, "tabela-eventos", pos(1036, 52, 228, 300, 9, 9),
-                     titulo({"visualType": "tableEx",
-                             "query": {"queryState": {"Values": {"projections": [
-                                 proj(col("dim_evento", "rotulo"), True), proj(col("dim_evento", "inicio"), True),
-                                 proj(col("dim_evento", "fim"), True)]}}},
+                             "objects": fill("#2B8FB3"),
+                             "drillFilterOtherVisuals": True}, "Voos realizados por mês")))
+    vs.append(visual(pg, "tabela-eventos", pos(1036, 84, 228, 200, 22, 22),
+                     titulo({"visualType": "pivotTable",
+                             "query": {"queryState": {
+                                 "Rows": {"projections": [proj(col("dim_evento", "rotulo"), True, "Evento")]}}},
                              "drillFilterOtherVisuals": True}, "Eventos (fictícios)"),
                      [filtro_cat("evento-tipo", "dim_evento", "tipo", "'Operacional'")]))
-    vs.append(caixa_texto(pg, "nota-lado", pos(1036, 360, 228, 270, 10, 10),
-                          [[("Ler com cuidado", "#F4F7F8", True)],
-                           "Os picos de jan, jul e dez se repetem todo ano: é sazonalidade, não evento.",
-                           [("Não concluir: coincidir no tempo com um evento não prova que ele causou a alta.", "#F4B24A", False)]], "10pt"))
-    vs.append(caixa_texto(pg, "nota", pos(200, 636, 1064, 44, 11, 11),
-                          ["Marcadores de evento: a série Marcador de Evento (série) só tem valor nos meses com evento operacional; formate-a com marcador âmbar e linha de largura 0 (ver guia/04-montagem.md)."], "10pt", "#8A949B"))
+    vs.append(caixa_texto(pg, "nota-lado", pos(1036, 294, 228, 338, 23, 23),
+                          [[("Ler com cuidado", TEXTO, True)],
+                           "Picos de jan, jul e dez se repetem todo ano: é sazonalidade, não evento.",
+                           [("Não concluir  ", AMBAR, True), ("coincidir no tempo com um evento não prova que ele causou a alta.", MUDO, False)]], "9pt"))
+    vs.append(caixa_texto(pg, "nota", pos(200, 640, 1064, 42, 24, 24),
+                          [[("Pontos âmbar  ", AMBAR, True), ("meses com evento operacional (fictício).", MUDO, False)]], "9pt"))
     P.append((pg, "Quando", vs))
 
     # ---- Página 4: Qualidade
     pg = "Qualidade"
-    vs = coluna_filtros(pg, 4)
-    vs.append(caixa_texto(pg, "titulo", pos(200, 16, 1064, 32, 6, 6),
-                          ["Qualidade e limites: quanto do que o painel diz dá para acreditar?"], "16pt", "#F4F7F8", True))
-    vs.append(visual(pg, "cobertura", pos(200, 56, 640, 300, 7, 7),
-                     titulo({"visualType": "pivotTable",
+    vs = cabecalho(pg, 4, "Qualidade", "Quanto do que o painel diz dá para acreditar?") + coluna_filtros(pg, 4)
+    vs.append(visual(pg, "cobertura", pos(200, 84, 440, 380, 20, 20),
+                     titulo({"visualType": "barChart",
                              "query": {"queryState": {
-                                 "Rows": {"projections": [proj(col("dim_companhia", "companhia"), True)]},
-                                 "Columns": {"projections": [proj(col("dim_calendario", "mes_abrev"), True)]},
-                                 "Values": {"projections": [proj(mea("% de Voos Sem Horário"))]}}},
-                             "drillFilterOtherVisuals": True}, "Cobertura do horário: % de voos sem horário (2024)"),
+                                 "Category": {"projections": [proj(col("dim_companhia", "companhia"), True)]},
+                                 "Y": {"projections": [proj(mea("% de Voos Sem Horário"))]}},
+                                 "sortDefinition": {"sort": [{"field": mea("% de Voos Sem Horário"), "direction": "Descending"}],
+                                                    "isDefaultSort": False}},
+                             "objects": {"labels": [{"properties": {"show": lit("true")}}],
+                                         "valueAxis": [{"properties": {"show": lit("false")}}], **fill(AMBAR)},
+                             "drillFilterOtherVisuals": True}, "Voos sem horário registrado, por companhia (2024)"),
                      [filtro_cat("cobertura-ano", "dim_calendario", "ano", "2024L")]))
-    vs.append(visual(pg, "incerteza", pos(856, 56, 408, 300, 8, 8),
+    vs.append(visual(pg, "incerteza", pos(656, 84, 608, 380, 21, 21),
                      titulo({"visualType": "lineChart",
                              "query": {"queryState": {
                                  "Category": {"projections": [proj(col("dim_calendario", "mes_ano"), True)]},
-                                 "Y": {"projections": [proj(mea("Taxa de Atraso (limite inferior)")),
-                                                       proj(mea("Taxa de Atraso 15")),
-                                                       proj(mea("Taxa de Atraso (limite superior)"))]}}},
-                             "objects": {"valueAxis": [{"properties": {"start": lit("0D")}}]},
-                             "drillFilterOtherVisuals": True}, "Planalto Air, 2024: o dado permite um intervalo"),
+                                 "Y": {"projections": [proj(mea("Taxa de Atraso (limite inferior)"), nome="Limite inferior"),
+                                                       proj(mea("Taxa de Atraso 15"), nome="Aparente"),
+                                                       proj(mea("Taxa de Atraso (limite superior)"), nome="Limite superior")]}}},
+                             "objects": {"valueAxis": [{"properties": {"start": lit("0D")}}],
+                                         "dataPoint": [
+                                             {"properties": {"fill": cor_lit(VERDE)}, "selector": {"metadata": "_Medidas.Taxa de Atraso (limite inferior)"}},
+                                             {"properties": {"fill": cor_lit(TEXTO)}, "selector": {"metadata": "_Medidas.Taxa de Atraso 15"}},
+                                             {"properties": {"fill": cor_lit(AMBAR)}, "selector": {"metadata": "_Medidas.Taxa de Atraso (limite superior)"}}]},
+                             "drillFilterOtherVisuals": True}, "Planalto Air em 2024: o dado só permite uma faixa"),
                      [filtro_cat("incerteza-cia", "dim_companhia", "companhia", "'Planalto Air'"),
                       filtro_cat("incerteza-ano", "dim_calendario", "ano", "2024L")]))
-    vs.append(caixa_texto(pg, "nao-diz", pos(200, 372, 640, 300, 9, 9),
-                          [[("O que este painel não diz", "#F4F7F8", True)],
-                           "1. A frase de abertura fala de voos com horário registrado, não de todos os voos.",
+    vs.append(caixa_texto(pg, "nao-diz", pos(200, 476, 1064, 206, 22, 22),
+                          [[("O que este painel não diz", TEXTO, True, "11pt")],
+                           "1. A taxa fala de voos com horário registrado, não de todos os voos.",
                            "2. A faixa de horário não é a causa: aeroporto e companhia também mudam a taxa.",
                            "3. A posição no ranking não é culpa do aeroporto: hub tem mais conexão.",
                            "4. Coincidir no tempo com um evento não prova que ele causou a alta.",
                            "5. 0,3% de voos sem horário fora da falha é o normal simulado, não uma garantia.",
-                           "6. Os dados são fictícios: nada aqui descreve a aviação brasileira real."], "11pt"))
-    vs.append(visual(pg, "conferencia", pos(856, 372, 408, 300, 10, 10),
-                     titulo({"visualType": "tableEx",
-                             "query": {"queryState": {"Values": {"projections": [
-                                 proj(mea("Voos Programados")), proj(mea("Voos Cancelados")), proj(mea("Voos Realizados")),
-                                 proj(mea("Voos Sem Horário")), proj(mea("Voos Com Horário"))]}}},
-                             "drillFilterOtherVisuals": True}, "Conferência de totais (programados - cancelados = realizados)")))
+                           "6. Os dados são fictícios: nada aqui descreve a aviação brasileira real."], "12pt"))
     P.append((pg, "Qualidade", vs))
     return P
+
+
+def campos_usados(pgs):
+    """Conjunto de (tabela, propriedade) que algum visual ou filtro usa (colunas e medidas)."""
+    usados = set()
+
+    def varrer(o):
+        if isinstance(o, dict):
+            for k in ("Column", "Measure"):
+                if k in o and isinstance(o[k], dict) and "Property" in o[k]:
+                    ent = o[k].get("Expression", {}).get("SourceRef", {}).get("Entity")
+                    if ent:
+                        usados.add((ent, o[k]["Property"]))
+            for v in o.values():
+                varrer(v)
+        elif isinstance(o, list):
+            for v in o:
+                varrer(v)
+    for _, _, vs in pgs:
+        for _, v in vs:
+            varrer(v)
+    return usados
 
 
 def gerar_relatorio():
@@ -524,7 +600,8 @@ def gerar_relatorio():
 
 
 if __name__ == "__main__":
-    colunas, medidas = gerar_modelo()
+    usados = campos_usados(paginas())
+    colunas, medidas = gerar_modelo(usados)
     n_pag, n_vis = gerar_relatorio()
     print(f"tabelas={len(colunas)} colunas={sum(len(c) for c in colunas.values())} medidas={len(medidas)} "
           f"relacoes={len(RELACOES)} paginas={n_pag} visuais={n_vis}")

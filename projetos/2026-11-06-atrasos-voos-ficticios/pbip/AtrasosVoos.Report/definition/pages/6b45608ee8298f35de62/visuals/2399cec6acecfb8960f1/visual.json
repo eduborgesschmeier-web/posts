@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "2399cec6acecfb8960f1",
   "position": {
-    "x": 856,
-    "y": 56,
-    "z": 8,
-    "height": 300,
-    "width": 408,
-    "tabOrder": 8
+    "x": 656,
+    "y": 84,
+    "z": 21,
+    "height": 380,
+    "width": 608,
+    "tabOrder": 21
   },
   "visual": {
     "visualType": "lineChart",
@@ -46,7 +46,8 @@
                 }
               },
               "queryRef": "_Medidas.Taxa de Atraso (limite inferior)",
-              "nativeQueryRef": "Taxa de Atraso (limite inferior)"
+              "nativeQueryRef": "Taxa de Atraso (limite inferior)",
+              "displayName": "Limite inferior"
             },
             {
               "field": {
@@ -60,7 +61,8 @@
                 }
               },
               "queryRef": "_Medidas.Taxa de Atraso 15",
-              "nativeQueryRef": "Taxa de Atraso 15"
+              "nativeQueryRef": "Taxa de Atraso 15",
+              "displayName": "Aparente"
             },
             {
               "field": {
@@ -74,7 +76,8 @@
                 }
               },
               "queryRef": "_Medidas.Taxa de Atraso (limite superior)",
-              "nativeQueryRef": "Taxa de Atraso (limite superior)"
+              "nativeQueryRef": "Taxa de Atraso (limite superior)",
+              "displayName": "Limite superior"
             }
           ]
         }
@@ -91,6 +94,62 @@
                 }
               }
             }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#3BE38B'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Medidas.Taxa de Atraso (limite inferior)"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F4F7F8'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Medidas.Taxa de Atraso 15"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F4B24A'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Medidas.Taxa de Atraso (limite superior)"
           }
         }
       ]
@@ -110,7 +169,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Planalto Air, 2024: o dado permite um intervalo'"
+                  "Value": "'Planalto Air em 2024: o dado só permite uma faixa'"
                 }
               }
             }

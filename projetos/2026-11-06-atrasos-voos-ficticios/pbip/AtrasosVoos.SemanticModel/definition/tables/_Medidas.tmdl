@@ -4,12 +4,14 @@ table _Medidas
 	/// Voos que constavam na malha, cancelados ou não.
 	measure 'Voos Programados' = SUM ( fato_operacao[voos_programados] )
 		formatString: #,0
+		isHidden
 		displayFolder: 1 Volume
 		lineageTag: 7cf9e76d-d891-584b-ab39-7140daaa815b
 
 	/// Voos programados que não decolaram.
 	measure 'Voos Cancelados' = SUM ( fato_operacao[voos_cancelados] )
 		formatString: #,0
+		isHidden
 		displayFolder: 1 Volume
 		lineageTag: 005fac14-493c-55d6-9b4a-cfd1d68e7bcd
 
@@ -22,24 +24,28 @@ table _Medidas
 	/// Voos realizados cujo horário real de saída foi registrado.
 	measure 'Voos Com Horário' = [Voos Realizados] - [Voos Sem Horário]
 		formatString: #,0
+		isHidden
 		displayFolder: 1 Volume
 		lineageTag: 500ecf1b-8fae-5a10-b8ff-ca55f7c23734
 
 	/// Voos com horário registrado que saíram mais de 15 min depois do previsto.
 	measure 'Voos Atrasados 15' = SUM ( fato_operacao[voos_atrasados_15] )
 		formatString: #,0
+		isHidden
 		displayFolder: 1 Volume
 		lineageTag: 316a81f9-d906-5076-94fc-c8811b6641a3
 
 	/// Voos com horário registrado que saíram mais de 60 min depois do previsto (atraso grave).
 	measure 'Voos Atrasados 60' = SUM ( fato_operacao[voos_atrasados_60] )
 		formatString: #,0
+		isHidden
 		displayFolder: 1 Volume
 		lineageTag: 370069eb-972d-5442-9fd5-b8731cd8b4c8
 
 	/// Soma dos minutos de atraso dos voos atrasados (mais de 15 min).
 	measure 'Minutos de Atraso' = SUM ( fato_operacao[minutos_atraso] )
 		formatString: #,0
+		isHidden
 		displayFolder: 1 Volume
 		lineageTag: 30d31eb9-e9d7-549a-a2fc-1cf904a6ae3f
 
@@ -58,12 +64,14 @@ table _Medidas
 	/// Parte dos voos com horário que atrasou mais de 60 min.
 	measure 'Taxa de Atraso 60' = DIVIDE ( [Voos Atrasados 60], [Voos Com Horário] )
 		formatString: 0.0%
+		isHidden
 		displayFolder: 3 Comparação
 		lineageTag: 4e26be87-d700-50e6-9873-fa6f3dac2d23
 
 	/// Quantos minutos, em média, atrasa um voo que atrasou.
 	measure 'Atraso Médio dos Atrasados (min)' = DIVIDE ( [Minutos de Atraso], [Voos Atrasados 15] )
 		formatString: 0.0
+		isHidden
 		displayFolder: 3 Comparação
 		lineageTag: f95a63a6-f7b4-5b04-a08d-a49b4c099192
 
@@ -75,6 +83,7 @@ table _Medidas
 			    REMOVEFILTERS ( dim_rota )
 			)
 		formatString: 0.0%
+		isHidden
 		displayFolder: 3 Comparação
 		lineageTag: 96fd4715-076a-582c-9567-28d6226890d3
 
@@ -113,6 +122,7 @@ table _Medidas
 			    )
 			)
 		formatString: 0
+		isHidden
 		displayFolder: 3 Comparação
 		lineageTag: 41a2e2ce-f51f-50f2-a554-f655ccb72cd8
 
@@ -124,6 +134,7 @@ table _Medidas
 			RETURN
 			    IF ( NOT ISBLANK ( anterior ), DIVIDE ( atual - anterior, anterior ) )
 		formatString: +0.0%;-0.0%;0.0%
+		isHidden
 		displayFolder: 2 Tempo
 		lineageTag: e0d71193-84ad-5065-ac0d-89d5cac3a8ef
 
@@ -135,6 +146,7 @@ table _Medidas
 			RETURN
 			    IF ( NOT ISBLANK ( anterior ), ( atual - anterior ) * 100 )
 		formatString: +0.0;-0.0;0.0
+		isHidden
 		displayFolder: 2 Tempo
 		lineageTag: 07791032-bc4d-5ca8-ae20-5d79f7d62c29
 
@@ -174,6 +186,7 @@ table _Medidas
 	/// Voos realizados sem horário real registrado (atraso desconhecido).
 	measure 'Voos Sem Horário' = SUM ( fato_operacao[voos_sem_horario] )
 		formatString: #,0
+		isHidden
 		displayFolder: 4 Qualidade do dado
 		lineageTag: 6ddc2776-a868-537a-93e1-49337ec4c5fa
 

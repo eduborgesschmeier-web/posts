@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
-  "name": "695dea5ea137472d8507",
+  "name": "cce4a7eee9897e8f6b9c",
   "position": {
     "x": 16,
-    "y": 16,
+    "y": 10,
     "z": 1,
-    "height": 28,
+    "height": 68,
     "width": 168,
     "tabOrder": 1
   },
@@ -19,11 +19,24 @@
               {
                 "textRuns": [
                   {
-                    "value": "Filtros (sincronizados)",
+                    "value": "GENESIS",
                     "textStyle": {
-                      "fontSize": "12pt",
-                      "color": "#F4F7F8",
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "13pt",
+                      "color": "#35C6F4",
                       "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Innovation",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
+                      "color": "#9AA3AB"
                     }
                   }
                 ]

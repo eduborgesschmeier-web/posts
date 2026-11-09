@@ -3,11 +3,11 @@
   "name": "78dbc794cf71b3950b89",
   "position": {
     "x": 200,
-    "y": 636,
-    "z": 10,
-    "height": 44,
+    "y": 640,
+    "z": 22,
+    "height": 42,
     "width": 1064,
-    "tabOrder": 10
+    "tabOrder": 22
   },
   "visual": {
     "visualType": "textbox",
@@ -19,18 +19,20 @@
               {
                 "textRuns": [
                   {
-                    "value": "Não concluir: ",
+                    "value": "Não concluir  ",
                     "textStyle": {
-                      "fontSize": "10pt",
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
                       "color": "#F4B24A",
                       "fontWeight": "bold"
                     }
                   },
                   {
-                    "value": "posição não é culpa do aeroporto (hub tem mais conexão); quem está abaixo do volume mínimo some do ranking; região é recorte do aeroporto de origem.",
+                    "value": "posição não é culpa do aeroporto (hub tem mais conexão); quem está abaixo do volume mínimo some do ranking.",
                     "textStyle": {
-                      "fontSize": "10pt",
-                      "color": "#F4B24A"
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
+                      "color": "#9AA3AB"
                     }
                   }
                 ]

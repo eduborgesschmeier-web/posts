@@ -3,11 +3,11 @@
   "name": "d04f921f46b16119fa61",
   "position": {
     "x": 200,
-    "y": 16,
-    "z": 6,
-    "height": 32,
-    "width": 1064,
-    "tabOrder": 6
+    "y": 8,
+    "z": 2,
+    "height": 74,
+    "width": 860,
+    "tabOrder": 2
   },
   "visual": {
     "visualType": "textbox",
@@ -19,11 +19,33 @@
               {
                 "textRuns": [
                   {
-                    "value": "Panorama: o atraso é do sistema inteiro ou de alguns pontos?",
+                    "value": "Atraso de voo  ",
                     "textStyle": {
+                      "fontFamily": "Segoe UI",
                       "fontSize": "16pt",
                       "color": "#F4F7F8",
                       "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "/  Panorama",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "16pt",
+                      "color": "#35C6F4",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "O atraso é do sistema inteiro ou de alguns pontos?",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
+                      "color": "#9AA3AB"
                     }
                   }
                 ]

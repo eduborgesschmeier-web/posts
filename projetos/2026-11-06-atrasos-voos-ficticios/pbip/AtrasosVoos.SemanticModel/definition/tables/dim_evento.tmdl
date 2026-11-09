@@ -16,6 +16,7 @@ table dim_evento
 
 	column rotulo_curto
 		dataType: string
+		isHidden
 		lineageTag: 12cc127d-45c5-53f3-96ff-1ee0d54b3e04
 		summarizeBy: none
 		sourceColumn: rotulo_curto
@@ -29,6 +30,7 @@ table dim_evento
 	column inicio
 		dataType: dateTime
 		formatString: dd/mm/yyyy
+		isHidden
 		lineageTag: 983a028e-9e48-5397-b1d5-cd8bcdf0a77a
 		summarizeBy: none
 		sourceColumn: inicio
@@ -38,6 +40,7 @@ table dim_evento
 	column fim
 		dataType: dateTime
 		formatString: dd/mm/yyyy
+		isHidden
 		lineageTag: 0c1dae4f-819a-5110-9f5a-c7dbaab482a7
 		summarizeBy: none
 		sourceColumn: fim
@@ -47,6 +50,7 @@ table dim_evento
 	column mes_inicio
 		dataType: dateTime
 		formatString: dd/mm/yyyy
+		isHidden
 		lineageTag: c7ee9b71-d7d6-5429-8419-ee87dad609d8
 		summarizeBy: none
 		sourceColumn: mes_inicio
@@ -56,6 +60,7 @@ table dim_evento
 	column mes_fim
 		dataType: dateTime
 		formatString: dd/mm/yyyy
+		isHidden
 		lineageTag: b41d6924-6bb4-5812-8f7a-46bd46cc67f5
 		summarizeBy: none
 		sourceColumn: mes_fim

@@ -3,11 +3,11 @@
   "name": "3fc1038aeb27835b8f6a",
   "position": {
     "x": 200,
-    "y": 360,
-    "z": 8,
-    "height": 270,
+    "y": 384,
+    "z": 21,
+    "height": 248,
     "width": 820,
-    "tabOrder": 8
+    "tabOrder": 21
   },
   "visual": {
     "visualType": "columnChart",
@@ -52,6 +52,25 @@
         }
       }
     },
+    "objects": {
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#2B8FB3'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "drillFilterOtherVisuals": true,
     "visualContainerObjects": {
       "title": [
@@ -67,7 +86,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Voos realizados por mês (mesmo eixo de tempo)'"
+                  "Value": "'Voos realizados por mês'"
                 }
               }
             }

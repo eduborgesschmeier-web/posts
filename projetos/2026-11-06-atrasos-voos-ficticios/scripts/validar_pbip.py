@@ -331,7 +331,7 @@ if not (PBIP / pbip["artifacts"][0]["report"]["path"]).is_dir():
 # ---------------------------------------------------------------- resumo
 n_cols = sum(len(t["colunas"]) for t in tabelas.values())
 print()
-print("RESUMO (NÃO TESTADO no Power BI Desktop)")
+print("RESUMO (validação estática; o teste real no Power BI Desktop está no README-PBIP.md)")
 print(f"  arquivos JSON válidos : {n_json}")
 print(f"  arquivos TMDL         : {len(tmdl_files)}")
 print(f"  tabelas               : {len(tabelas)} ({', '.join(tabelas)})")

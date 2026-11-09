@@ -10,6 +10,7 @@ table dim_motivo
 
 	column motivo
 		dataType: string
+		isHidden
 		lineageTag: 5d18e40a-71d3-5d24-944b-d587aa89ddfb
 		summarizeBy: none
 		sourceColumn: motivo

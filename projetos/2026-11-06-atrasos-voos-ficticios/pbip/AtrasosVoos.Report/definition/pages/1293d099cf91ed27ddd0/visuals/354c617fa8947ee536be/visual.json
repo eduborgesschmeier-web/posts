@@ -3,11 +3,11 @@
   "name": "354c617fa8947ee536be",
   "position": {
     "x": 200,
-    "y": 16,
-    "z": 6,
-    "height": 32,
-    "width": 1064,
-    "tabOrder": 6
+    "y": 8,
+    "z": 2,
+    "height": 74,
+    "width": 860,
+    "tabOrder": 2
   },
   "visual": {
     "visualType": "textbox",
@@ -19,11 +19,33 @@
               {
                 "textRuns": [
                   {
-                    "value": "Onde: quais aeroportos de origem atrasam mais?",
+                    "value": "Atraso de voo  ",
                     "textStyle": {
+                      "fontFamily": "Segoe UI",
                       "fontSize": "16pt",
                       "color": "#F4F7F8",
                       "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "/  Onde",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "16pt",
+                      "color": "#35C6F4",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Quais aeroportos de origem atrasam mais?",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
+                      "color": "#9AA3AB"
                     }
                   }
                 ]

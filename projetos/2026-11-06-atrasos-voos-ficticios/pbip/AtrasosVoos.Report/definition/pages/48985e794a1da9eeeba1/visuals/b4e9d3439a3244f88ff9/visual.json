@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "b4e9d3439a3244f88ff9",
   "position": {
-    "x": 856,
-    "y": 160,
-    "z": 9,
-    "height": 470,
-    "width": 408,
-    "tabOrder": 9
+    "x": 636,
+    "y": 256,
+    "z": 26,
+    "height": 376,
+    "width": 628,
+    "tabOrder": 26
   },
   "visual": {
     "visualType": "barChart",
@@ -55,16 +55,16 @@
         "sort": [
           {
             "field": {
-              "Column": {
+              "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Etapas"
+                    "Entity": "_Medidas"
                   }
                 },
-                "Property": "Etapa"
+                "Property": "Valor da Etapa"
               }
             },
-            "direction": "Ascending"
+            "direction": "Descending"
           }
         ],
         "isDefaultSort": false
@@ -78,6 +78,36 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#35C6F4'"
+                    }
+                  }
                 }
               }
             }

@@ -5,6 +5,7 @@ table dim_calendario
 	column data
 		dataType: dateTime
 		formatString: dd/mm/yyyy
+		isHidden
 		isKey
 		lineageTag: c2f046b8-415e-5fe3-af5c-6d04c6b03c1c
 		summarizeBy: none
@@ -20,18 +21,21 @@ table dim_calendario
 
 	column trimestre
 		dataType: string
+		isHidden
 		lineageTag: c14549c7-e2f9-5a44-9ae2-32bd5f3b60da
 		summarizeBy: none
 		sourceColumn: trimestre
 
 	column mes_num
 		dataType: int64
+		isHidden
 		lineageTag: ffa67b61-4227-5675-8c06-4b498d204229
 		summarizeBy: none
 		sourceColumn: mes_num
 
 	column mes_abrev
 		dataType: string
+		isHidden
 		lineageTag: 15bc306f-78db-5547-917d-218893039f06
 		sortByColumn: mes_num
 		summarizeBy: none
@@ -46,6 +50,7 @@ table dim_calendario
 
 	column ano_mes
 		dataType: string
+		isHidden
 		lineageTag: d5ae0648-1e2f-5195-a8ec-7d2416ec7a57
 		summarizeBy: none
 		sourceColumn: ano_mes
@@ -53,6 +58,7 @@ table dim_calendario
 	column inicio_mes
 		dataType: dateTime
 		formatString: dd/mm/yyyy
+		isHidden
 		lineageTag: f4e3d390-2b86-53c0-b5dd-ca5e5f5151fe
 		summarizeBy: none
 		sourceColumn: inicio_mes

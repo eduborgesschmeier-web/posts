@@ -3,11 +3,11 @@
   "name": "c1a98ca7b8a2f5692890",
   "position": {
     "x": 200,
-    "y": 636,
-    "z": 10,
-    "height": 44,
+    "y": 640,
+    "z": 27,
+    "height": 42,
     "width": 1064,
-    "tabOrder": 10
+    "tabOrder": 27
   },
   "visual": {
     "visualType": "textbox",
@@ -19,18 +19,20 @@
               {
                 "textRuns": [
                   {
-                    "value": "Não concluir: ",
+                    "value": "Não concluir  ",
                     "textStyle": {
-                      "fontSize": "10pt",
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
                       "color": "#F4B24A",
                       "fontWeight": "bold"
                     }
                   },
                   {
-                    "value": "a faixa de horário não é a causa sozinha; aeroporto e companhia também mudam a taxa. Os degraus 4 e 5 do funil são subconjuntos dos voos com horário, não do total programado.",
+                    "value": "a faixa de horário não é a causa sozinha: aeroporto e companhia também mudam a taxa. Os dois últimos degraus são subconjuntos dos voos com horário.",
                     "textStyle": {
-                      "fontSize": "10pt",
-                      "color": "#F4B24A"
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "9pt",
+                      "color": "#9AA3AB"
                     }
                   }
                 ]

@@ -3,11 +3,11 @@
   "name": "1b594b2e4968d098ffeb",
   "position": {
     "x": 200,
-    "y": 56,
-    "z": 7,
-    "height": 570,
+    "y": 84,
+    "z": 20,
+    "height": 548,
     "width": 520,
-    "tabOrder": 7
+    "tabOrder": 20
   },
   "visual": {
     "visualType": "barChart",
@@ -28,7 +28,8 @@
               },
               "queryRef": "dim_aeroporto.iata",
               "nativeQueryRef": "iata",
-              "active": true
+              "active": true,
+              "displayName": "Aeroporto"
             }
           ]
         },
@@ -83,6 +84,36 @@
             }
           }
         }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#35C6F4'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true,
@@ -100,7 +131,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Ranking de aeroportos de origem (só com volume mínimo)'"
+                  "Value": "'Taxa de atraso (só aeroportos com volume mínimo)'"
                 }
               }
             }
