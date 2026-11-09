@@ -2,3 +2,8 @@
 whatsapp_estado.json
 __pycache__/
 *.pyc
+perfis.json
+perfis.json.novo
+dados/
+*.db
+*.db-*

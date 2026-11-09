@@ -25,7 +25,7 @@ class Cliente:
         env = {"PATH": os.environ.get("PATH", ""), "PYTHONDONTWRITEBYTECODE": "1",
                "EVOLUTION_URL": url, "EVOLUTION_API_KEY": CHAVE, "EVOLUTION_INSTANCE": instancia,
                "WHATSAPP_INTERVALO_S": "0", "WHATSAPP_TETO_DIA": "100",
-               "WHATSAPP_ESTADO": os.path.join(self.pasta, "estado.db")}
+               "WHATSAPP_ESTADO": os.path.join(self.pasta, "estado.db"), "WHATSAPP_PERFIS_ARQUIVO": os.devnull}
         env.update(extra or {})
         self.p = subprocess.Popen([sys.executable, "-I", SERVER], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE, text=True, env=env)
@@ -515,7 +515,8 @@ class TestEntradaHostil(Base):
 
 class TestFacilidadeDeUso(Base):
     def rodar(self, *args, entrada=None, env=None):
-        e = {"PATH": os.environ.get("PATH", ""), "PYTHONDONTWRITEBYTECODE": "1"}
+        e = {"PATH": os.environ.get("PATH", ""), "PYTHONDONTWRITEBYTECODE": "1",
+             "WHATSAPP_PERFIS_ARQUIVO": os.devnull}
         e.update(env or {})
         return subprocess.run([sys.executable, "-I", SERVER, *args], input=entrada, capture_output=True, text=True,
                               env=e, timeout=60)
@@ -523,7 +524,7 @@ class TestFacilidadeDeUso(Base):
     def amb(self, **extra):
         d = {"EVOLUTION_URL": self.f.url, "EVOLUTION_API_KEY": CHAVE, "EVOLUTION_INSTANCE": "inst",
              "WHATSAPP_ESTADO": os.path.join(tempfile.gettempdir(), "doctor-teste.db"),
-             "WHATSAPP_ENV_ARQUIVO": os.devnull}
+             "WHATSAPP_ENV_ARQUIVO": os.devnull, "WHATSAPP_PERFIS_ARQUIVO": os.devnull}
         d.update(extra)
         return d
 

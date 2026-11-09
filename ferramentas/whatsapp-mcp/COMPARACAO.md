@@ -21,13 +21,17 @@ Do nosso lado, "medido" quer dizer: há teste automatizado contra uma **Evolutio
 | Lista de permitidos | `WHATSAPP_PERMITIDOS` opcional (testado) | **não** é a política dele: decisão do Thiago é "manda para qualquer pessoa que o dono pedir" |
 | Diagnóstico | `python3 server.py doctor` (testado) | não descrito |
 | Instalação guiada | `configurar` e `subir` (testados, `subir` com Docker falso) | `instalar.sh` seco/`--aplicar`, a partir do cofre dele; não executamos |
-| Testes automatizados | 59 testes, mais uma checagem por mutação (abaixo) | README cita 16 testes do serviço e testes do portão; não rodamos |
+| Testes automatizados | 105 testes, mais uma checagem por mutação (abaixo) | README cita 16 testes do serviço e testes do portão; não rodamos |
+| Vários perfis isolados | **sim (v0.3)**: um perfil por pessoa, com instância, lista de permitidos, teto, intervalo, estado (arquivo SQLite) e token próprios; o perfil sai do token, nunca de argumento; teste de isolamento (contatos, grupos, envio, histórico, contador, idempotência, sessão) contra uma Evolution falsa que distingue instâncias | uma instância por pessoa derivada da identidade do portão de login, em produção real, segundo o README dele |
+| Página de conexão | **sim (v0.3)**: link de convite de uso único (72 h), cookie curto, QR como `data:` URI renovado a cada 5 s, CSP `default-src 'none'`, sem JavaScript, botão de desconectar; testada só por requisições HTTP, **nunca num navegador real** | QR renovando a cada 5 s com CSP, atrás do `maus-portao`, segundo o README dele |
+| Transporte HTTP do MCP | **sim (v0.3)**: `POST /mcp`, Bearer por perfil em tempo constante, CORS fechado, sem SSE; **nunca testado com o Claude real como conector** | não verificável |
 | Backend oficial (Meta) | **não existe**; só o ponto de extensão e a documentação | o README recomenda a API oficial para escala; se há código dela: não verificável |
 
 ## O que o nosso NÃO tem e o dele tem
 - Integração com o portão de login (`maus-portao`), com o cofre de segredos e com o chat do MausBot.
-- Uma instância de WhatsApp **por pessoa** derivada da identidade conferida; o nosso serve **uma** instância (a sua).
-- Página web de conexão (QR renovando a cada 5 s, com CSP); o nosso devolve o QR pela ferramenta.
+- Identidade conferida por um portão de login (`maus-portao`): o nosso identifica o perfil por **token** próprio e por convite, sem login de usuário, sem recuperação de
+  conta e sem trilha de auditoria central. Também não temos cofre de segredos (o `perfis.json` guarda só hashes, mas o `.env` guarda a chave da Evolution em arquivo).
+- Painel para o dono ver todas as pessoas e o uso (temos só o comando `perfis`) e limites por pessoa configuráveis por um chat.
 - Envio para até 50 números e até 10 arquivos por pedido; o nosso vai a 10 destinos e 5 arquivos (limite proposital).
 - Busca de nome em agenda já com 1.368 contatos em produção real, e um histórico de incidentes que moldou as regras (ex.: o bot que dizia
   "enviada" sem enviar). **Nós não temos esse tempo de uso**: o nosso só rodou contra um servidor falso.
@@ -37,6 +41,13 @@ Alteramos o código de propósito, uma regra por vez, e rodamos a suíte de 59 t
 retentável derrubou 1; zerar o contador diário derrubou 3; ignorar o último envio derrubou 2; tornar `simular` falso por padrão derrubou 1; não
 devolver o teto ao falhar derrubou 1. Nas seis mutações ao menos um teste falhou. (Em cada cópia mutada o teste `subir` também falhou, por
 um artefato da cópia, que não incluía a pasta `evolution/`; esse não conta.) Isso mede os testes, **não** o comportamento com WhatsApp real.
+
+### Mutações da v0.3 (perfis, HTTP, convite): 7 de 7 pegas
+Na suíte de 105 testes (rodando os 46 novos), alterar uma regra por vez derrubou: isolamento (todos os perfis usando o servidor do primeiro) **10** testes; token
+obrigatório removido (cai no primeiro perfil) **4**; convite reutilizável **2**; teto do perfil ignorado **1**; comparação do token com `==` em vez de
+`hmac.compare_digest` **1**; CSP sem `default-src 'none'` **1**; sessão MCP sem dono **1**. Um oitavo achado veio de um teste, não de mutação: com duas requisições
+simultâneas o `Servidor.w` criava dois objetos de envio e furava o intervalo; corrigido com trava e coberto por `test_duas_requisicoes_ao_mesmo_tempo_no_mesmo_perfil_respeitam_o_intervalo`.
+De novo: isso mede os testes contra a Evolution **falsa**, não o comportamento com WhatsApp real.
 
 ## Conclusão sem exagero
 Medimos que o nosso cobre, contra uma Evolution falsa, os freios e a confiabilidade listados. Não medimos que ele seja "melhor" que o do Thiago:

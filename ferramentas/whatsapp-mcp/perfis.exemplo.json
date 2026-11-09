@@ -1,0 +1,19 @@
+{
+  "perfis": {
+    "edu": {
+      "instancia": "edu-wa",
+      "token_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "permitidos": ["48 99123-4567"],
+      "teto_dia": 100,
+      "intervalo_s": 3
+    },
+    "mae": {
+      "instancia": "mae-wa",
+      "token_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "permitidos": ["11 98765-4321"],
+      "teto_dia": 30,
+      "intervalo_s": 5,
+      "estado": "estado-mae.db"
+    }
+  }
+}

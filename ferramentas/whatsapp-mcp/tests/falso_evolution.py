@@ -2,6 +2,7 @@
 import json
 import threading
 import time
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 CHAVE = "chave-de-teste-FALSA-0123456789"
@@ -30,9 +31,14 @@ class Falso:
         self.dormir_no_envio = 0.0
         self.mensagens_status = 200
         self.falhas_envio = []        # status HTTP a devolver (um por chamada de envio) antes de aceitar
+        self.removidas = []           # instâncias apagadas por DELETE /instance/delete/<nome>
+        self.instancias = {}          # nome -> {"estado","contatos","grupos","qr"}: o que a instância X enxerga (isolamento)
         self.respostas_brutas = {}    # prefixo de rota -> bytes a devolver no lugar do JSON
         self.trava = threading.Lock()
         falso = self
+
+        def da_instancia(nome, campo, padrao):
+            return (falso.instancias.get(nome) or {}).get(campo, padrao)
 
         class H(BaseHTTPRequestHandler):
             def log_message(self, *a):
@@ -57,6 +63,7 @@ class Falso:
                 if self.headers.get("apikey") != CHAVE:
                     return self._responder(401, {"erro": "apikey"})
                 p = self.path.split("?")[0]
+                nome = urllib.parse.unquote(p.rsplit("/", 1)[-1])
                 for pref, bruto in falso.respostas_brutas.items():
                     if p.startswith(pref):
                         try:
@@ -76,21 +83,27 @@ class Falso:
                 if p.startswith("/instance/connectionState/"):
                     if not falso.instancia_existe:
                         return self._responder(404, {"erro": "não existe"})
-                    return self._responder(200, {"instance": {"instanceName": "t", "state": falso.estado}})
+                    return self._responder(200, {"instance": {"instanceName": nome, "state": da_instancia(nome, "estado", falso.estado)}})
                 if p == "/instance/create":
                     falso.instancia_existe, falso.estado = True, "connecting"
                     return self._responder(201, {"instance": {"instanceName": "t"}})
                 if p.startswith("/instance/connect/"):
                     if "number=" in self.path:
                         return self._responder(200, {"pairingCode": "WZYE1234", "count": 1})
-                    return self._responder(200, {"base64": "data:image/png;base64,AAAA", "code": "2@x", "count": 1})
+                    return self._responder(200, {"base64": da_instancia(nome, "qr", "data:image/png;base64,AAAA"), "code": "2@x", "count": 1})
                 if p.startswith("/instance/logout/"):
-                    falso.estado = "close"
+                    if nome in falso.instancias:
+                        falso.instancias[nome]["estado"] = "close"
+                    else:
+                        falso.estado = "close"
+                    return self._responder(200, {"status": "SUCCESS"})
+                if p.startswith("/instance/delete/"):
+                    falso.removidas.append(nome)
                     return self._responder(200, {"status": "SUCCESS"})
                 if p.startswith("/chat/findContacts/"):
-                    return self._responder(200, CONTATOS)
+                    return self._responder(200, da_instancia(nome, "contatos", CONTATOS))
                 if p.startswith("/group/fetchAllGroups/"):
-                    return self._responder(200, GRUPOS)
+                    return self._responder(200, da_instancia(nome, "grupos", GRUPOS))
                 if p.startswith("/chat/findMessages/"):
                     if falso.mensagens_status != 200:
                         return self._responder(falso.mensagens_status, {"erro": "x"})
@@ -116,8 +129,19 @@ class Falso:
         self.url = f"http://127.0.0.1:{self.porta}"
         threading.Thread(target=self.httpd.serve_forever, daemon=True).start()
 
-    def envios(self):
-        return [c for c in self.chamadas if c[1].startswith("/message/send")]
+    def envios(self, instancia=None):
+        """Chamadas de envio; com `instancia`, só as feitas para ela (o nome é o último trecho do caminho)."""
+        return [c for c in self.chamadas if c[1].startswith("/message/send")
+                and (instancia is None or urllib.parse.unquote(c[1].split("?")[0].rsplit("/", 1)[-1]) == instancia)]
+
+    def instancias_chamadas(self):
+        """Nomes de instância que receberam QUALQUER chamada (exceto a criação, que leva o nome no corpo)."""
+        out = set()
+        for _m, caminho, _c, _t in self.chamadas:
+            partes = caminho.split("?")[0].strip("/").split("/")
+            if len(partes) == 3:
+                out.add(urllib.parse.unquote(partes[2]))
+        return out
 
     def parar(self):
         self.httpd.shutdown()

@@ -8,8 +8,11 @@ ambíguo ou não permitido. Nunca diz "entregue": ENVIADO = o WhatsApp aceitou.
 """
 import base64
 import binascii
+import copy
 import getpass
 import hashlib
+import hmac
+import html
 import http.client
 import json
 import os
@@ -27,9 +30,12 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date, datetime
+from http.cookies import SimpleCookie
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 PROTOCOLO = "2024-11-05"
-VERSAO = "0.2.0"
+PROTOCOLOS_ACEITOS = ("2024-11-05", "2025-03-26", "2025-06-18")   # as três só diferem no transporte; as ferramentas são as mesmas
+VERSAO = "0.3.0"
 MAX_DESTINOS = 10
 MAX_ARQUIVOS = 5
 MAX_ARQUIVO_BYTES = 25 * 1024 * 1024
@@ -87,14 +93,18 @@ class Config:
         self.estado = e.get("WHATSAPP_ESTADO") or os.path.join(AQUI, "whatsapp_estado.db")
         brutos = [p.strip() for p in re.split(r"[,;\n]+", e.get("WHATSAPP_PERMITIDOS") or "") if p.strip()]
         self.permitidos_definida = bool(brutos)
-        self.permitidos = set()
-        for p in brutos:
-            if p.lower().endswith("@g.us"):
-                self.permitidos.add(p.lower())
-            else:
-                n = normalizar_numero(p)
-                if n:
-                    self.permitidos.add(n)
+        self.permitidos = permitidos_de(brutos)
+        # -- perfis (várias pessoas, cada uma com o próprio WhatsApp) e transporte HTTP
+        self.perfis_arquivo = e.get("WHATSAPP_PERFIS_ARQUIVO") or os.path.join(AQUI, "perfis.json")
+        self.dados = e.get("WHATSAPP_DADOS") or os.path.join(AQUI, "dados")
+        self.perfil_atual = (e.get("WHATSAPP_PERFIL_ATUAL") or "").strip()
+        self.perfil = None          # nome do perfil, só nas cópias criadas por cfg_do_perfil
+        self.erro_perfil = None     # preenchido quando o modo stdio não consegue escolher um perfil com segurança
+        self.http_max_corpo = _inteiro(e.get("WHATSAPP_HTTP_MAX_CORPO"), 4 * 1024 * 1024) or 4 * 1024 * 1024
+        self.sessao_s = _decimal(e.get("WHATSAPP_SESSAO_S"), 3600.0) or 3600.0
+        self.url_publica = (e.get("WHATSAPP_URL_PUBLICA") or "").rstrip("/")
+        self.http_hosts = {h.strip().lower() for h in (e.get("WHATSAPP_HTTP_HOSTS") or "").split(",") if h.strip()}
+        self.cookie_secure = (e.get("WHATSAPP_COOKIE_SECURE") or "").strip().lower() in ("1", "true", "sim")
 
     def faltando(self):
         return [k for k, v in (("EVOLUTION_URL", self.url), ("EVOLUTION_API_KEY", self.chave),
@@ -102,6 +112,8 @@ class Config:
 
     def problema(self):
         """Texto em português com a correção, ou None se a configuração permite trabalhar."""
+        if self.erro_perfil:
+            return self.erro_perfil
         if self.backend == "cloud":
             return ("O backend `cloud` (API oficial da Meta) ainda não está implementado nesta versão; só a interface "
                     "está preparada. Correção: use WHATSAPP_BACKEND=evolution.")
@@ -114,6 +126,20 @@ class Config:
         if not self.url.startswith(("http://", "https://")):
             return "EVOLUTION_URL precisa começar com http:// ou https://. Correção: ex. http://127.0.0.1:8080."
         return None
+
+
+def permitidos_de(brutos):
+    """Números (só dígitos, com país) e ids de grupo autorizados, a partir de uma lista de textos."""
+    out = set()
+    for p in brutos:
+        p = str(p).strip()
+        if p.lower().endswith("@g.us"):
+            out.add(p.lower())
+        else:
+            n = normalizar_numero(p)
+            if n:
+                out.add(n)
+    return out
 
 
 def _inteiro(v, padrao):
@@ -189,9 +215,10 @@ def sem_acento(s):
 # ---------------------------------------------------------------- log seguro
 
 class Log:
-    def __init__(self, chave, saida=None):
+    def __init__(self, chave, saida=None, perfil=None):
         self.chave = chave
         self.saida = saida or sys.stderr
+        self.prefixo = "[whatsapp-mcp" + (f":{perfil}" if perfil else "") + "] "
 
     def limpar(self, texto):
         t = str(texto)
@@ -201,7 +228,7 @@ class Log:
 
     def __call__(self, msg):
         try:
-            self.saida.write("[whatsapp-mcp] " + self.limpar(msg) + "\n")
+            self.saida.write(self.prefixo + self.limpar(msg) + "\n")
             self.saida.flush()
         except Exception:  # noqa: BLE001
             pass
@@ -284,10 +311,14 @@ class Armazem:
 
     def __init__(self, caminho):
         self.trava = threading.RLock()
-        os.makedirs(os.path.dirname(os.path.abspath(caminho)), exist_ok=True)
+        os.makedirs(os.path.dirname(os.path.abspath(caminho)), exist_ok=True, mode=0o700)
         try:
             self.db = sqlite3.connect(caminho, isolation_level=None, check_same_thread=False, timeout=10)
             self.db.executescript(ESQUEMA)
+            try:
+                os.chmod(caminho, 0o600)   # histórico de outra pessoa: só o dono do processo lê
+            except OSError:
+                pass
         except sqlite3.DatabaseError as e:
             raise ErroFerramenta(f"o arquivo de estado ({os.path.basename(caminho)}) não é um banco SQLite válido ({e}). "
                                  "Correção: aponte WHATSAPP_ESTADO para um arquivo novo.") from None
@@ -387,6 +418,11 @@ class WhatsApp:
         self.store = Armazem(cfg.estado)
         self.dormir = dormir
         self.inst = urllib.parse.quote(cfg.instancia, safe="")
+        self.trava_envio = threading.Lock()   # no HTTP há várias threads: sem isto o intervalo entre envios não vale
+
+    def fechar(self):
+        with self.store.trava:
+            self.store.db.close()
 
     # -- chamadas de leitura/controle (nunca de envio)
     def _get(self, metodo, caminho, corpo=None):
@@ -415,6 +451,8 @@ class WhatsApp:
             raise ErroFerramenta(f"estado: HTTP {s}")
         est = (d.get("instance") or d).get("state")
         out = {"ok": True, "existe": True, "estado": est, "conectada": est == "open"}
+        if self.cfg.perfil:
+            out["perfil"] = self.cfg.perfil
         if est == "connecting":
             s2, d2 = self._get("GET", f"/instance/connect/{self.inst}")
             out["ha_qr"] = bool(s2 == 200 and isinstance(d2, dict) and (d2.get("base64") or d2.get("code")))
@@ -599,7 +637,8 @@ class WhatsApp:
                 problemas.append({"destino": "", "motivo": "destino vazio"})
                 continue
             if self.cfg.permitidos_definida and ident not in self.cfg.permitidos:
-                problemas.append({"destino": mascarar(ident), "motivo": "fora de WHATSAPP_PERMITIDOS"})
+                problemas.append({"destino": mascarar(ident), "motivo": "fora de WHATSAPP_PERMITIDOS" + (
+                    f" (perfil {self.cfg.perfil}; lista vazia = ninguém)" if self.cfg.perfil else "")})
                 continue
             if ident not in vistos:
                 vistos.add(ident)
@@ -658,6 +697,10 @@ class WhatsApp:
         return "d:" + conteudo, False, conteudo
 
     def enviar(self, a):
+        with self.trava_envio:
+            return self._enviar(a)
+
+    def _enviar(self, a):
         para = a.get("para")
         if isinstance(para, str):
             para = [para]
@@ -922,12 +965,14 @@ FERRAMENTAS = [
 class Servidor:
     def __init__(self, cfg, log, dormir=time.sleep):
         self.cfg, self.log, self.dormir, self._w = cfg, log, dormir, None
+        self._trava_w = threading.Lock()
 
     @property
     def w(self):
-        if self._w is None:                      # cria o banco só quando alguém usa uma ferramenta
-            self._w = WhatsApp(self.cfg, self.log, self.dormir)
-        return self._w
+        with self._trava_w:   # no HTTP duas threads criariam dois WhatsApp (duas travas de envio) e furariam o intervalo
+            if self._w is None:                  # cria o banco só quando alguém usa uma ferramenta
+                self._w = WhatsApp(self.cfg, self.log, self.dormir)
+            return self._w
 
     def tratar(self, msg):
         """Devolve a resposta (dict) ou None para notificação."""
@@ -938,7 +983,8 @@ class Servidor:
             return None  # notificação (inclui notifications/initialized)
         try:
             if metodo == "initialize":
-                res = {"protocolVersion": PROTOCOLO, "capabilities": {"tools": {}},
+                pedida = params.get("protocolVersion") if isinstance(params, dict) else None
+                res = {"protocolVersion": pedida if pedida in PROTOCOLOS_ACEITOS else PROTOCOLO, "capabilities": {"tools": {}},
                        "serverInfo": {"name": "whatsapp-mcp", "version": VERSAO}}
             elif metodo == "ping":
                 res = {}
@@ -994,6 +1040,856 @@ class Servidor:
             if resp is not None:
                 saida.write(json.dumps(resp, ensure_ascii=False) + "\n")
                 saida.flush()
+
+
+# ---------------------------------------------------------------- perfis (uma pessoa = um perfil, isolados entre si)
+
+PERFIL_RE = re.compile(r"^[a-z][a-z0-9_-]{0,30}$")
+INSTANCIA_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+HASH_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
+PREFIXO_TOKEN = "wam_"
+VALIDADE_CONVITE_H = 72.0
+MAX_TOKEN = 512
+
+
+class ErroPerfis(Exception):
+    pass
+
+
+def hash_token(token):
+    return "sha256:" + hashlib.sha256(str(token).encode("utf-8", "replace")).hexdigest()
+
+
+def carregar_perfis(cfg):
+    """{nome: perfil normalizado}. Arquivo ausente ou vazio = {} (modo de uma pessoa só). Formato ruim = ErroPerfis.
+    Dois perfis nunca podem apontar para a mesma instância nem para o mesmo arquivo de estado: seria misturar pessoas."""
+    try:
+        with open(cfg.perfis_arquivo, encoding="utf-8") as f:
+            bruto = f.read()
+    except OSError:
+        return {}
+    if not bruto.strip():
+        return {}
+    try:
+        doc = json.loads(bruto)
+    except ValueError:
+        raise ErroPerfis(f"{os.path.basename(cfg.perfis_arquivo)} não é um JSON válido. Correção: compare com perfis.exemplo.json.") from None
+    perfis_brutos = doc.get("perfis") if isinstance(doc, dict) else None
+    if not isinstance(perfis_brutos, dict):
+        raise ErroPerfis('perfis.json precisa ter o formato {"perfis": {"nome": {...}}} (veja perfis.exemplo.json).')
+    out, instancias, estados = {}, {}, {}
+    for nome, p in perfis_brutos.items():
+        if not PERFIL_RE.match(str(nome)):
+            raise ErroPerfis(f"nome de perfil `{str(nome)[:40]}` inválido: use letras minúsculas, números, - ou _ (começando por letra).")
+        if not isinstance(p, dict):
+            raise ErroPerfis(f"perfil `{nome}`: precisa ser um objeto.")
+        inst = str(p.get("instancia") or "")
+        if not INSTANCIA_RE.match(inst):
+            raise ErroPerfis(f"perfil `{nome}`: `instancia` ausente ou inválida (letras, números, . _ -).")
+        th = p.get("token_hash")
+        if th is not None and not (isinstance(th, str) and HASH_RE.match(th)):
+            raise ErroPerfis(f"perfil `{nome}`: `token_hash` precisa ser `sha256:` e 64 hexadecimais (gerado por `perfil-novo`).")
+        perm = p.get("permitidos") or []
+        if isinstance(perm, str):
+            perm = [x for x in re.split(r"[,;\n]+", perm) if x.strip()]
+        if not isinstance(perm, list):
+            raise ErroPerfis(f"perfil `{nome}`: `permitidos` precisa ser uma lista.")
+        estado = str(p.get("estado") or f"estado-{nome}.db")
+        if not os.path.isabs(estado):
+            estado = os.path.join(cfg.dados, estado)
+        estado = os.path.abspath(estado)
+        if inst in instancias:
+            raise ErroPerfis(f"os perfis `{instancias[inst]}` e `{nome}` usam a mesma instância; cada pessoa precisa da sua.")
+        if estado in estados:
+            raise ErroPerfis(f"os perfis `{estados[estado]}` e `{nome}` usam o mesmo arquivo de estado; cada pessoa precisa do seu.")
+        instancias[inst], estados[estado] = nome, nome
+        out[nome] = {"nome": nome, "instancia": inst, "token_hash": th, "permitidos": [str(x).strip() for x in perm],
+                     "teto_dia": _inteiro(p.get("teto_dia"), cfg.teto_dia), "intervalo_s": _decimal(p.get("intervalo_s"), cfg.intervalo_s),
+                     "estado": estado}
+    return out
+
+
+def cfg_do_perfil(base, p):
+    """Cópia da configuração com TUDO que é da pessoa trocado: instância, lista, teto, intervalo, estado.
+    Em perfil, lista vazia significa ninguém (o inverso do modo antigo): conta de outra pessoa nasce fechada."""
+    c = copy.copy(base)
+    c.perfil, c.erro_perfil = p["nome"], None
+    c.instancia, c.estado = p["instancia"], p["estado"]
+    c.teto_dia, c.intervalo_s = p["teto_dia"], p["intervalo_s"]
+    c.permitidos, c.permitidos_definida = permitidos_de(p["permitidos"]), True
+    return c
+
+
+def gravar_perfis(cfg, perfis_brutos):
+    """Grava perfis.json por arquivo temporário + rename (nunca meio escrito), modo 600."""
+    caminho = cfg.perfis_arquivo
+    tmp = caminho + ".novo"
+    _escrever_privado(tmp, json.dumps({"perfis": perfis_brutos}, indent=2, ensure_ascii=False) + "\n")
+    os.replace(tmp, caminho)
+
+
+def perfis_brutos(cfg):
+    try:
+        with open(cfg.perfis_arquivo, encoding="utf-8") as f:
+            texto = f.read()
+        return (json.loads(texto).get("perfis") if texto.strip() else None) or {}
+    except (OSError, ValueError, AttributeError):
+        return {}
+
+
+class Registro:
+    """Quem é cada perfil e o servidor MCP DELE. O perfil sai do token da conexão, nunca de argumento do modelo.
+    Recarrega o perfis.json quando ele muda (perfil novo/removido vale sem reiniciar)."""
+
+    def __init__(self, cfg, log):
+        self.cfg, self.log = cfg, log
+        self.trava = threading.RLock()
+        self.perfis, self._marca, self._servidores = {}, "nunca", {}
+        self.atualizar()
+
+    def _marca_arquivo(self):
+        try:
+            st = os.stat(self.cfg.perfis_arquivo)
+            return (st.st_mtime_ns, st.st_size)
+        except OSError:
+            return None
+
+    def atualizar(self):
+        with self.trava:
+            marca = self._marca_arquivo()
+            if marca == self._marca:
+                return
+            try:
+                novos = carregar_perfis(self.cfg)
+            except ErroPerfis as e:
+                self.log(f"perfis.json inválido, mantendo os perfis anteriores: {e}")
+                self._marca = marca
+                return
+            for nome in list(self._servidores):   # perfil removido ou alterado: o servidor antigo (e o banco aberto) sai
+                if nome not in novos or novos[nome] != self.perfis.get(nome):
+                    srv = self._servidores.pop(nome)
+                    try:
+                        if srv._w is not None:
+                            srv._w.fechar()
+                    except Exception:  # noqa: BLE001
+                        pass
+            self.perfis, self._marca = novos, marca
+
+    def identificar(self, token):
+        """Nome do perfil dono do token, ou None. Percorre TODOS os perfis e compara em tempo constante,
+        para o tempo de resposta não revelar quantos caracteres do token estavam certos nem qual perfil existe."""
+        self.atualizar()
+        h = hashlib.sha256(str(token or "")[:MAX_TOKEN].encode("utf-8", "replace")).hexdigest()
+        achado = None
+        for nome, p in list(self.perfis.items()):
+            alvo = (p["token_hash"] or "sha256:" + "0" * 64)[7:]
+            if hmac.compare_digest(h, alvo) and p["token_hash"]:
+                achado = nome
+        return achado
+
+    def servidor(self, nome):
+        with self.trava:
+            self.atualizar()
+            if nome not in self.perfis:
+                return None
+            if nome not in self._servidores:
+                self._servidores[nome] = Servidor(cfg_do_perfil(self.cfg, self.perfis[nome]),
+                                                  Log(self.cfg.chave, perfil=nome))
+            return self._servidores[nome]
+
+
+def resolver_perfil_stdio(cfg):
+    """Modo stdio: o perfil vem do ambiente do processo (WHATSAPP_PERFIL_ATUAL, escrito pelo dono na configuração do
+    Claude Desktop), nunca do modelo. Com perfis.json presente e sem perfil escolhido, NÃO cai no modo antigo:
+    poderia falar com o WhatsApp da pessoa errada."""
+    try:
+        perfis = carregar_perfis(cfg)
+    except ErroPerfis as e:
+        cfg.erro_perfil = str(e)
+        return cfg
+    if cfg.perfil_atual:
+        if cfg.perfil_atual not in perfis:
+            cfg.erro_perfil = (f"O perfil `{cfg.perfil_atual[:40]}` (WHATSAPP_PERFIL_ATUAL) não existe em perfis.json. "
+                               "Correção: rode `python3 server.py perfis` e use um dos nomes listados.")
+            return cfg
+        return cfg_do_perfil(cfg, perfis[cfg.perfil_atual])
+    if perfis:
+        cfg.erro_perfil = ("Existe perfis.json, mas o processo não diz de quem é. Correção: defina WHATSAPP_PERFIL_ATUAL=<nome> "
+                           "no `env` do Claude Desktop (um processo por pessoa).")
+    return cfg
+
+
+# ---------------------------------------------------------------- acesso: convites de uso único e sessões da página
+
+ESQUEMA_ACESSO = """
+create table if not exists convites (hash text primary key, perfil text not null, criado real not null,
+    expira real not null, usado_em real);
+"""
+
+
+class Acesso:
+    """Convites (só o hash fica em disco). Compartilhado entre o comando `convite` e o servidor HTTP."""
+
+    def __init__(self, cfg):
+        os.makedirs(cfg.dados, exist_ok=True, mode=0o700)
+        caminho = os.path.join(cfg.dados, "acesso.db")
+        self.trava = threading.RLock()
+        self.db = sqlite3.connect(caminho, isolation_level=None, check_same_thread=False, timeout=10)
+        self.db.executescript(ESQUEMA_ACESSO)
+        try:
+            os.chmod(caminho, 0o600)
+        except OSError:
+            pass
+
+    @staticmethod
+    def _h(token):
+        return hashlib.sha256(str(token)[:MAX_TOKEN].encode("utf-8", "replace")).hexdigest()
+
+    def criar_convite(self, perfil, horas=VALIDADE_CONVITE_H):
+        token = "wmc_" + secrets.token_urlsafe(32)
+        agora = time.time()
+        with self.trava:
+            self.db.execute("insert into convites(hash, perfil, criado, expira) values(?,?,?,?)",
+                            (self._h(token), perfil, agora, agora + horas * 3600))
+        return token
+
+    def vigente(self, token):
+        """Só olha (não consome): serve para a página mostrar o botão sem queimar o link."""
+        with self.trava:
+            r = self.db.execute("select perfil from convites where hash=? and usado_em is null and expira>?",
+                                (self._h(token), time.time())).fetchone()
+        return r[0] if r else None
+
+    def consumir(self, token):
+        """Uso único, atômico: a 2ª tentativa (ou a corrida de duas) devolve None."""
+        with self.trava:
+            agora = time.time()
+            h = self._h(token)
+            cur = self.db.execute("update convites set usado_em=? where hash=? and usado_em is null and expira>?", (agora, h, agora))
+            if cur.rowcount != 1:
+                return None
+            return self.db.execute("select perfil from convites where hash=?", (h,)).fetchone()[0]
+
+    def pendentes(self, perfil):
+        with self.trava:
+            return self.db.execute("select count(*) from convites where perfil=? and usado_em is null and expira>?",
+                                   (perfil, time.time())).fetchone()[0]
+
+    def apagar_perfil(self, perfil):
+        with self.trava:
+            self.db.execute("delete from convites where perfil=?", (perfil,))
+
+
+# ---------------------------------------------------------------- páginas (HTML sem JavaScript, CSP fechada)
+
+CSS = """
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#f4f6f8;color:#14202b;margin:0;padding:16px;
+font-size:20px;line-height:1.5}
+main{max-width:36rem;margin:0 auto;background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 10px #0002}
+h1{font-size:1.5rem;margin-top:0}h2{font-size:1.2rem;margin-bottom:.3rem}
+.estado{font-size:1.7rem;font-weight:700;padding:16px;border-radius:12px;text-align:center;margin:16px 0}
+.ok{background:#d9f5e1;color:#0b5a25}.nao{background:#fde2e2;color:#8a1010}.espera{background:#fff1cc;color:#6b4a00}
+img.qr{display:block;margin:12px auto;width:min(100%,320px);height:auto;image-rendering:pixelated;border:8px solid #fff;outline:1px solid #ccd}
+.botao{display:block;width:100%;box-sizing:border-box;min-height:64px;font-size:1.3rem;font-weight:700;border:0;border-radius:14px;
+padding:14px;margin:12px 0;cursor:pointer;text-align:center;text-decoration:none;color:#fff;background:#1769c9}
+.botao.perigo{background:#b3261e}.botao.claro{background:#e3e8ee;color:#14202b}
+.aviso{background:#fff7e0;border-left:6px solid #e0a100;padding:12px 16px;border-radius:8px;font-size:1rem}
+ul{padding-left:1.2rem}li{margin:.2rem 0}small,.peq{font-size:.95rem;color:#44525f}
+"""
+CSP_PAGINA = ("default-src 'none'; img-src data:; style-src 'sha256-" +
+              base64.b64encode(hashlib.sha256(CSS.encode()).digest()).decode() +
+              "'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'")
+
+
+def _pagina(titulo, corpo, atualizar_s=None):
+    meta = f'<meta http-equiv="refresh" content="{atualizar_s}">' if atualizar_s else ""
+    return ('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">'
+            '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            f'<meta name="robots" content="noindex,nofollow">{meta}<title>{html.escape(titulo)}</title>'
+            f"<style>{CSS}</style></head><body><main>{corpo}</main></body></html>").encode("utf-8")
+
+
+def pagina_sem_acesso():
+    return _pagina("Link não vale mais", "<h1>Este link não vale mais</h1>"
+                   "<p>Ele já foi usado, venceu, ou está errado.</p>"
+                   "<p>Peça um link novo para quem mandou este.</p>")
+
+
+def pagina_convite(token, perfil):
+    # O link só MOSTRA um botão. Quem queima o convite é o clique (POST): aplicativos de conversa abrem links sozinhos
+    # para fazer pré-visualização, e isso gastaria o link único antes de a pessoa chegar.
+    return _pagina("Ligar o WhatsApp", (
+        f"<h1>Olá! Vamos ligar o seu WhatsApp</h1><p>Este é o seu link pessoal. Ele serve <b>uma vez só</b>.</p>"
+        "<p>Vai levar menos de 2 minutos. Deixe o celular com o WhatsApp na mão.</p>"
+        f'<form method="post" action="/convite/{html.escape(token, quote=True)}">'
+        '<button class="botao" type="submit">Começar</button></form>'
+        '<p class="peq">Se você não estava esperando isto, feche esta página. Nada acontece.</p>'))
+
+
+def pagina_conectar(perfil, situacao, qr=None, csrf="", teto=None):
+    """situacao: 'conectado' | 'desconectado' | 'indisponivel'."""
+    if situacao == "conectado":
+        topo = '<div class="estado ok">Conectado ✅</div><p>Seu WhatsApp está ligado ao assistente. Não precisa fazer mais nada.</p>'
+    elif situacao == "indisponivel":
+        topo = ('<div class="estado espera">Aguarde um pouco…</div><p>O serviço não respondeu agora. '
+                'Esta página tenta de novo sozinha a cada 5 segundos.</p>')
+    else:
+        topo = '<div class="estado nao">Desconectado</div>'
+        if qr:
+            topo += ('<h2>Como ligar</h2><ol><li>Abra o <b>WhatsApp</b> no celular.</li>'
+                     '<li>Toque nos três pontinhos (ou em <b>Configurações</b>) e depois em <b>Aparelhos conectados</b>.</li>'
+                     '<li>Toque em <b>Conectar um aparelho</b>.</li><li>Aponte a câmera para o quadrado abaixo.</li></ol>'
+                     f'<img class="qr" alt="Código para ler com o WhatsApp" src="{html.escape(qr, quote=True)}">'
+                     '<p class="peq">O quadrado muda sozinho. Se não der certo, espere 5 segundos e tente de novo.</p>')
+        else:
+            topo += '<p>Estou preparando o código para você ler. Esta página atualiza sozinha a cada 5 segundos.</p>'
+    limite = f" Por dia, no máximo {int(teto)} mensagens." if teto else ""
+    return _pagina("Ligar o WhatsApp ao assistente", (
+        "<h1>Ligar o WhatsApp ao assistente</h1>" + topo +
+        "<h2>O que o assistente pode fazer</h2><ul>"
+        "<li>Ver os nomes dos seus contatos e grupos.</li>"
+        "<li>Ler as últimas mensagens de uma conversa, <b>se você pedir</b>.</li>"
+        "<li>Mandar mensagem <b>só quando você mandar e confirmar</b>, e <b>só para os números que foram liberados</b>."
+        f"{limite}</li></ul>"
+        "<h2>O que ele não faz</h2><ul>"
+        "<li>Não manda nada por conta própria.</li>"
+        "<li>Não manda para número que não foi liberado.</li>"
+        "<li>Não guarda o texto das suas mensagens. Fica só o dia, a hora e o número escondido (+55 48 9****-1234).</li>"
+        "<li>Nunca diz que a mensagem \"chegou\": só diz se o WhatsApp aceitou.</li></ul>"
+        '<div class="aviso"><b>Atenção:</b> esta ligação <b>não é oficial</b> do WhatsApp. Em casos raros o WhatsApp '
+        "pode bloquear o número. Você pode desligar quando quiser, aqui embaixo ou no celular, em "
+        "<b>Aparelhos conectados</b>.</div>"
+        '<a class="botao perigo" href="/desconectar">Desconectar meu WhatsApp</a>'
+        f'<p class="peq">Perfil: {html.escape(perfil)}</p>'), atualizar_s=5)
+
+
+def pagina_desconectar(csrf):
+    campo = f'<input type="hidden" name="csrf" value="{html.escape(csrf, quote=True)}">'
+    return _pagina("Desconectar", (
+        "<h1>Desconectar o WhatsApp?</h1><p>O assistente deixa de enxergar o seu WhatsApp agora. "
+        "Para ligar de novo, será preciso ler o código outra vez.</p>"
+        f'<form method="post" action="/desconectar">{campo}<button class="botao perigo" type="submit">Sim, desconectar</button></form>'
+        '<a class="botao claro" href="/conectar">Não, voltar</a>'))
+
+
+def pagina_desconectado_ok():
+    return _pagina("Desconectado", '<h1>Pronto, desconectado</h1><p>O assistente não enxerga mais o seu WhatsApp.</p>'
+                   '<a class="botao claro" href="/conectar">Ligar de novo</a>')
+
+
+# ---------------------------------------------------------------- transporte HTTP (MCP Streamable HTTP, só POST + JSON)
+
+MAX_SESSOES_MCP = 500
+COOKIE = "wm_sessao"
+
+
+def _token_do_cabecalho(valor):
+    if not valor:
+        return None
+    partes = valor.strip().split(None, 1)
+    if len(partes) == 2 and partes[0].lower() == "bearer":
+        return partes[1].strip()
+    return None
+
+
+class AppHTTP:
+    def __init__(self, cfg, registro, acesso, log):
+        self.cfg, self.registro, self.acesso, self.log = cfg, registro, acesso, log
+        self.mcp = {}      # id da sessão MCP -> perfil
+        self.web = {}      # hash do cookie -> {"perfil", "csrf", "expira"}
+        self.trava = threading.Lock()
+
+    # -- sessões MCP (simples: só amarram o id ao perfil que o abriu)
+    def abrir_sessao_mcp(self, perfil):
+        sid = secrets.token_urlsafe(24)
+        with self.trava:
+            if len(self.mcp) >= MAX_SESSOES_MCP:
+                self.mcp.pop(next(iter(self.mcp)))
+            self.mcp[sid] = perfil
+        return sid
+
+    def sessao_mcp_vale(self, sid, perfil):
+        with self.trava:
+            return self.mcp.get(sid) == perfil
+
+    def fechar_sessao_mcp(self, sid, perfil):
+        with self.trava:
+            if self.mcp.get(sid) == perfil:
+                del self.mcp[sid]
+                return True
+        return False
+
+    # -- sessões da página (cookie curto, depois do convite)
+    def abrir_sessao_web(self, perfil):
+        cookie, csrf = secrets.token_urlsafe(32), secrets.token_urlsafe(16)
+        with self.trava:
+            agora = time.time()
+            for k in [k for k, v in self.web.items() if v["expira"] < agora]:
+                del self.web[k]
+            self.web[hashlib.sha256(cookie.encode()).hexdigest()] = {"perfil": perfil, "csrf": csrf, "expira": agora + self.cfg.sessao_s}
+        return cookie, csrf
+
+    def sessao_web(self, cookie):
+        if not cookie:
+            return None
+        with self.trava:
+            s = self.web.get(hashlib.sha256(cookie[:MAX_TOKEN].encode("utf-8", "replace")).hexdigest())
+            if s and s["expira"] >= time.time() and s["perfil"] in self.registro.perfis:
+                return s
+        return None
+
+
+def criar_http(cfg, registro, acesso, log, host, porta):
+    app = AppHTTP(cfg, registro, acesso, log)
+
+    class H(BaseHTTPRequestHandler):
+        timeout = 30                     # conexão parada não prende o servidor
+        server_version = "whatsapp-mcp"
+        sys_version = ""
+
+        def log_message(self, *a):       # o registro padrão imprimiria a URL (o convite está nela)
+            pass
+
+        # -- respostas
+        def _rota_log(self):
+            c = self.path.split("?", 1)[0]
+            return "/convite/***" if c.startswith("/convite/") else c[:60]
+
+        def _enviar(self, status, corpo, tipo, extra=None):
+            self.send_response(status)
+            self.send_header("Content-Type", tipo)
+            self.send_header("Content-Length", str(len(corpo)))
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.send_header("Referrer-Policy", "no-referrer")
+            self.send_header("X-Frame-Options", "DENY")
+            for k, v in (extra or {}).items():
+                self.send_header(k, v)
+            self.end_headers()
+            if self.command != "HEAD":
+                self.wfile.write(corpo)
+            log(f"http {self.command} {self._rota_log()} -> {status}")
+
+        def _json(self, status, obj, extra=None):
+            self._enviar(status, json.dumps(obj, ensure_ascii=False).encode(), "application/json; charset=utf-8", extra)
+
+        def _html(self, status, corpo, extra=None):
+            h = {"Content-Security-Policy": CSP_PAGINA}
+            h.update(extra or {})
+            self._enviar(status, corpo, "text/html; charset=utf-8", h)
+
+        def _nao_autorizado(self):
+            # Mesma resposta para "sem token" e "token errado": nada que diga se o perfil existe.
+            self._json(401, {"erro": "não autorizado"}, {"WWW-Authenticate": 'Bearer realm="whatsapp-mcp"'})
+
+        # -- verificações comuns
+        def _origem_ok(self):
+            host = (self.headers.get("Host") or "").lower()
+            if cfg.http_hosts and host not in cfg.http_hosts:
+                return False
+            origem = self.headers.get("Origin")
+            if origem is None:
+                return True    # cliente de servidor (conector do Claude) e curl não mandam Origin
+            return urllib.parse.urlsplit(origem).netloc.lower() == host and bool(host)   # só a própria página; CORS fechado
+
+        def _perfil_bearer(self):
+            t = _token_do_cabecalho(self.headers.get("Authorization"))
+            return registro.identificar(t) if t else None
+
+        def _perfil_web(self):
+            """(perfil, sessao|None). Cabeçalho Bearer vale; senão cookie. O token longo NUNCA é aceito na URL."""
+            p = self._perfil_bearer()
+            if p:
+                return p, None
+            try:
+                c = SimpleCookie(self.headers.get("Cookie") or "")
+                s = app.sessao_web(c[COOKIE].value if COOKIE in c else None)
+            except Exception:  # noqa: BLE001
+                s = None
+            return (s["perfil"], s) if s else (None, None)
+
+        def _ler_corpo(self, limite):
+            if self.headers.get("Transfer-Encoding"):
+                self._json(411, {"erro": "envie Content-Length"})
+                return None
+            bruto = self.headers.get("Content-Length")
+            if bruto is None or not bruto.isdigit():
+                self._json(411, {"erro": "envie Content-Length"})
+                return None
+            n = int(bruto)
+            if n > limite:
+                self._json(413, {"erro": f"corpo maior que {limite} bytes"})
+                return None
+            return self.rfile.read(n)
+
+        # -- despacho
+        def _tratar(self):
+            if not self._origem_ok():
+                return self._json(403, {"erro": "origem não permitida"})
+            caminho, m = self.path.split("?", 1)[0], self.command
+            try:
+                if caminho == "/mcp":
+                    return self._mcp(m)
+                if caminho == "/saude" and m == "GET":
+                    return self._json(200, {"ok": True})
+                if caminho.startswith("/convite/") and m in ("GET", "POST"):
+                    return self._convite(m, caminho[len("/convite/"):])
+                if caminho == "/conectar" and m == "GET":
+                    return self._conectar()
+                if caminho == "/desconectar" and m in ("GET", "POST"):
+                    return self._desconectar(m)
+            except (BrokenPipeError, ConnectionResetError):
+                return
+            except Exception as e:  # noqa: BLE001
+                log(f"erro interno no HTTP: {type(e).__name__}")
+                return self._json(500, {"erro": "erro interno"})
+            self._json(404, {"erro": "não encontrado"})
+
+        do_GET = do_POST = do_DELETE = do_OPTIONS = do_PUT = do_PATCH = do_HEAD = _tratar
+
+        # -- /mcp
+        def _mcp(self, metodo):
+            if metodo not in ("POST", "DELETE"):
+                return self._json(405, {"erro": "use POST"}, {"Allow": "POST, DELETE"})   # OPTIONS/GET: sem CORS, sem SSE
+            perfil = self._perfil_bearer()
+            if not perfil:
+                return self._nao_autorizado()      # antes de ler o corpo: quem não tem token não gasta memória nossa
+            sid = self.headers.get("Mcp-Session-Id")
+            if metodo == "DELETE":
+                if sid and app.fechar_sessao_mcp(sid, perfil):
+                    return self._enviar(204, b"", "application/json")
+                return self._json(404, {"erro": "sessão desconhecida"})
+            corpo = self._ler_corpo(cfg.http_max_corpo)
+            if corpo is None:
+                return
+            if sid and not app.sessao_mcp_vale(sid, perfil):   # sessão de OUTRO perfil também cai aqui
+                return self._json(404, {"jsonrpc": "2.0", "id": None, "error": {"code": -32001, "message": "sessão desconhecida; inicialize de novo"}})
+            try:
+                msg = json.loads(corpo.decode("utf-8"))
+            except (ValueError, UnicodeDecodeError):
+                return self._json(400, {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": "JSON inválido"}})
+            srv = registro.servidor(perfil)
+            if srv is None:
+                return self._nao_autorizado()
+            extra = {}
+            if isinstance(msg, list):
+                resps = [r for r in (srv.tratar(x) for x in msg) if r is not None]
+                resp = resps or None
+            else:
+                resp = srv.tratar(msg)
+                if isinstance(msg, dict) and msg.get("method") == "initialize" and resp and "result" in resp:
+                    extra["Mcp-Session-Id"] = app.abrir_sessao_mcp(perfil)
+            if resp is None:
+                return self._enviar(202, b"", "application/json", extra)
+            self._json(200, resp, extra)
+
+        # -- página de conexão
+        def _convite(self, metodo, token):
+            if not re.fullmatch(r"[A-Za-z0-9_-]{10,100}", token):
+                return self._html(410, pagina_sem_acesso())
+            if metodo == "GET":
+                p = acesso.vigente(token)
+                return self._html(200, pagina_convite(token, p)) if p else self._html(410, pagina_sem_acesso())
+            p = acesso.consumir(token)
+            registro.atualizar()
+            if not p or p not in registro.perfis:
+                return self._html(410, pagina_sem_acesso())
+            cookie, _csrf = app.abrir_sessao_web(p)
+            seguro = cfg.cookie_secure or (self.headers.get("X-Forwarded-Proto") or "").lower() == "https"
+            atributos = f"{COOKIE}={cookie}; Path=/; HttpOnly; SameSite=Strict; Max-Age={int(cfg.sessao_s)}" + ("; Secure" if seguro else "")
+            self._enviar(303, b"", "text/plain; charset=utf-8", {"Location": "/conectar", "Set-Cookie": atributos})
+
+        def _conectar(self):
+            perfil, _s = self._perfil_web()
+            if not perfil:
+                return self._html(401, pagina_sem_acesso())
+            srv = registro.servidor(perfil)
+            if srv is None:
+                return self._html(401, pagina_sem_acesso())
+            w, pf = srv.w, registro.perfis[perfil]
+            try:
+                est = w.estado()
+                if est.get("conectada"):
+                    return self._html(200, pagina_conectar(perfil, "conectado", teto=pf["teto_dia"]))
+                out = w.conectar({})
+                if out.get("conectada"):
+                    return self._html(200, pagina_conectar(perfil, "conectado", teto=pf["teto_dia"]))
+                qr = out.get("qr_data_uri")
+                if isinstance(qr, str) and not qr.startswith("data:image/"):
+                    qr = None
+                return self._html(200, pagina_conectar(perfil, "desconectado", qr=qr, teto=pf["teto_dia"]))
+            except ErroFerramenta:
+                return self._html(200, pagina_conectar(perfil, "indisponivel", teto=pf["teto_dia"]))
+
+        def _desconectar(self, metodo):
+            perfil, sessao = self._perfil_web()
+            if not perfil:
+                return self._html(401, pagina_sem_acesso())
+            if metodo == "GET":
+                return self._html(200, pagina_desconectar(sessao["csrf"] if sessao else ""))
+            if sessao is not None:        # com cookie, exige o selo da própria página (outro site não consegue enviar)
+                corpo = self._ler_corpo(2048)
+                if corpo is None:
+                    return
+                enviado = (urllib.parse.parse_qs(corpo.decode("utf-8", "replace")).get("csrf") or [""])[0]
+                if not hmac.compare_digest(enviado, sessao["csrf"]):
+                    return self._html(403, _pagina("Não foi possível", "<h1>Não foi possível desconectar</h1><p>Volte e tente de novo.</p>"
+                                                    '<a class="botao claro" href="/conectar">Voltar</a>'))
+            srv = registro.servidor(perfil)
+            try:
+                srv.w.desconectar()
+            except ErroFerramenta:
+                return self._html(502, _pagina("Não foi possível", "<h1>Não consegui desconectar agora</h1>"
+                                               "<p>Tente de novo em instantes, ou desligue no celular em <b>Aparelhos conectados</b>.</p>"
+                                               '<a class="botao claro" href="/conectar">Voltar</a>'))
+            self._html(200, pagina_desconectado_ok())
+
+    class Servidor_(ThreadingHTTPServer):
+        daemon_threads = True
+        request_queue_size = 32
+
+    return Servidor_((host, porta), H)
+
+
+def http_servir(cfg, args, p=print):
+    host, porta = "127.0.0.1", _inteiro(os.environ.get("WHATSAPP_HTTP_PORTA"), 8787)
+    host = os.environ.get("WHATSAPP_HTTP_HOST") or host
+    for i, a in enumerate(args):
+        if a == "--porta" and i + 1 < len(args):
+            porta = _inteiro(args[i + 1], porta)
+        if a == "--host" and i + 1 < len(args):
+            host = args[i + 1]
+    log = Log(cfg.chave)
+    try:
+        perfis = carregar_perfis(cfg)
+    except ErroPerfis as e:
+        p(f"[FALHA] {e}")
+        return 1
+    if not perfis:
+        p("[FALHA] Nenhum perfil em perfis.json. -> Crie um: `python3 server.py perfil-novo <nome>`.")
+        return 1
+    ref = copy.copy(cfg)
+    ref.instancia = ref.instancia or "por-perfil"   # a instância é de cada perfil, não global
+    if ref.problema():
+        p("[FALHA] " + ref.problema())
+        return 1
+    if host not in ("127.0.0.1", "::1", "localhost"):
+        log(f"AVISO: ouvindo em {host}, fora do computador local. Ponha HTTPS (túnel ou proxy) na frente; nunca exponha a porta pura.")
+    srv = criar_http(cfg, Registro(cfg, log), Acesso(cfg), log, host, porta)
+    log(f"escutando em http://{host}:{srv.server_address[1]} ({len(perfis)} perfil(is))")
+    try:
+        srv.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    return 0
+
+
+# ---------------------------------------------------------------- administração (para o dono): perfis, convite, remover
+
+def _opcao(args, nome, padrao=None):
+    for i, a in enumerate(args):
+        if a == nome and i + 1 < len(args):
+            return args[i + 1]
+    return padrao
+
+
+def _estado_evolution(cfg, instancia):
+    """'conectado' | 'desconectado' | 'não existe' | 'sem resposta' (nunca levanta; leitura só)."""
+    try:
+        c = copy.copy(cfg)
+        c.timeout_s = 3.0
+        st, d = Evolution(c).pedir("GET", f"/instance/connectionState/{urllib.parse.quote(instancia, safe='')}")
+    except (Timeout, SemConexao, Ambiguo, RespostaInvalida):
+        return "sem resposta"
+    if st == 404:
+        return "não existe"
+    if st == 200 and isinstance(d, dict):
+        return "conectado" if (d.get("instance") or d).get("state") == "open" else "desconectado"
+    return "sem resposta"
+
+
+def _uso_do_dia(caminho):
+    try:
+        if not os.path.exists(caminho):
+            return 0
+        db = sqlite3.connect(f"file:{caminho}?mode=ro", uri=True, timeout=5)
+        try:
+            r = db.execute("select usados from uso where data=?", (date.today().isoformat(),)).fetchone()
+        finally:
+            db.close()
+        return r[0] if r else 0
+    except sqlite3.Error:
+        return 0
+
+
+def cmd_perfis(cfg, p=print):
+    try:
+        perfis = carregar_perfis(cfg)
+    except ErroPerfis as e:
+        p(f"[FALHA] {e}")
+        return 1
+    if not perfis:
+        p("Nenhum perfil. Crie o primeiro: `python3 server.py perfil-novo <nome>`.")
+        return 0
+    acesso = Acesso(cfg)
+    p(f"{len(perfis)} perfil(is) em {os.path.basename(cfg.perfis_arquivo)} (nenhum segredo é mostrado):")
+    for nome, pf in perfis.items():
+        p(f"- {nome}: instância {pf['instancia']}, WhatsApp {_estado_evolution(cfg, pf['instancia'])}, "
+          f"uso hoje {_uso_do_dia(pf['estado'])}/{pf['teto_dia']}, {len(permitidos_de(pf['permitidos']))} número(s) permitido(s), "
+          f"token {'definido' if pf['token_hash'] else 'AUSENTE'}, {acesso.pendentes(nome)} convite(s) pendente(s)")
+    return 0
+
+
+def cmd_perfil_novo(cfg, args, p=print):
+    nome = args[0] if args and not args[0].startswith("--") else ""
+    if not PERFIL_RE.match(nome):
+        p("[FALHA] Uso: python3 server.py perfil-novo <nome> [--permitidos \"48 99123-4567, ...\"] [--teto N] [--intervalo S]\n"
+          "        O nome usa letras minúsculas, números, - ou _ (ex.: edu, mae).")
+        return 2
+    try:
+        perfis = carregar_perfis(cfg)
+    except ErroPerfis as e:
+        p(f"[FALHA] {e}")
+        return 1
+    brutos = perfis_brutos(cfg)
+    if nome in brutos:
+        p(f"[FALHA] O perfil `{nome}` já existe. Nada foi alterado. Para recomeçar: `perfil-remover {nome}`.")
+        return 1
+    token = PREFIXO_TOKEN + secrets.token_urlsafe(32)
+    inst = _opcao(args, "--instancia") or f"{nome}-{secrets.token_hex(3)}"
+    if not INSTANCIA_RE.match(inst) or any(x["instancia"] == inst for x in perfis.values()):
+        p("[FALHA] Instância inválida ou já usada por outro perfil.")
+        return 1
+    novo = {"instancia": inst, "token_hash": hash_token(token),
+            "permitidos": [x.strip() for x in re.split(r"[,;\n]+", _opcao(args, "--permitidos", "")) if x.strip()],
+            "teto_dia": _inteiro(_opcao(args, "--teto"), cfg.teto_dia), "intervalo_s": _decimal(_opcao(args, "--intervalo"), cfg.intervalo_s)}
+    brutos[nome] = novo
+    gravar_perfis(cfg, brutos)
+    p(f"Perfil `{nome}` criado (instância `{inst}`, teto {novo['teto_dia']}/dia).")
+    p("")
+    p("TOKEN (aparece só agora; no arquivo fica apenas o hash. Guarde-o já):")
+    p(token)
+    p("")
+    if not novo["permitidos"]:
+        p("[aviso] Lista de permitidos vazia: neste perfil, vazio significa NINGUÉM. Nada poderá ser enviado até você "
+          f"preencher `permitidos` de `{nome}` em {os.path.basename(cfg.perfis_arquivo)} (ou refazer com --permitidos).")
+    p(f"Próximo passo: `python3 server.py convite {nome}` gera o link para a pessoa ligar o WhatsApp dela.")
+    return 0
+
+
+def cmd_convite(cfg, args, p=print):
+    nome = args[0] if args else ""
+    try:
+        perfis = carregar_perfis(cfg)
+    except ErroPerfis as e:
+        p(f"[FALHA] {e}")
+        return 1
+    if nome not in perfis:
+        p(f"[FALHA] Perfil `{nome[:40]}` não existe. -> `python3 server.py perfis` lista os existentes.")
+        return 1
+    horas = _decimal(_opcao(args, "--validade-horas"), VALIDADE_CONVITE_H) or VALIDADE_CONVITE_H
+    token = Acesso(cfg).criar_convite(nome, horas)
+    base = cfg.url_publica or f"http://127.0.0.1:{_inteiro(os.environ.get('WHATSAPP_HTTP_PORTA'), 8787)}"
+    p(f"Link de convite para `{nome}` (vale {horas:g} h e abre UMA vez; aparece só agora):")
+    p(f"{base}/convite/{token}")
+    if not cfg.url_publica:
+        p("[aviso] WHATSAPP_URL_PUBLICA não definida: o link acima só abre no próprio computador. Defina o endereço HTTPS público.")
+    return 0
+
+
+def cmd_perfil_remover(cfg, args, entrada=None, p=print):
+    entrada = entrada or sys.stdin
+    nome = args[0] if args and not args[0].startswith("--") else ""
+    try:
+        perfis = carregar_perfis(cfg)
+    except ErroPerfis as e:
+        p(f"[FALHA] {e}")
+        return 1
+    if nome not in perfis:
+        p(f"[FALHA] Perfil `{nome[:40]}` não existe. -> `python3 server.py perfis`.")
+        return 1
+    pf = perfis[nome]
+    p(f"Isto vai DESCONECTAR o WhatsApp do perfil `{nome}`, apagar a instância `{pf['instancia']}` na Evolution, "
+      f"o histórico e o contador ({os.path.basename(pf['estado'])}), os convites e o perfil. Não tem volta.")
+    sys.stdout.write(f"Para confirmar, digite o nome do perfil ({nome}): ")
+    sys.stdout.flush()
+    if entrada.readline().strip() != nome:
+        p("Confirmação diferente do nome. Nada foi apagado.")
+        return 1
+    inst = urllib.parse.quote(pf["instancia"], safe="")
+    ev = Evolution(cfg)
+    ignorar = "--ignorar-evolution" in args
+    for rotulo, caminho in (("desconectar", f"/instance/logout/{inst}"), ("apagar instância", f"/instance/delete/{inst}")):
+        try:
+            st, _ = ev.pedir("DELETE", caminho, estrito=False)
+            falhou = st >= 300 and st != 404
+        except (Timeout, SemConexao, Ambiguo, RespostaInvalida) as e:
+            st, falhou = type(e).__name__, True
+        if falhou and not ignorar and rotulo == "desconectar":
+            p(f"[FALHA] Não consegui {rotulo} na Evolution ({st}). Nada local foi apagado, para a conta não ficar ligada sem dono. "
+              "-> Suba a Evolution e repita, ou use --ignorar-evolution (e depois desligue em Aparelhos conectados no celular).")
+            return 1
+        p(("[aviso] " if falhou else "[ok]    ") + f"{rotulo}: " + (f"não confirmado ({st}); confira na Evolution" if falhou else "feito"))
+    for suf in ("", "-wal", "-shm", "-journal"):
+        try:
+            os.remove(pf["estado"] + suf)
+        except OSError:
+            pass
+    Acesso(cfg).apagar_perfil(nome)
+    brutos = perfis_brutos(cfg)
+    brutos.pop(nome, None)
+    gravar_perfis(cfg, brutos)
+    p(f"[ok]    histórico, convites e perfil `{nome}` apagados. Peça à pessoa para conferir em WhatsApp > Aparelhos conectados.")
+    return 0
+
+
+def doctor_perfis(cfg, perfis, p=print):
+    """Checa a Evolution uma vez e, em seguida, CADA perfil (instância, estado gravável, lista, token). 0 = sem bloqueio."""
+    bloqueios = []
+
+    def passo(ok, texto, correcao=None, aviso=False):
+        p(("[ok]    " if ok else "[aviso] " if aviso else "[FALHA] ") + texto)
+        if not ok and correcao:
+            p("        -> " + correcao)
+        if not ok and not aviso:
+            bloqueios.append(texto)
+
+    p(f"whatsapp-mcp {VERSAO}: diagnóstico de {len(perfis)} perfil(is)")
+    passo(sys.version_info >= (3, 9), f"Python {sys.version_info.major}.{sys.version_info.minor}", "Instale Python 3.9 ou mais novo.")
+    passo(cfg.backend == "evolution", f"backend: {cfg.backend}", cfg.problema())
+    for nome, valor in (("EVOLUTION_URL", cfg.url), ("EVOLUTION_API_KEY", cfg.chave)):
+        extra = f" (tamanho: {len(valor)})" if nome.endswith("KEY") and valor else (f" = {valor}" if valor else "")
+        passo(bool(valor), f"{nome} definida{extra}" if valor else f"{nome} não definida",
+              "Rode `python3 server.py configurar` ou defina no .env.")
+    evolution_ok = False
+    if cfg.url and cfg.chave and cfg.url.startswith(("http://", "https://")):
+        try:
+            st, _ = Evolution(cfg).pedir("GET", "/", estrito=False)
+            evolution_ok = st < 500
+            passo(evolution_ok, f"a Evolution responde em {cfg.url} (HTTP {st})", "Veja `docker compose logs api`.")
+        except (Timeout, SemConexao, Ambiguo, RespostaInvalida) as e:
+            passo(False, f"a Evolution não respondeu ({type(e).__name__})", "Suba a Evolution: `python3 server.py subir`.")
+    for nome, pf in perfis.items():
+        p(f"-- perfil {nome}")
+        passo(bool(pf["token_hash"]), "token definido (hash guardado)" if pf["token_hash"] else "sem token",
+              "Sem token este perfil não entra por HTTP. Refaça com `perfil-remover` e `perfil-novo`.", aviso=True)
+        try:
+            Armazem(pf["estado"]).db.close()
+            passo(True, f"arquivo de estado gravável ({os.path.basename(pf['estado'])})")
+        except (ErroFerramenta, OSError) as e:
+            passo(False, f"arquivo de estado: {e}", "Confira as permissões da pasta de dados (WHATSAPP_DADOS).")
+        n = len(permitidos_de(pf["permitidos"]))
+        passo(n > 0, f"{n} número(s) permitido(s); teto {pf['teto_dia']}/dia, intervalo {pf['intervalo_s']:g}s",
+              "Lista vazia = o perfil não consegue enviar nada. Preencha `permitidos` em perfis.json.", aviso=True)
+        if evolution_ok:
+            est = _estado_evolution(cfg, pf["instancia"])
+            passo(est == "conectado", f"instância `{pf['instancia']}`: {est}",
+                  f"Mande à pessoa o link: `python3 server.py convite {nome}`.", aviso=True)
+    if bloqueios:
+        p(f"\n{len(bloqueios)} problema(s) a corrigir. Rode `python3 server.py doctor` de novo depois.")
+        return 1
+    p("\nTudo certo para começar. Teste primeiro com simular (o padrão).")
+    return 0
 
 
 # ---------------------------------------------------------------- doctor, configurar, subir
@@ -1178,18 +2074,40 @@ def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     cfg = Config()
     if argv and argv[0] == "doctor":
-        return doctor(cfg)
+        try:
+            perfis = carregar_perfis(cfg)
+        except ErroPerfis as e:
+            print(f"[FALHA] {e}")
+            return 1
+        if cfg.perfil_atual:
+            perfis = {k: v for k, v in perfis.items() if k == cfg.perfil_atual}
+            if not perfis:
+                print(f"[FALHA] O perfil `{cfg.perfil_atual[:40]}` (WHATSAPP_PERFIL_ATUAL) não existe em perfis.json.")
+                return 1
+        return doctor_perfis(cfg, perfis) if perfis else doctor(cfg)
     if argv and argv[0] == "configurar":
         return configurar(argv[1:])
     if argv and argv[0] == "subir":
         return subir(cfg, argv[1:])
+    if argv and argv[0] == "http":
+        return http_servir(cfg, argv[1:])
+    if argv and argv[0] == "perfis":
+        return cmd_perfis(cfg)
+    if argv and argv[0] == "perfil-novo":
+        return cmd_perfil_novo(cfg, argv[1:])
+    if argv and argv[0] == "perfil-remover":
+        return cmd_perfil_remover(cfg, argv[1:])
+    if argv and argv[0] == "convite":
+        return cmd_convite(cfg, argv[1:])
     if argv and argv[0] in ("--versao", "--version"):
         print(VERSAO)
         return 0
     if argv:
-        print("Uso: python3 server.py [doctor | configurar | subir]   (sem argumento: servidor MCP por stdio)")
+        print("Uso: python3 server.py [doctor | configurar | subir | http | perfis | perfil-novo <nome> | "
+              "perfil-remover <nome> | convite <perfil>]   (sem argumento: servidor MCP por stdio)")
         return 2
-    log = Log(cfg.chave)
+    cfg = resolver_perfil_stdio(cfg)
+    log = Log(cfg.chave, perfil=cfg.perfil)
     problema = cfg.problema()
     if problema:
         log("aviso: " + problema)
