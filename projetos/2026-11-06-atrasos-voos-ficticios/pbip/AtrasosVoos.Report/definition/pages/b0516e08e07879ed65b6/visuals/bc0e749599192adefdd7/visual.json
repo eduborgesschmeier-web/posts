@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "bc0e749599192adefdd7",
   "position": {
-    "x": 200,
-    "y": 84,
+    "x": 216,
+    "y": 104,
     "z": 20,
-    "height": 290,
-    "width": 820,
+    "height": 264,
+    "width": 816,
     "tabOrder": 20
   },
   "visual": {
@@ -23,12 +23,13 @@
                       "Entity": "dim_calendario"
                     }
                   },
-                  "Property": "mes_ano"
+                  "Property": "inicio_mes"
                 }
               },
-              "queryRef": "dim_calendario.mes_ano",
-              "nativeQueryRef": "mes_ano",
-              "active": true
+              "queryRef": "dim_calendario.inicio_mes",
+              "nativeQueryRef": "inicio_mes",
+              "active": true,
+              "displayName": "Mês"
             }
           ]
         },
@@ -84,13 +85,33 @@
       }
     },
     "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Scalar'"
+                }
+              }
+            },
+            "labelAngle": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
       "valueAxis": [
         {
           "properties": {
             "start": {
               "expr": {
                 "Literal": {
-                  "Value": "0D"
+                  "Value": "0.1D"
                 }
               }
             },
@@ -130,7 +151,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#8C7BFF'"
+                      "Value": "'#9AA3AB'"
                     }
                   }
                 }
@@ -148,7 +169,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#F4B24A'"
+                      "Value": "'#F4F7F8'"
                     }
                   }
                 }

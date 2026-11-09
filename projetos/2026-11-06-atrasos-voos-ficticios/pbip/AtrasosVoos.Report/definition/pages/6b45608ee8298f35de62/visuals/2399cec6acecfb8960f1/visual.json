@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "2399cec6acecfb8960f1",
   "position": {
-    "x": 656,
-    "y": 84,
+    "x": 672,
+    "y": 104,
     "z": 21,
-    "height": 380,
-    "width": 608,
+    "height": 348,
+    "width": 584,
     "tabOrder": 21
   },
   "visual": {
@@ -23,12 +23,13 @@
                       "Entity": "dim_calendario"
                     }
                   },
-                  "Property": "mes_ano"
+                  "Property": "inicio_mes"
                 }
               },
-              "queryRef": "dim_calendario.mes_ano",
-              "nativeQueryRef": "mes_ano",
-              "active": true
+              "queryRef": "dim_calendario.inicio_mes",
+              "nativeQueryRef": "inicio_mes",
+              "active": true,
+              "displayName": "Mês"
             }
           ]
         },
@@ -105,7 +106,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#3BE38B'"
+                      "Value": "'#2B8FB3'"
                     }
                   }
                 }
@@ -141,7 +142,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#F4B24A'"
+                      "Value": "'#35C6F4'"
                     }
                   }
                 }

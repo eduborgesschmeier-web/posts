@@ -93,7 +93,7 @@ table _Medidas
 			VAR r = [Taxa de Atraso na Rede]
 			RETURN
 			    IF ( NOT ISBLANK ( t ), ( t - r ) * 100 )
-		formatString: +0.0;-0.0;0.0
+		formatString: +0.0" p.p.";-0.0" p.p.";0.0" p.p."
 		displayFolder: 3 Comparação
 		lineageTag: 63fa9990-f425-5789-9099-6aa26681ce95
 

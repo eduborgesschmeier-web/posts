@@ -43,6 +43,7 @@ table dim_calendario
 
 	column mes_ano
 		dataType: string
+		isHidden
 		lineageTag: a4026c64-22f7-5911-9bee-f7ce690707b0
 		sortByColumn: inicio_mes
 		summarizeBy: none
@@ -58,7 +59,6 @@ table dim_calendario
 	column inicio_mes
 		dataType: dateTime
 		formatString: dd/mm/yyyy
-		isHidden
 		lineageTag: f4e3d390-2b86-53c0-b5dd-ca5e5f5151fe
 		summarizeBy: none
 		sourceColumn: inicio_mes

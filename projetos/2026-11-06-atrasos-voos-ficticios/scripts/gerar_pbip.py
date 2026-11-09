@@ -309,11 +309,16 @@ def visual(pagina, chave, posicao, vis, filtros=None):
     return chave, v
 
 
-# padrão visual Genesis (genesisinnovation.io): preto #05070C, texto #F4F7F8, ciano #35C6F4, verde #3BE38B, roxo #8C7BFF
+# padrão visual Genesis (genesisinnovation.io): só preto, branco e a família do ciano da marca
+# grade de 8 px: margem 24, espaço entre cartões 16, coluna de filtros 176, conteúdo 1040
 BG, CARD, LINHA = "#05070C", "#0A0F16", "#232A31"
-CIANO, VERDE, ROXO, AMBAR = "#35C6F4", "#3BE38B", "#8C7BFF", "#F4B24A"
+CIANO, CIANO_CLARO, CIANO_ESCURO = "#35C6F4", "#BFF0FF", "#2B8FB3"
 TEXTO, MUDO = "#F4F7F8", "#9AA3AB"
 FONTE = "Segoe UI"
+M, G = 24, 16                      # margem e espaço entre cartões
+X0, WC = 216, 1040                 # início e largura da área de conteúdo
+YT, YB = 104, 636                  # topo e fim do corpo
+YN, HN = 652, 44                   # nota de rodapé
 
 
 def titulo(vis, texto):
@@ -355,29 +360,29 @@ def filtro_cat(nome_f, ent, prop, valor_lit):
 
 
 def cabecalho(pg, n, nome_pagina, pergunta):
-    vs = [caixa_texto(pg, "marca", pos(16, 10, 168, 68, 1, 1),
-                      [[("GENESIS", CIANO, True, "13pt")], [("Innovation", MUDO, False, "9pt")]])]
-    vs.append(caixa_texto(pg, "titulo", pos(200, 8, 860, 74, 2, 2),
+    vs = [caixa_texto(pg, "marca", pos(M, 16, 176, 72, 1, 1),
+                      [[("GENESIS", CIANO, True, "14pt")], [("Innovation", MUDO, False, "9pt")]])]
+    vs.append(caixa_texto(pg, "titulo", pos(X0, 16, 832, 72, 2, 2),
                           [[("Atraso de voo  ", TEXTO, True, "16pt"), ("/  " + nome_pagina, CIANO, True, "16pt")],
                            [(pergunta, MUDO, False, "9pt")]]))
-    vs.append(caixa_texto(pg, "selo", pos(1076, 10, 188, 68, 3, 3),
-                          [[("DADOS FICTÍCIOS", AMBAR, True, "9pt")], [(f"Página {n} de 4", MUDO, False, "9pt")]], align="right"))
+    vs.append(caixa_texto(pg, "selo", pos(1064, 16, 192, 72, 3, 3),
+                          [[("DADOS FICTÍCIOS", CIANO_CLARO, True, "9pt")], [(f"Página {n} de 4", MUDO, False, "9pt")]], align="right"))
     return vs
 
 
 def coluna_filtros(pg, n_pagina):
-    """Coluna esquerda: 3 segmentações sincronizadas entre as páginas + rodapé."""
+    """Coluna esquerda (x=24, largura 176): 3 segmentações sincronizadas entre as páginas."""
     sync = lambda g: {"groupName": g, "fieldChanges": True, "filterChanges": True}
     vs = []
-    vs.append(visual(pg, "seg-ano", pos(16, 84, 168, 104, 9, 9),
+    vs.append(visual(pg, "seg-ano", pos(M, YT, 176, 104, 9, 9),
                      {"visualType": "slicer", "query": {"queryState": {"Values": {"projections": [proj(col("dim_calendario", "ano"), True)]}}},
                       "syncGroup": sync("Ano"), "drillFilterOtherVisuals": True,
                       "visualContainerObjects": {"title": [{"properties": {"show": lit("true"), "text": texto_lit("Ano")}}]}}))
-    vs.append(visual(pg, "seg-companhia", pos(16, 198, 168, 200, 10, 10),
+    vs.append(visual(pg, "seg-companhia", pos(M, YT + 104 + G, 176, 200, 10, 10),
                      {"visualType": "slicer", "query": {"queryState": {"Values": {"projections": [proj(col("dim_companhia", "companhia"), True)]}}},
                       "syncGroup": sync("Companhia"), "drillFilterOtherVisuals": True,
                       "visualContainerObjects": {"title": [{"properties": {"show": lit("true"), "text": texto_lit("Companhia")}}]}}))
-    vs.append(visual(pg, "seg-volume", pos(16, 408, 168, 96, 11, 11),
+    vs.append(visual(pg, "seg-volume", pos(M, YT + 104 + G + 200 + G, 176, 96, 11, 11),
                      {"visualType": "slicer", "query": {"queryState": {"Values": {"projections": [proj(col("Param Volume Minimo", "Value"), True)]}}},
                       "objects": {"data": [{"properties": {"mode": texto_lit("Dropdown")}}]},
                       "syncGroup": sync("VolumeMinimo"), "drillFilterOtherVisuals": True,
@@ -385,16 +390,16 @@ def coluna_filtros(pg, n_pagina):
     return vs
 
 
-def nota(pg, texto, z, y=640, h=42):
-    return caixa_texto(pg, "nota", pos(200, y, 1064, h, z, z),
-                       [[("Não concluir  ", AMBAR, True), (texto, MUDO, False)]], "9pt")
+def nota(pg, texto, z):
+    return caixa_texto(pg, "nota", pos(X0, YN, WC, HN, z, z),
+                       [[("Não concluir  ", CIANO, True), (texto, MUDO, False)]], "9pt")
 
 
-def kpi(pg, chave, med, tit, cor, x, z, unidade_nenhuma=False):
+def kpi(pg, chave, med, tit, cor, x, z, inteiro=False):
     props = {"color": cor_lit(cor)}
-    if unidade_nenhuma:
+    if inteiro:
         props["labelDisplayUnits"] = lit("1D")
-    return visual(pg, chave, pos(x, 84, 257, 88, z, z),
+    return visual(pg, chave, pos(x, YT, 248, 92, z, z),
                   titulo({"visualType": "card",
                           "query": {"queryState": {"Values": {"projections": [proj(mea(med))]}}},
                           "objects": {"labels": [{"properties": props}]},
@@ -405,66 +410,78 @@ def fill(cor):
     return {"dataPoint": [{"properties": {"fill": cor_lit(cor)}}]}
 
 
+def rotulos(inteiro=False):
+    """Rótulos de dados dos gráficos. inteiro=True mostra o número completo (sem 'Mi')."""
+    props = {"show": lit("true")}
+    if inteiro:
+        props["labelDisplayUnits"] = lit("1D")
+    return {"labels": [{"properties": props}]}
+
+
+def eixo_oculto():
+    return {"valueAxis": [{"properties": {"show": lit("false")}}]}
+
+
 def paginas():
     P = []
 
     # ---- Página 1: Panorama
     pg = "Panorama"
     vs = cabecalho(pg, 1, "Panorama", "O atraso é do sistema inteiro ou de alguns pontos?") + coluna_filtros(pg, 1)
-    vs.append(kpi(pg, "kpi-atraso", "Taxa de Atraso 15", "Taxa de atraso (mais de 15 min)", CIANO, 200, 20))
-    vs.append(kpi(pg, "kpi-voos", "Voos Realizados", "Voos realizados", TEXTO, 469, 21, True))
-    vs.append(kpi(pg, "kpi-cancel", "Taxa de Cancelamento", "Taxa de cancelamento", ROXO, 738, 22))
-    vs.append(kpi(pg, "kpi-semhorario", "% de Voos Sem Horário", "Voos sem horário registrado", AMBAR, 1007, 23))
-    vs.append(visual(pg, "narrativa", pos(200, 182, 1064, 64, 24, 24),
+    xs = [X0 + i * (248 + G) for i in range(4)]
+    vs.append(kpi(pg, "kpi-atraso", "Taxa de Atraso 15", "Taxa de atraso (mais de 15 min)", CIANO, xs[0], 20))
+    vs.append(kpi(pg, "kpi-voos", "Voos Realizados", "Voos realizados", TEXTO, xs[1], 21, True))
+    vs.append(kpi(pg, "kpi-cancel", "Taxa de Cancelamento", "Taxa de cancelamento", TEXTO, xs[2], 22))
+    vs.append(kpi(pg, "kpi-semhorario", "% de Voos Sem Horário", "Sem horário (% dos realizados)", TEXTO, xs[3], 23))
+    vs.append(visual(pg, "narrativa", pos(X0, YT + 92 + G, WC, 60, 24, 24),
                      titulo({"visualType": "card",
                              "query": {"queryState": {"Values": {"projections": [proj(mea("Narrativa"))]}}},
                              "objects": {"categoryLabels": [{"properties": {"show": lit("false")}}],
                                          "labels": [{"properties": {"fontSize": lit("10D"), "color": cor_lit(TEXTO)}}]},
                              "drillFilterOtherVisuals": True}, "Em uma frase (muda com os filtros)")))
-    vs.append(visual(pg, "faixa-taxa", pos(200, 256, 420, 376, 25, 25),
+    y2 = YT + 92 + G + 60 + G          # 288
+    h2 = YB - y2                        # 348
+    vs.append(visual(pg, "faixa-taxa", pos(X0, y2, 410, h2, 25, 25),
                      titulo({"visualType": "columnChart",
                              "query": {"queryState": {
                                  "Category": {"projections": [proj(col("dim_faixa_horario", "faixa"), True)]},
                                  "Y": {"projections": [proj(mea("Taxa de Atraso 15"))]}}},
-                             "objects": {"labels": [{"properties": {"show": lit("true")}}],
-                                         "valueAxis": [{"properties": {"start": lit("0D"), "end": lit("0.4D"), "show": lit("false")}}],
+                             "objects": {**rotulos(), "valueAxis": [{"properties": {"start": lit("0D"), "end": lit("0.4D"), "show": lit("false")}}],
                                          **fill(CIANO)},
                              "drillFilterOtherVisuals": True}, "Atraso por faixa de horário")))
-    vs.append(visual(pg, "funil-etapas", pos(636, 256, 628, 376, 26, 26),
+    vs.append(visual(pg, "funil-etapas", pos(X0 + 410 + G, y2, WC - 410 - G, h2, 26, 26),
                      titulo({"visualType": "barChart",
                              "query": {"queryState": {
                                  "Category": {"projections": [proj(col("Etapas", "Etapa"), True)]},
                                  "Y": {"projections": [proj(mea("Valor da Etapa"))]}},
                                  "sortDefinition": {"sort": [{"field": mea("Valor da Etapa"), "direction": "Descending"}],
                                                     "isDefaultSort": False}},
-                             "objects": {"labels": [{"properties": {"show": lit("true")}}],
-                                         "valueAxis": [{"properties": {"show": lit("false")}}], **fill(CIANO)},
-                             "drillFilterOtherVisuals": True}, "Do programado ao atraso grave")))
+                             "objects": {**rotulos(True), **eixo_oculto(), **fill(CIANO)},
+                             "drillFilterOtherVisuals": True}, "Do programado ao atraso grave (voos)")))
     vs.append(nota(pg, "a faixa de horário não é a causa sozinha: aeroporto e companhia também mudam a taxa. Os dois últimos degraus são subconjuntos dos voos com horário.", 27))
     P.append((pg, "Panorama", vs))
 
     # ---- Página 2: Onde
     pg = "Onde"
     vs = cabecalho(pg, 2, "Onde", "Quais aeroportos de origem atrasam mais?") + coluna_filtros(pg, 2)
-    vs.append(visual(pg, "ranking", pos(200, 84, 520, 548, 20, 20),
+    wm = (WC - G) // 2                                    # 512
+    vs.append(visual(pg, "ranking", pos(X0, YT, wm, YB - YT, 20, 20),
                      titulo({"visualType": "barChart",
                              "query": {"queryState": {
                                  "Category": {"projections": [proj(col("dim_aeroporto", "iata"), True, "Aeroporto")]},
                                  "Y": {"projections": [proj(mea("Taxa de Atraso (volume mínimo)"))]}},
                                  "sortDefinition": {"sort": [{"field": mea("Taxa de Atraso (volume mínimo)"), "direction": "Descending"}],
                                                     "isDefaultSort": False}},
-                             "objects": {"labels": [{"properties": {"show": lit("true")}}],
-                                         "valueAxis": [{"properties": {"show": lit("false")}}], **fill(CIANO)},
+                             "objects": {**rotulos(), **eixo_oculto(), **fill(CIANO)},
                              "drillFilterOtherVisuals": True}, "Taxa de atraso (só aeroportos com volume mínimo)")))
-    vs.append(visual(pg, "dif-rede", pos(736, 84, 528, 548, 21, 21),
+    vs.append(visual(pg, "dif-rede", pos(X0 + wm + G, YT, wm, YB - YT, 21, 21),
                      titulo({"visualType": "barChart",
                              "query": {"queryState": {
                                  "Category": {"projections": [proj(col("dim_aeroporto", "iata"), True, "Aeroporto")]},
                                  "Y": {"projections": [proj(mea("Diferença para a Rede (p.p.)"))]}},
                                  "sortDefinition": {"sort": [{"field": mea("Diferença para a Rede (p.p.)"), "direction": "Descending"}],
                                                     "isDefaultSort": False}},
-                             "objects": {"labels": [{"properties": {"show": lit("true")}}],
-                                         "valueAxis": [{"properties": {"show": lit("false")}}], **fill(ROXO)},
+                             "objects": {**rotulos(), "valueAxis": [{"properties": {"show": lit("false"), "end": lit("13D")}}], **fill(CIANO_CLARO)},
                              "drillFilterOtherVisuals": True}, "Diferença para a média da rede (pontos percentuais)")))
     vs.append(nota(pg, "posição não é culpa do aeroporto (hub tem mais conexão); quem está abaixo do volume mínimo some do ranking.", 22))
     P.append((pg, "Onde", vs))
@@ -472,72 +489,78 @@ def paginas():
     # ---- Página 3: Quando
     pg = "Quando"
     vs = cabecalho(pg, 3, "Quando", "A taxa de atraso, mês a mês") + coluna_filtros(pg, 3)
-    vs.append(visual(pg, "serie-mensal", pos(200, 84, 820, 290, 20, 20),
+    wl = 816
+    wr = WC - wl - G                                      # 208
+    h_a = 264
+    vs.append(visual(pg, "serie-mensal", pos(X0, YT, wl, h_a, 20, 20),
                      titulo({"visualType": "lineChart",
                              "query": {"queryState": {
-                                 "Category": {"projections": [proj(col("dim_calendario", "mes_ano"), True)]},
+                                 "Category": {"projections": [proj(col("dim_calendario", "inicio_mes"), True, "Mês")]},
                                  "Y": {"projections": [proj(mea("Taxa de Atraso 15"), nome="Taxa de atraso"), proj(mea("Taxa de Atraso (média móvel 3M)"), nome="Média móvel 3M"),
                                                        proj(mea("Marcador de Evento (série)"), nome="Mês com evento")]}}},
-                             "objects": {"valueAxis": [{"properties": {"start": lit("0D"), "end": lit("0.35D")}}],
+                             "objects": {"categoryAxis": [{"properties": {"axisType": texto_lit("Scalar"), "labelAngle": lit("0D")}}], "valueAxis": [{"properties": {"start": lit("0.1D"), "end": lit("0.35D")}}],
                                          "dataPoint": [
                                              {"properties": {"fill": cor_lit(CIANO)}, "selector": {"metadata": "_Medidas.Taxa de Atraso 15"}},
-                                             {"properties": {"fill": cor_lit(ROXO)}, "selector": {"metadata": "_Medidas.Taxa de Atraso (média móvel 3M)"}},
-                                             {"properties": {"fill": cor_lit(AMBAR)}, "selector": {"metadata": "_Medidas.Marcador de Evento (série)"}}],
+                                             {"properties": {"fill": cor_lit(MUDO)}, "selector": {"metadata": "_Medidas.Taxa de Atraso (média móvel 3M)"}},
+                                             {"properties": {"fill": cor_lit(TEXTO)}, "selector": {"metadata": "_Medidas.Marcador de Evento (série)"}}],
                                          "lineStyles": [{"properties": {"strokeWidth": lit("0D"), "showMarker": lit("true"), "markerShape": texto_lit("circle"), "markerSize": lit("9D")},
                                                          "selector": {"metadata": "_Medidas.Marcador de Evento (série)"}}]},
                              "drillFilterOtherVisuals": True}, "Taxa de atraso, média móvel de 3 meses e meses com evento")))
-    vs.append(visual(pg, "volume-mensal", pos(200, 384, 820, 248, 21, 21),
+    vs.append(visual(pg, "volume-mensal", pos(X0, YT + h_a + G, wl, YB - (YT + h_a + G), 21, 21),
                      titulo({"visualType": "columnChart",
                              "query": {"queryState": {
-                                 "Category": {"projections": [proj(col("dim_calendario", "mes_ano"), True)]},
+                                 "Category": {"projections": [proj(col("dim_calendario", "inicio_mes"), True, "Mês")]},
                                  "Y": {"projections": [proj(mea("Voos Realizados"))]}}},
-                             "objects": fill("#2B8FB3"),
-                             "drillFilterOtherVisuals": True}, "Voos realizados por mês")))
-    vs.append(visual(pg, "tabela-eventos", pos(1036, 84, 228, 200, 22, 22),
+                             "objects": {"categoryAxis": [{"properties": {"axisType": texto_lit("Scalar"), "labelAngle": lit("0D")}}], "valueAxis": [{"properties": {"labelDisplayUnits": lit("1000D")}}], **fill(CIANO_ESCURO)},
+                             "drillFilterOtherVisuals": True}, "Voos realizados por mês (em milhares)")))
+    vs.append(visual(pg, "tabela-eventos", pos(X0 + wl + G, YT, wr, 192, 22, 22),
                      titulo({"visualType": "pivotTable",
                              "query": {"queryState": {
-                                 "Rows": {"projections": [proj(col("dim_evento", "rotulo"), True, "Evento")]}}},
+                                 "Rows": {"projections": [proj(col("dim_evento", "rotulo_curto"), True, "Evento")]}}},
+                             "objects": {"values": [{"properties": {"fontSize": lit("8D")}}],
+                                         "columnHeaders": [{"properties": {"fontSize": lit("8D")}}]},
                              "drillFilterOtherVisuals": True}, "Eventos (fictícios)"),
                      [filtro_cat("evento-tipo", "dim_evento", "tipo", "'Operacional'")]))
-    vs.append(caixa_texto(pg, "nota-lado", pos(1036, 294, 228, 338, 23, 23),
+    vs.append(caixa_texto(pg, "nota-lado", pos(X0 + wl + G, YT + 192 + G, wr, YB - (YT + 192 + G), 23, 23),
                           [[("Ler com cuidado", TEXTO, True)],
                            "Picos de jan, jul e dez se repetem todo ano: é sazonalidade, não evento.",
-                           [("Não concluir  ", AMBAR, True), ("coincidir no tempo com um evento não prova que ele causou a alta.", MUDO, False)]], "9pt"))
-    vs.append(caixa_texto(pg, "nota", pos(200, 640, 1064, 42, 24, 24),
-                          [[("Pontos âmbar  ", AMBAR, True), ("meses com evento operacional (fictício).", MUDO, False)]], "9pt"))
+                           [("Não concluir  ", CIANO, True), ("coincidir no tempo com um evento não prova que ele causou a alta.", MUDO, False)]], "9pt"))
+    vs.append(caixa_texto(pg, "nota", pos(X0, YN, WC, HN, 24, 24),
+                          [[("Pontos brancos  ", CIANO, True), ("meses com evento operacional (fictício).", MUDO, False)]], "9pt"))
     P.append((pg, "Quando", vs))
 
     # ---- Página 4: Qualidade
     pg = "Qualidade"
     vs = cabecalho(pg, 4, "Qualidade", "Quanto do que o painel diz dá para acreditar?") + coluna_filtros(pg, 4)
-    vs.append(visual(pg, "cobertura", pos(200, 84, 440, 380, 20, 20),
+    hq = 348
+    vs.append(visual(pg, "cobertura", pos(X0, YT, 440, hq, 20, 20),
                      titulo({"visualType": "barChart",
                              "query": {"queryState": {
                                  "Category": {"projections": [proj(col("dim_companhia", "companhia"), True)]},
                                  "Y": {"projections": [proj(mea("% de Voos Sem Horário"))]}},
                                  "sortDefinition": {"sort": [{"field": mea("% de Voos Sem Horário"), "direction": "Descending"}],
                                                     "isDefaultSort": False}},
-                             "objects": {"labels": [{"properties": {"show": lit("true")}}],
-                                         "valueAxis": [{"properties": {"show": lit("false")}}], **fill(AMBAR)},
+                             "objects": {**rotulos(), **eixo_oculto(), **fill(CIANO)},
                              "drillFilterOtherVisuals": True}, "Voos sem horário registrado, por companhia (2024)"),
                      [filtro_cat("cobertura-ano", "dim_calendario", "ano", "2024L")]))
-    vs.append(visual(pg, "incerteza", pos(656, 84, 608, 380, 21, 21),
+    vs.append(visual(pg, "incerteza", pos(X0 + 440 + G, YT, WC - 440 - G, hq, 21, 21),
                      titulo({"visualType": "lineChart",
                              "query": {"queryState": {
-                                 "Category": {"projections": [proj(col("dim_calendario", "mes_ano"), True)]},
+                                 "Category": {"projections": [proj(col("dim_calendario", "inicio_mes"), True, "Mês")]},
                                  "Y": {"projections": [proj(mea("Taxa de Atraso (limite inferior)"), nome="Limite inferior"),
                                                        proj(mea("Taxa de Atraso 15"), nome="Aparente"),
                                                        proj(mea("Taxa de Atraso (limite superior)"), nome="Limite superior")]}}},
                              "objects": {"valueAxis": [{"properties": {"start": lit("0D")}}],
                                          "dataPoint": [
-                                             {"properties": {"fill": cor_lit(VERDE)}, "selector": {"metadata": "_Medidas.Taxa de Atraso (limite inferior)"}},
+                                             {"properties": {"fill": cor_lit(CIANO_ESCURO)}, "selector": {"metadata": "_Medidas.Taxa de Atraso (limite inferior)"}},
                                              {"properties": {"fill": cor_lit(TEXTO)}, "selector": {"metadata": "_Medidas.Taxa de Atraso 15"}},
-                                             {"properties": {"fill": cor_lit(AMBAR)}, "selector": {"metadata": "_Medidas.Taxa de Atraso (limite superior)"}}]},
+                                             {"properties": {"fill": cor_lit(CIANO)}, "selector": {"metadata": "_Medidas.Taxa de Atraso (limite superior)"}}]},
                              "drillFilterOtherVisuals": True}, "Planalto Air em 2024: o dado só permite uma faixa"),
                      [filtro_cat("incerteza-cia", "dim_companhia", "companhia", "'Planalto Air'"),
                       filtro_cat("incerteza-ano", "dim_calendario", "ano", "2024L")]))
-    vs.append(caixa_texto(pg, "nao-diz", pos(200, 476, 1064, 206, 22, 22),
-                          [[("O que este painel não diz", TEXTO, True, "11pt")],
+    yq = YT + hq + G                                      # 468
+    vs.append(caixa_texto(pg, "nao-diz", pos(X0, yq, WC, 696 - yq, 22, 22),
+                          [[("O que este painel não diz", TEXTO, True, "12pt")],
                            "1. A taxa fala de voos com horário registrado, não de todos os voos.",
                            "2. A faixa de horário não é a causa: aeroporto e companhia também mudam a taxa.",
                            "3. A posição no ranking não é culpa do aeroporto: hub tem mais conexão.",

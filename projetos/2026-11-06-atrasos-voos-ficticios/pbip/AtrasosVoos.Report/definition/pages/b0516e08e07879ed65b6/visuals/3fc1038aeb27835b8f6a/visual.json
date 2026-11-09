@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "3fc1038aeb27835b8f6a",
   "position": {
-    "x": 200,
+    "x": 216,
     "y": 384,
     "z": 21,
-    "height": 248,
-    "width": 820,
+    "height": 252,
+    "width": 816,
     "tabOrder": 21
   },
   "visual": {
@@ -23,12 +23,13 @@
                       "Entity": "dim_calendario"
                     }
                   },
-                  "Property": "mes_ano"
+                  "Property": "inicio_mes"
                 }
               },
-              "queryRef": "dim_calendario.mes_ano",
-              "nativeQueryRef": "mes_ano",
-              "active": true
+              "queryRef": "dim_calendario.inicio_mes",
+              "nativeQueryRef": "inicio_mes",
+              "active": true,
+              "displayName": "Mês"
             }
           ]
         },
@@ -53,6 +54,39 @@
       }
     },
     "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Scalar'"
+                }
+              }
+            },
+            "labelAngle": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1000D"
+                }
+              }
+            }
+          }
+        }
+      ],
       "dataPoint": [
         {
           "properties": {
@@ -86,7 +120,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Voos realizados por mês'"
+                  "Value": "'Voos realizados por mês (em milhares)'"
                 }
               }
             }

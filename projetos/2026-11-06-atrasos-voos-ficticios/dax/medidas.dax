@@ -68,7 +68,7 @@ CALCULATE (
     REMOVEFILTERS ( dim_rota )
 )
 
-// Pasta de exibição: 3 Comparação | Formato: +0.0;-0.0;0.0
+// Pasta de exibição: 3 Comparação | Formato: +0.0" p.p.";-0.0" p.p.";0.0" p.p."
 // O que mede: Quantos pontos percentuais um aeroporto está acima (+) ou abaixo (-) da rede.
 // Por que assim: Diferença em pontos percentuais, não em %: 'atrasa 30% mais' e '30 p.p. a mais' são coisas diferentes. O IF mantém vazio onde não há dado.
 Diferença para a Rede (p.p.) =

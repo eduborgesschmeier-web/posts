@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "d637748997f676210f30",
   "position": {
-    "x": 1036,
-    "y": 84,
+    "x": 1048,
+    "y": 104,
     "z": 22,
-    "height": 200,
-    "width": 228,
+    "height": 192,
+    "width": 208,
     "tabOrder": 22
   },
   "visual": {
@@ -23,17 +23,45 @@
                       "Entity": "dim_evento"
                     }
                   },
-                  "Property": "rotulo"
+                  "Property": "rotulo_curto"
                 }
               },
-              "queryRef": "dim_evento.rotulo",
-              "nativeQueryRef": "rotulo",
+              "queryRef": "dim_evento.rotulo_curto",
+              "nativeQueryRef": "rotulo_curto",
               "active": true,
               "displayName": "Evento"
             }
           ]
         }
       }
+    },
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "drillFilterOtherVisuals": true,
     "visualContainerObjects": {

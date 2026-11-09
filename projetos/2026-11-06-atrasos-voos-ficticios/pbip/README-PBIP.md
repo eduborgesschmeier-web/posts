@@ -37,7 +37,7 @@ Feito no Power BI Desktop 2.159.1231.0 (Windows 11), em 06 e 09/11/2026.
 
 ## Design no padrão Genesis (09/11/2026)
 
-O painel foi redesenhado com o padrão visual da Genesis Innovation (tokens lidos de genesisinnovation.io): fundo `#05070C`, texto `#F4F7F8`, ciano `#35C6F4` como cor principal, verde `#3BE38B`, roxo `#8C7BFF` e âmbar `#F4B24A` só para alertas, cartões com borda suave e cantos arredondados. As fontes da marca (Sora e Manrope) não vêm no Windows, então o painel usa Segoe UI; se Sora estiver instalada, troque `FONTE` e `fontFamily` no gerador.
+O painel foi redesenhado com o padrão visual da Genesis Innovation (tokens lidos de genesisinnovation.io): fundo `#05070C`, texto `#F4F7F8`, ciano `#35C6F4` como cor principal (com as variantes `#BFF0FF` e `#2B8FB3`) e cinzas neutros; nada de verde, roxo ou âmbar, porque a marca é preto, branco e ciano. Cartões com borda suave e cantos arredondados. As fontes da marca (Sora e Manrope) não vêm no Windows, então o painel usa Segoe UI; se Sora estiver instalada, troque `FONTE` e `fontFamily` no gerador.
 
 Menos números, mais gráfico (a regra foi "só o que importa"):
 
@@ -46,6 +46,13 @@ Menos números, mais gráfico (a regra foi "só o que importa"):
 - **Quando:** série mensal com média móvel e meses com evento, volume mensal e lista de eventos.
 - **Qualidade:** % sem horário por companhia (a Planalto Air aparece com 12,0% contra 0,3% das outras) e a faixa possível da Planalto Air. Os 4 cartões de conferência de totais e a matriz 12 x 5 saíram; a conferência continua em `guia/02-medidas.md`.
 - **Painel Dados enxuto:** o gerador esconde (`isHidden`) toda coluna e toda medida que nenhum visual usa. Ficam visíveis só `dim_aeroporto`, `dim_calendario`, `dim_companhia`, `dim_evento`, `dim_faixa_horario`, `Etapas`, `Param Volume Minimo` e as medidas usadas nos visuais; `dim_rota`, `dim_motivo` e os fatos somem da lista, mas continuam no modelo e nas medidas.
+
+Segunda rodada (09/11/2026, conferida em captura real no Power BI Desktop 2.159):
+
+- **Grade de 8 px:** margem 24, espaço entre cartões 16, coluna de filtros de 176 e conteúdo de 1.040 de largura. Nada cortado e sem barra de rolagem.
+- **Números com unidade e formato:** `22,8%`, `6.084.871` (número cheio, sem "Mi"), `+7,7 p.p.`, volume mensal em milhares. O eixo da diferença para a rede tem teto fixo para o rótulo de GRU não cair dentro da barra clara.
+- **Datas:** o eixo de tempo usa `inicio_mes` (data) como eixo contínuo com formato `mmm/aa`, em vez do texto `jan/2023` girado em 45 graus. Resultado: rótulos horizontais (`jan 2023`, `jul 2023`...) e sem barra de rolagem. A lista de eventos usa `rotulo_curto`, que cabe na caixa.
+- **Pegadinha:** estreitar um gráfico de colunas com 36 categorias de texto faz o Power BI colocar barra de rolagem e cortar rótulos; o eixo contínuo de datas resolve.
 
 Isso substitui os itens 2, 4 e 6 da tabela acima (tabelas em matriz, meses nas linhas, card com fonte 10), que eram a primeira rodada de correção.
 

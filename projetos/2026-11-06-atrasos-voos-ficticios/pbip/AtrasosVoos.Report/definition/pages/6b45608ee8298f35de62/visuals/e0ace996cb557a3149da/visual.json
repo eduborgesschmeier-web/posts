@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
   "name": "e0ace996cb557a3149da",
   "position": {
-    "x": 200,
-    "y": 476,
+    "x": 216,
+    "y": 468,
     "z": 22,
-    "height": 206,
-    "width": 1064,
+    "height": 228,
+    "width": 1040,
     "tabOrder": 22
   },
   "visual": {
@@ -22,7 +22,7 @@
                     "value": "O que este painel não diz",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
-                      "fontSize": "11pt",
+                      "fontSize": "12pt",
                       "color": "#F4F7F8",
                       "fontWeight": "bold"
                     }
