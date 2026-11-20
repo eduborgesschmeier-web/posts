@@ -1,0 +1,315 @@
+btu;nome;marca;inverter;ciclo;loja;lojas;preco
+9000;EOS 9000 BTUs Frio EASM9000FI / EASM9000FE;EOS;0;frio;Amazon;2;1313.1
+9000;Vix 9000 BTUs Frio AS-09CR2SLDDK04;Vix;0;frio;Americanas;3;1518.0
+9000;Vix 9000 BTUs Frio AS-09CR2SLDDK01;Vix;0;frio;Americanas;3;1518.0
+9000;Philco 9000 BTUs Frio Inverter PAC9FB;Philco;1;frio;Amazon;4;1529.09
+9000;Philco 9000 BTUs Frio Inverter PAC9FC;Philco;1;frio;Fast Shop;6;1539.96
+9000;Prime Air 9000 BTUs Quente/Frio Inverter 9QC;Prime;1;quente_frio;Magazine Luiza;3;1571.61
+9000;Vix 9000 BTUs Quente/Frio Inverter AS-09UW2RLDDK00;Vix;1;quente_frio;Magazine Luiza;4;1599.0
+9000;Agratto 9000 BTUs Frio Inverter Zen Top ZICST9F-02;Agratto;1;frio;Americanas;3;1606.22
+9000;Vix 9000 BTUs Quente/Frio AS-09HR2SYRCA00;Vix;0;quente_frio;Americanas;3;1626.24
+9000;Midea 9000 BTUs Frio Inverter 42EBVCB09M5 / 38TBVCB09M5;Midea;1;frio;Webcontinental;3;1660.9
+9000;Agratto 9000 BTUs Frio Inverter KNICST9F-02;Agratto;1;frio;Webcontinental;2;1682.97
+9000;Hitachi 9000 BTUs Frio Inverter AirHome SPK09C3IVF;Hitachi;1;frio;Magazine Luiza;2;1689.0
+9000;TCL 9000 BTUs Frio Inverter TAC-09CTG3-INV;TCL;1;frio;Fast Shop;2;1697.4
+9000;Agratto 9000 BTUs Quente/Frio Inverter LCST9QF-02I;Agratto;1;quente_frio;Americanas;5;1699.0
+9000;Philco 9000 BTUs Frio PAS9500FA1;Philco;0;frio;Americanas;4;1699.0
+9000;Philco 9000 BTUs Frio PAS9FT;Philco;0;frio;Americanas;4;1699.0
+9000;Philco 9000 BTUs Frio PAC9FI;Philco;0;frio;Americanas;3;1699.0
+9000;Electrolux Color Adapt 9000 BTUs Frio UI09F / UE09F;Electrolux;0;frio;Electrolux;1;1699.0
+9000;Elgin 9000 BTUs Frio Inverter Eco Dream HIFE09C2CA / HIFI09C2WA;Elgin;1;frio;Amazon;2;1704.43
+9000;Gree G-Top Auto 9000 BTUs Frio Inverter GWC09ATB-D6DNA1A;Gree;1;frio;Amazon;2;1709.91
+9000;Elgin Eco II 9000 BTUs Frio Inverter HJFI09C2IA / HJFE09C2NA;Elgin;1;frio;Webcontinental;3;1728.99
+9000;Elgin Eco Inverter III 9000 BTUs Frio HJFC09C2WHCH;Elgin;1;frio;Webcontinental;3;1728.99
+9000;Philco Eco 9000 BTUs Frio Inverter PAC9000ITFM9W;Philco;1;frio;Webcontinental;2;1748.76
+9000;Elgin Eco Inverter III 9000 BTUs Frio;Elgin;1;frio;Webcontinental;4;1749.0
+9000;Vix 9000 BTUs Frio AS-09CR2SLDDK02;Vix;0;frio;Fast Shop;1;1751.0
+9000;Electrolux 9000 BTUs Quente/Frio Inverter NI09R / NE09R;Electrolux;1;quente_frio;Webcontinental;3;1778.56
+9000;Hisense 9000 BTUs Frio Inverter AS-09TW2RLD;Hisense;1;frio;Americanas;3;1799.0
+9000;Elgin Eco II 9000 BTUs Quente/Frio Inverter HJQI09C2WB / HJQE09C2CB;Elgin;1;quente_frio;Americanas;1;1799.1
+9000;EOS 9000 BTUs Controle Remoto Frio Master Inverter EASM9001IFI/EASM9000IFE;EOS;1;frio;Amazon;3;1799.49
+9000;HQ 9000 BTUs Frio Inverter VIHT9KCO3S2S13;HQ;1;frio;Americanas;3;1811.0
+9000;Electrolux Color Adapt 9000 BTUs Frio Inverter YI09F / YE09F;Electrolux;1;frio;Americanas;7;1828.64
+9000;HQ 9000 BTUs Quente/Frio Inverter VIHT9KCH3S2S23;HQ;1;quente_frio;Americanas;1;1909.0
+9000;Hisense 9000 BTUs Frio Inverter AS-09TW2RURCK00;Hisense;1;frio;Webcontinental;2;1924.56
+9000;LG Dual Inverter Compact 9000 BTUs Frio Inverter S3-Q09AAQAK;LG;1;frio;Americanas;5;1934.24
+9000;Hisense 9000 BTUs Frio Inverter Eco Plus AS-09TW2RLRCK00E;Hisense;1;frio;Fast Shop;1;1934.41
+9000;TCL Elite Series A1 9000 BTUs Frio TAC-09CSA1;TCL;0;frio;Amazon;2;1939.59
+9000;Philco 9000 BTUs Quente/Frio PAS9QT 220V;Philco;0;quente_frio;Americanas;4;1949.0
+9000;LG AI Dual Inverter Voice 9000 BTUs Frio Inverter S3-Q09AA31F;LG;1;frio;Americanas;4;1969.44
+9000;LG Dual Inverter AI Compact 9000 BTUs Frio S3-Q09AAQAC;LG;1;frio;Webcontinental;3;1973.62
+9000;LG 9000 BTUs Frio Inverter AI Smart Voice S3-Q09JA31E;LG;1;frio;Americanas;5;1987.04
+9000;Agratto 9000 BTUs Frio Inverter Liv Top LCST9FI-02I / LCST9FE-02I;Agratto;1;frio;Amazon;2;1988.9
+9000;Gree G-Top Auto 9000 BTUs Quente/Frio Inverter GWH09ATA-D6DNA1A;Gree;1;quente_frio;Magazine Luiza;4;1989.0
+9000;Philco 9000 BTUs Quente/Frio Inverter PAC9QC;Philco;1;quente_frio;Americanas;4;1998.48
+9000;Springer Midea AI Ecomaster 9000 BTUs Frio Inverter 42EZVCA09M5 / 38EZVCA09M5;Midea;1;frio;Webcontinental;6;1999.0
+9000;Gree G-Top Auto 9000 BTUs Frio Inverter GWC09ATA-D6DNA1A;Gree;1;frio;Amazon;2;1999.9
+9000;Hisense 9000 BTUs Quente/Frio Inverter AS-09UW2RLDTT00E / AS-09UW2RLD00C;Hisense;1;quente_frio;Americanas;3;2007.28
+9000;Electrolux Color Adapt 9000 BTUs Frio Inverter JI09F / JE09F;Electrolux;1;frio;Webcontinental;5;2045.48
+9000;Springer Midea AI Ecomaster 9000 BTUs Quente/Frio Inverter 42EZVQA09M5 / 38EZVQA09M5;Midea;1;quente_frio;Amazon;5;2048.78
+9000;Philco 9000 BTUs Quente/Frio Inverter PAC9QG;Philco;1;quente_frio;Webcontinental;1;2099.0
+9000;LG Dual Inverter Compact 9000 BTUs Frio Inverter +AI S3-Q09AAQAL;LG;1;frio;Webcontinental;3;2099.0
+9000;LG Dual Inverter AI Voice 9000 BTUs Frio S3-Q09AA33J;LG;1;frio;Loja Online LG;2;2114.1
+9000;Midea 9000 BTUs Frio Inverter Lite 42EBVCA09M5 / 38TBVCA09M5;Midea;1;frio;Fast Shop;1;2116.0
+9000;TCL T-Pro 2.0 9000 BTUs Frio Inverter TAC-09CTG2-INV;TCL;1;frio;Americanas;3;2154.24
+9000;Samsung 9000 BTUs Frio Inverter WindFree AI Pro F-AR60H09D1AW;Samsung;1;frio;Webcontinental;1;2189.01
+9000;Elgin Eco Inverter III 9000 BTUs Quente/Frio;Elgin;1;quente_frio;Americanas;1;2198.99
+9000;Fujitsu Premium 9000 BTUs Quente/Frio Inverter ASBG09KMBA / AOBG09KMCA;Fujitsu;1;quente_frio;Magazine Luiza;4;2199.0
+9000;TCL T-Pro 2.0 9000 BTUs Quente/Frio Inverter TAC-09CHTG2-INV;TCL;1;quente_frio;Webcontinental;1;2199.0
+9000;Fujitsu Premium 9000 BTUs Frio Inverter ASBG09CMBA / AOBG09CMCA;Fujitsu;1;frio;Amazon;3;2248.2
+9000;Fontaine 9000 BTUs Frio FCST9F-01;Fontaine;0;frio;Magazine Luiza;4;2248.2
+9000;Springer Midea 9000 BTUs Frio Inverter AirVolution Connect 42AFVCI09S5 / 38TVCI09S5;Midea;1;frio;Fast Shop;2;2279.0
+9000;Midea AI Ecomaster 9000 BTUs Inverter Frio 42EZVCB09M5 / 38EZVCB09M5;Midea;1;frio;Webcontinental;1;2279.0
+9000;LG Dual Inverter AI Voice 9000 BTUs Quente/Frio Inverter S3-W09AA33G;LG;1;quente_frio;Webcontinental;2;2284.48
+9000;Midea Xtreme Save Connect 9000 BTUs Frio Inverter 38AGVCI09M5 / 42AGVCI09M5;Midea;1;frio;Magazine Luiza;1;2295.0
+9000;LG AI Dual Inverter Voice 9000 BTUs Quente/Frio Inverter S3-W09AA31E;LG;1;quente_frio;Webcontinental;4;2298.6
+9000;LG Dual Inverter Voice 9000 BTUs Frio Inverter +AI S3-Q09AA31A;LG;1;frio;Webcontinental;3;2339.0
+9000;Gree 9000 BTUs Quente/Frio Inverter GWH09ATBXB-D6DNA3B-I;Gree;1;quente_frio;Webcontinental;1;2339.1
+9000;LG Dual Inverter Compact 9000 BTUs Controle Remoto Quente/Frio +AI S3-W09AAQAL;LG;1;quente_frio;Loja Online LG;3;2399.0
+9000;LG Dual Inverter AI Air 9000 BTUs Frio Inverter S3-Q090AKH0;LG;1;frio;Americanas;1;2409.44
+9000;LG AI Dual Inverter Voice 9000 BTUs Quente/Frio Inverter S3-W09AA31D;LG;1;quente_frio;Americanas;3;2418.24
+9000;Philco Eco 9000 BTUs Quente/Frio Inverter PAC9000IQFM15E;Philco;1;quente_frio;Webcontinental;4;2479.0
+9000;Philco 9000 BTUs Quente/Frio Inverter PAC9000ITQFM9W;Philco;1;quente_frio;Fast Shop;1;2484.0
+9000;LG Dual Inverter Voice 9000 BTUs Frio Inverter S4-Q09AA31B;LG;1;frio;Loja Online LG;2;2489.0
+9000;Gree 9000 BTUs Quente/Frio Inverter GWH09ACA-D6DNA1A;Gree;1;quente_frio;Amazon;4;2519.1
+9000;Consul Triple Inverter 9000 BTUs Controle Remoto Frio EconoMaxi CBK09C / CBL09C;Consul;1;frio;Webcontinental;1;2587.78
+9000;LG Dual Inverter Voice 9000 BTUs Frio Inverter S3-Q09AA31C;LG;1;frio;Magazine Luiza;2;2611.55
+9000;Consul Triple Inverter 9000 BTUs Quente/Frio CBR09CB;Consul;1;quente_frio;Webcontinental;3;2690.1
+9000;Samsung WindFree Connect 9000 BTUs Frio Inverter AR09CVFAMWK;Samsung;1;frio;Amazon;1;2699.0
+9000;LG AI Dual Inverter 9000 BTUs Frio Inverter Air S3-Q090AKH0;LG;1;frio;Fast Shop;3;2738.0
+9000;Samsung WindFree Connect 9000 BTUs Frio Inverter AR09DYFAAWKNAZ / AR09DYFAAWKXAZ;Samsung;1;frio;Amazon;2;2799.0
+9000;Midea AI Ecomaster 9000 BTUs Frio Inverter 42EFVCA09M8 / 38EFVCA09M8;Midea;1;frio;Fast Shop;1;2862.55
+9000;LG Dual Inverter Voice 9000 BTUs Quente/Frio Inverter +AI S3-W09AA31C;LG;1;quente_frio;Americanas;2;2899.0
+9000;LG Dual Inverter AI Air 9000 BTUs Quente/Frio Inverter S3-W090AKH0;LG;1;quente_frio;Webcontinental;2;2979.0
+9000;Gree G-Diamond Top 9000 BTUs Quente/Frio GWH09AGA-D3DNA1BD;Gree;0;quente_frio;Magazine Luiza;1;3144.15
+9000;Fujitsu 9000 BTUs Frio Inverter Airstage Essencial ASKA09CPBA / AOKA09CPBA;Fujitsu;1;frio;Fast Shop;1;3198.0
+9000;LG AI Dual Inverter Voice 9000 BTUs Frio Inverter S3-Q09AA31D;LG;1;frio;Fast Shop;1;3198.0
+9000;Daikin 9000 BTUs Quente/Frio Inverter FTHC09T5VL / RHC09T5VL;Daikin;1;quente_frio;Americanas;2;3324.64
+9000;Philco Eco 9000 BTUs Quente/Frio Inverter PAC9000IQFM15;Philco;1;quente_frio;Webcontinental;1;3648.69
+9000;Springer Midea Xtreme Save Connect 9000 BTUs Frio Inverter 42AGVCB09M5 / 38AGVCB09M5;Midea;1;frio;Amazon;1;4197.0
+12000;Vix 12000 BTUs Frio;Vix;0;frio;Fast Shop;2;1732.04
+12000;Electrolux 12000 BTUs Frio Inverter NI12F / NE12F;Electrolux;1;frio;Webcontinental;4;1778.56
+12000;Electrolux Color Adapt 12000 BTUs Frio Inverter JI12F / JE12F;Electrolux;1;frio;Webcontinental;3;1778.56
+12000;Agratto 12000 BTUs Inverter Controle Remoto Frio Zen Top ZICST12F-02;Agratto;1;frio;Webcontinental;4;1780.15
+12000;Agratto 12000 BTUs Frio Inverter Liv Top LCST12FI-02I / LCST12FE-02I;Agratto;1;frio;Americanas;2;1799.0
+12000;Hitachi 12000 BTUs Frio Inverter AirHome SPK12C3IVF;Hitachi;1;frio;Magazine Luiza;2;1849.0
+12000;Vix 12000 BTUs Frio Inverter AS-12TW2RLDDK0;Vix;1;frio;Americanas;3;1891.12
+12000;Philco 12000 BTUs Frio PAC12FI;Philco;0;frio;Magazine Luiza;4;1898.0
+12000;Philco 12000 BTUs Frio Inverter PAC12FC;Philco;1;frio;Americanas;7;1900.0
+12000;Midea 12000 BTUs Frio Inverter 42EFVCB12M5 / 38TAVCB12M5;Midea;1;frio;Webcontinental;1;1924.56
+12000;Hisense 12000 BTUs Frio Inverter AS-12TW2RURCK00;Hisense;1;frio;Webcontinental;2;1935.57
+12000;HQ 12000 BTUs Quente/Frio Inverter VIHT12KCH3S2S23;HQ;1;quente_frio;Americanas;2;1967.0
+12000;EOS 12000 BTUs Frio Master Inverter EASM12001IFI/EASM12001IFE;EOS;1;frio;Amazon;3;1979.1
+12000;Vix 12000 BTUs Quente/Frio Inverter AS-12UW2RLDDK00;Vix;1;quente_frio;Magazine Luiza;4;1997.04
+12000;Electrolux Color Adapt 12000 BTUs Frio UI12F / UE12F;Electrolux;0;frio;Electrolux;2;1999.0
+12000;Philco 12000 BTUs Frio PAC12000TFM12;Philco;0;frio;Magazine Luiza;1;2020.06
+12000;Hisense 12000 BTUs Frio Inverter Eco Plus;Hisense;1;frio;Webcontinental;4;2025.55
+12000;Consul 12000 BTUs Frio Inverter Dual CBK12EB / CBL12E;Consul;1;frio;Amazon;2;2043.64
+12000;Prime Air 12000 BTUs Frio 12000TF;Prime;0;frio;Magazine Luiza;1;2089.91
+12000;Midea 12000 BTUs Frio Inverter AirVolution Lite 42EBVCA12M5 / 38TBVCA12M5;Midea;1;frio;Webcontinental;1;2099.0
+12000;Philco 12000 BTUs Quente/Frio Inverter PAC12QC;Philco;1;quente_frio;Webcontinental;4;2099.0
+12000;Elgin 12000 BTUs Frio Inverter Eco III HJQE12C2CG / HJQI12C2WG;Elgin;1;frio;Webcontinental;1;2099.0
+12000;Elgin 12000 BTUs Frio Inverter Eco II 45HJFI12C2WB / 45HJFE12C2CB;Elgin;1;frio;Americanas;4;2099.01
+12000;Philco 12000 BTUs Frio Inverter PAC12FB;Philco;1;frio;Webcontinental;1;2129.0
+12000;LG Dual Inverter AI Compact 12000 BTUs Frio S3-Q12JAQAC;LG;1;frio;Webcontinental;4;2130.05
+12000;LG Dual Inverter Voice 12000 BTUs Frio Inverter +AI S3-Q12JA31;LG;1;frio;Americanas;4;2145.44
+12000;Agratto 12000 BTUs Quente/Frio Inverter LCST12QF-02I;Agratto;1;quente_frio;Americanas;1;2145.44
+12000;Hisense 12000 BTUs Frio Inverter AS-12TW2RLD;Hisense;1;frio;Americanas;3;2149.0
+12000;TCL T-Pro 2.0 12000 BTUs Frio Inverter TAC-12CTG2-INV;TCL;1;frio;Americanas;3;2198.24
+12000;Fujitsu Airstage Essencial 12000 BTUs Frio Inverter ASKA12CPBB;Fujitsu;1;frio;Americanas;1;2218.48
+12000;Midea AI Ecomaster 12000 BTUs Frio Inverter 42EZVCC12M5 / 38EZVCC12M5;Midea;1;frio;Fast Shop;2;2220.52
+12000;LG Dual Inverter Compact 12000 BTUs Frio Inverter +AI S3-Q12JAQAL;LG;1;frio;Fast Shop;6;2249.1
+12000;TCL 12000 BTUs Quente/Frio Inverter BreezeIN AI TAC-12CHTG3-INV;TCL;1;quente_frio;Americanas;3;2259.84
+12000;Springer Midea AI Ecomaster 12000 BTUs Frio Inverter 42EZVCA12M5 / 38EZVCA12M5;Midea;1;frio;Fast Shop;5;2262.28
+12000;Philco 12000 BTUs Quente/Frio Inverter PAC12000IQFM15;Philco;1;quente_frio;Webcontinental;3;2269.0
+12000;Elgin 12000 BTUs Inverter Controle Remoto Quente/Frio HJQC12C2WHCH;Elgin;1;quente_frio;Webcontinental;2;2289.35
+12000;Elgin Eco II 12000 BTUs Quente/Frio Inverter HJQE12C2 / HJQI12C2 Wi-Fi;Elgin;1;quente_frio;Amazon;2;2290.0
+12000;Philco Eco 12000 BTUs Frio Inverter PAC12000IFM15;Philco;1;frio;Webcontinental;3;2294.91
+12000;Samsung WindFree 12000 BTUs Frio Inverter AR12DYFAAWKNAZ / AR12DYFAAWKXAZ;Samsung;1;frio;Americanas;4;2299.0
+12000;TCL 12000 BTUs Frio Inverter TAC-12CTG3-INV;TCL;1;frio;Webcontinental;2;2299.0
+12000;Samsung 12000 BTUs Inverter Controle Remoto Frio WindFree AI Pro F-AR60H12D1AW;Samsung;1;frio;Webcontinental;2;2329.0
+12000;Fontaine 12000 BTUs Frio FCST12F-01;Fontaine;0;frio;Magazine Luiza;4;2348.1
+12000;LG AI Dual Inverter Voice 12000 BTUs Frio Inverter S3-Q12JA33J;LG;1;frio;Loja Online LG;4;2388.6
+12000;LG Dual Inverter AI Voice 12000 BTUs Quente/Frio Inverter S3-W12JA33D;LG;1;quente_frio;Loja Online LG;1;2469.28
+12000;LG Dual Inverter Compact 12000 BTUs Controle Remoto Quente/Frio +AI S3-W12JAQAL;LG;1;quente_frio;Loja Online LG;2;2483.08
+12000;LG Dual Inverter AI Voice 12000 BTUs Frio Inverter S3-Q12JA31L;LG;1;frio;Webcontinental;3;2499.0
+12000;TCL FreshIN 3.0 12000 BTUs Frio Inverter TAC-12CFG3WI-INV / TAC-12CFG3O-INV;TCL;1;frio;Webcontinental;5;2519.0
+12000;LG Dual Inverter Voice 12000 BTUs Frio Inverter AI S3-Q12JA31J;LG;1;frio;Webcontinental;4;2519.1
+12000;Springer Midea AI Ecomaster 12000 BTUs Quente/Frio Inverter 42EZVQA12M5 / 38EZVQA12M5;Midea;1;quente_frio;Americanas;2;2529.0
+12000;LG AI Dual Inverter Voice 12000 BTUs Quente/Frio Inverter S3-W12JA33G;LG;1;quente_frio;Loja Online LG;3;2546.1
+12000;Samsung 12000 BTUs Inverter Controle Remoto Quente/Frio WindFree AI Pro F-AR60H12C1AWN;Samsung;1;quente_frio;KaBuM!;3;2569.9
+12000;Electrolux Color Adapt 12000 BTUs Frio Inverter YI12F / YE12F;Electrolux;1;frio;Webcontinental;3;2649.0
+12000;Midea AI Ecomaster 12000 BTUs Quente/Frio Inverter 42EMVQA12M5 / 38EMVQA12M5;Midea;1;quente_frio;Webcontinental;1;2697.3
+12000;LG Dual Inverter Voice 12000 BTUs Quente/Frio Inverter +AI S3-W12JA31D;LG;1;quente_frio;Webcontinental;3;2719.0
+12000;Electrolux Color Adapt 12000 BTUs Quente/Frio Inverter YI12R / YE12R;Electrolux;1;quente_frio;Webcontinental;3;2769.01
+12000;Samsung 12000 BTUs Inverter Controle Remoto Frio WindFree AI Power Volt F-AR60H12D1VW;Samsung;1;frio;Webcontinental;1;2799.0
+12000;Gree Eco Garden 12000 BTUs Quente/Frio Inverter GWH12QC-D3DNB8M/O / GWH12ACC-D3DNA1M/I;Gree;1;quente_frio;Magazine Luiza;4;2879.1
+12000;Springer Midea 12000 BTUs Frio Inverter AirVolution Connect 42AFVCI12S5 / 38TVCI12S5;Midea;1;frio;Amazon;2;2899.0
+12000;Samsung WindFree Black Edition 12000 BTUs Inverter Controle Remoto Quente/Frio AI F-AR70H12C1BBN;Samsung;1;quente_frio;Webcontinental;1;2899.01
+12000;LG Dual Inverter Voice Artcool 12000 BTUs Controle Remoto Frio S3-Q12JAR1K;LG;1;frio;Webcontinental;3;2949.0
+12000;Hitachi 12000 BTUs Quente/Frio Inverter airHome 600 SPK12C3IVQ;Hitachi;1;quente_frio;Americanas;2;2953.58
+12000;Gree G-Diamond 12000 BTUs Frio Inverter GWC12ACC / GWC12QC;Gree;1;frio;Americanas;3;3182.49
+12000;LG Dual Inverter AI Air 12000 BTUs Quente/Frio Inverter S3-W120AKH0;LG;1;quente_frio;Americanas;2;3198.8
+12000;Samsung WindFree Connect 12000 BTUs Frio Inverter AR12CVFAMWK;Samsung;1;frio;Webcontinental;2;3199.01
+12000;LG Dual Inverter AI Air 12000 BTUs Frio Inverter S3-Q120AKH0;LG;1;frio;Loja Online LG;2;3319.01
+12000;Daikin 12000 BTUs Frio Inverter FTKC12T5VL / RKC12T5VL;Daikin;1;frio;Webcontinental;4;3329.1
+12000;LG 12000 BTUs Quente/Frio Inverter S3-W12JARD1;LG;1;quente_frio;Webcontinental;3;3349.0
+12000;Consul Triple Inverter 12000 BTUs Controle Remoto Frio CBK12D / CBL12D;Consul;1;frio;Webcontinental;1;3552.15
+12000;Samsung Ultra 12000 BTUs Frio Inverter AR12CVHZAWK;Samsung;1;frio;Amazon;2;3672.63
+12000;Daikin 12000 BTUs Quente/Frio Inverter RHC12T5VL / FTHC12T5VL;Daikin;1;quente_frio;KaBuM!;3;3799.05
+18000;Philco 18000 BTUs Frio Inverter PAC18FC;Philco;1;frio;Amazon;2;2222.91
+18000;Prime Air 18000 BTUs Frio 18000TF;Prime;0;frio;Magazine Luiza;4;2249.91
+18000;Philco 18000 BTUs Frio PAC18FI;Philco;0;frio;Americanas;4;2451.29
+18000;Agratto 18000 BTUs Frio Inverter LCST18F-02I;Agratto;1;frio;Webcontinental;6;2467.54
+18000;Electrolux Color Adapt 18000 BTUs Frio Inverter YI18F / YE18F;Electrolux;1;frio;Amazon;6;2499.0
+18000;Electrolux Color Adapt 18000 BTUs Frio Inverter JI18F / JE18F;Electrolux;1;frio;Webcontinental;6;2579.32
+18000;Elgin 18000 BTUs Inverter Controle Remoto Frio HJFC18C2WHCH;Elgin;1;frio;Webcontinental;1;2599.01
+18000;Electrolux Color Adapt 18000 BTUs Quente/Frio UI18R / UE18R;Electrolux;0;quente_frio;Americanas;3;2609.1
+18000;Vix 18000 BTUs Controle Remoto Frio AS-18CR2SXADK03;Vix;0;frio;Magazine Luiza;1;2698.08
+18000;TCL 18000 BTUs Frio Inverter T-PRO 2.0 TAC-18CTG2X-INV;TCL;1;frio;Americanas;2;2726.24
+18000;Philco 18000 BTUs Frio Inverter PAC18FB;Philco;1;frio;Americanas;1;2726.24
+18000;Midea 18000 BTUs Frio Inverter AirVolution Lite 42EBVCA18M5 / 38TBVCA18M5;Midea;1;frio;Webcontinental;2;2749.0
+18000;Agratto 18000 BTUs Quente/Frio Inverter Liv Top LCST18QF-02I;Agratto;1;quente_frio;Webcontinental;4;2758.79
+18000;Electrolux 18000 BTUs Frio Inverter NI18F / NE18F;Electrolux;1;frio;Fast Shop;5;2798.0
+18000;Midea 18000 BTUs Frio Inverter Lite 42EBVCB18M5 / 38TBVCB18M5;Midea;1;frio;Webcontinental;2;2799.0
+18000;Vix 18000 BTUs Frio Inverter AS-18TW2RMADK02;Vix;1;frio;Fast Shop;1;2898.0
+18000;Electrolux Color Adapt 18000 BTUs Quente/Frio Inverter YI18R / YE18R;Electrolux;1;quente_frio;Magazine Luiza;5;2942.27
+18000;Philco 18000 BTUs Quente/Frio Inverter PAC18QC;Philco;1;quente_frio;Amazon;5;2946.32
+18000;Fujitsu Airstage Essencial 18000 BTUs Frio Inverter ASKA18CPBA / AOKA18CPBA;Fujitsu;1;frio;Amazon;4;2995.19
+18000;Midea 18000 BTUs Frio Inverter AI AirVolution 42EFVCA18M5 / 38TAVCA18M5;Midea;1;frio;Americanas;3;3001.68
+18000;Hitachi AirHome 600 18000 BTUs Frio Inverter SPK18C3IVF;Hitachi;1;frio;Americanas;4;3012.0
+18000;HQ 18000 BTUs Quente/Frio Inverter VIHT18KCH3S2S23;HQ;1;quente_frio;Fast Shop;2;3019.0
+18000;Midea 18000 BTUs Inverter Controle Remoto Frio 42EFVCB18M5 / 38TAVCB18M5;Midea;1;frio;Webcontinental;3;3023.1
+18000;Electrolux 18000 BTUs Quente/Frio Inverter NI18R / NE18R;Electrolux;1;quente_frio;Webcontinental;4;3024.18
+18000;Electrolux Color Adapt 18000 BTUs Quente/Frio Inverter JI18R / JE18R;Electrolux;1;quente_frio;Magazine Luiza;3;3039.05
+18000;Consul 18000 BTUs Frio Inverter CBK18CB;Consul;1;frio;Magazine Luiza;1;3041.1
+18000;Gree G-Top Auto 18000 BTUs Quente/Frio Inverter GWH18ATD-D6DNA1A;Gree;1;quente_frio;Amazon;5;3050.89
+18000;Gree G-Top Auto 18000 BTUs Frio Inverter GWC18ATD-D6DNA1A;Gree;1;frio;Magazine Luiza;6;3059.0
+18000;Hitachi AirHome 600 18000 BTUs Quente/Frio Inverter SPK18C3IVQ;Hitachi;1;quente_frio;Amazon;3;3059.1
+18000;Electrolux 18000 BTUs Frio Inverter QI18F/QE18F;Electrolux;1;frio;Webcontinental;1;3099.0
+18000;Philco 18000 BTUs Quente/Frio Inverter PAC18000IQFM15;Philco;1;quente_frio;Americanas;5;3113.44
+18000;Springer Midea AI Ecomaster 18000 BTUs Frio Inverter 42EZVCA18M5 / 38EZVCA18M5;Midea;1;frio;Amazon;5;3128.51
+18000;Philco 18000 BTUs Frio Inverter PAC18000IFM15;Philco;1;frio;Webcontinental;2;3139.0
+18000;Gree G-Top 18000 BTUs Quente/Frio Inverter GWH18AGD-D3DNA1D;Gree;1;quente_frio;Amazon;2;3149.09
+18000;LG Dual Inverter AI Voice 18000 BTUs Frio Inverter S3-Q18KL31C / S3UQ18KL31C;LG;1;frio;Americanas;5;3154.8
+18000;Fujitsu 18000 BTUs Quente/Frio Inverter ASKA18KPBA;Fujitsu;1;quente_frio;Americanas;3;3160.08
+18000;LG Dual Inverter Compact 18000 BTUs Frio Inverter AI S3-Q18KLQAC;LG;1;frio;Webcontinental;4;3169.0
+18000;Springer Midea AI Ecomaster 18000 BTUs Quente/Frio Inverter 42EZVQA18M5 / 38EZVQA18M5;Midea;1;quente_frio;Americanas;5;3186.58
+18000;Samsung Ultra 18000 BTUs Frio Inverter AR18BVHZCWKNAZ;Samsung;1;frio;Amazon;1;3190.0
+18000;TCL T-Pro 2.0 18000 BTUs Quente/Frio Inverter TAC-18CHTG2X-INV;TCL;1;quente_frio;Americanas;3;3263.04
+18000;LG Dual Inverter Compact 18000 BTUs Frio Inverter +AI S3-Q18KLQAL;LG;1;frio;Americanas;3;3280.64
+18000;Electrolux Color Adapt 18000 BTUs Frio UI18F / UE18F;Electrolux;0;frio;Webcontinental;1;3299.0
+18000;Samsung WindFree AI 18000 BTUs Frio Inverter AR60F18D1AWNAZ;Samsung;1;frio;Americanas;2;3318.48
+18000;LG AI Dual Inverter Voice 18000 BTUs Frio Inverter S3-Q18KL33C;LG;1;frio;Loja Online LG;1;3319.0
+18000;TCL FreshIN 3.0 18000 BTUs Frio Inverter TAC-18CFG3WI-INV / TAC-18CFG3O-INV;TCL;1;frio;Magazine Luiza;4;3338.05
+18000;TCL FreshIN 3.0 18000 BTUs Inverter Frio TAC-18CFG3B-INV;TCL;1;frio;Americanas;4;3359.84
+18000;LG Dual Inverter Voice 18000 BTUs Frio Inverter S3-Q18KL31B;LG;1;frio;Americanas;2;3401.2
+18000;Hisense 18000 BTUs Frio Inverter AS-18TW2RMA;Hisense;1;frio;Fast Shop;1;3408.0
+18000;Samsung Ultra 18000 BTUs Quente/Frio Inverter AR18BSHZCWK;Samsung;1;quente_frio;Amazon;1;3419.1
+18000;Samsung 18000 BTUs Inverter Controle Remoto Frio WindFree AI Pro F-AR60H18D1AW;Samsung;1;frio;Webcontinental;2;3449.0
+18000;Philco 18000 BTUs Quente/Frio Inverter PAC18000IQFM15E;Philco;1;quente_frio;Webcontinental;3;3469.0
+18000;Gree G-Classic 18000 BTUs Frio Inverter GWC18ATD-D6DNA2A;Gree;1;frio;Americanas;3;3473.1
+18000;Fujitsu 18000 BTUs Frio Inverter Airstage Premium ASBG18CMBA / AOBG18CMCA;Fujitsu;1;frio;Americanas;3;3483.04
+18000;TCL T-Pro 2.0 18000 BTUs Quente/Frio Inverter TAC-18CHTG2-INV;TCL;1;quente_frio;Magazine Luiza;3;3487.5
+18000;Agratto 18000 BTUs Frio Inverter Neo Top ICS18F-02;Agratto;1;frio;Magazine Luiza;1;3495.08
+18000;Samsung Digital Inverter 18000 BTUs Frio Ultra AI F-AR50F18D1AH;Samsung;1;frio;Webcontinental;1;3536.72
+18000;Elgin Eco Star 18000 BTUs Frio Inverter HSFE18C2N;Elgin;1;frio;Amazon;1;3599.0
+18000;Samsung WindFree Black Edition 18000 BTUs Quente/Frio Inverter Wi-Fi AR18CSECABT;Samsung;1;quente_frio;Amazon;5;3599.1
+18000;LG Dual Inverter Voice UV Nano 18000 BTUs Quente/Frio Inverter S3-W18KL31C;LG;1;quente_frio;Amazon;4;3611.7
+18000;Midea Xtreme Save Connect 18000 BTUs Quente/Frio Inverter Black Edition 42MGVQI18M5 / 38MGVQI18M5;Midea;1;quente_frio;Amazon;2;3642.29
+18000;LG Dual Inverter Compact 18000 BTUs Controle Remoto Quente/Frio +AI S3-W18KLQAL;LG;1;quente_frio;KaBuM!;2;3710.31
+18000;LG AI Dual Inverter Voice 18000 BTUs Quente/Frio Inverter S3-W18KL33C;LG;1;quente_frio;Loja Online LG;1;3761.88
+18000;Samsung WindFree Connect 18000 BTUs Frio Inverter AR18CVFAAWKNAZ;Samsung;1;frio;Amazon;2;3999.0
+18000;LG AI Dual Inverter Voice Artcool 18000 BTUs Frio Inverter S3-Q18KLR1B;LG;1;frio;Webcontinental;2;4029.0
+18000;Midea AI Ecomaster 18000 BTUs Quente/Frio Inverter 42EMVQA18M5 / 38EMVQA18M5;Midea;1;quente_frio;Webcontinental;1;4031.1
+18000;LG AI Dual Inverter Voice Artcool 18000 BTUs Frio Inverter S3-Q18KLR1C;LG;1;frio;Loja Online LG;3;4076.1
+18000;Midea Xtreme Save Connect 18000 BTUs Quente/Frio Inverter 42AGVQI18M5 / 38AGVQI18M5;Midea;1;quente_frio;Webcontinental;4;4099.0
+18000;Gree G-Diamond 18000 BTUs Frio Inverter GWC18ACD-D3DNA1M;Gree;1;frio;Americanas;5;4184.1
+18000;Samsung WindFree AI 18000 BTUs Quente/Frio Inverter AR18DXFAAWKNAZ / AR18DXFAAWKXAZ;Samsung;1;quente_frio;Webcontinental;4;4199.0
+18000;Samsung Digital Inverter 18000 BTUs Controle Remoto Frio AR18CVHZAWKNAZ;Samsung;1;frio;Webcontinental;3;4249.01
+18000;Gree G-Top Connection 18000 BTUs Frio Inverter GWC18AGD-D3DNA1D;Gree;1;frio;Magazine Luiza;1;4331.91
+18000;Springer Midea AirVolution Connect 18000 BTUs Frio Inverter 42AFVCI18S5 / 38TVCI18S5;Midea;1;frio;Fast Shop;1;4398.0
+18000;Elgin Eco 18000 BTUs Frio Inverter 45HJFI18C2WB / 45HJFE18C2CB;Elgin;1;frio;Webcontinental;1;4526.72
+18000;LG Dual Inverter Voice Artcool UV Nano 18000 BTUs Quente/Frio Inverter S3-W18KLR7A;LG;1;quente_frio;Americanas;6;4776.64
+18000;Samsung WindFree Black Edition 18000 BTUs Quente/Frio Inverter AI F-AR70H18C1ABN;Samsung;1;quente_frio;Webcontinental;1;4786.32
+18000;LG AI Dual Inverter Voice Artcool 18000 BTUs Quente/Frio Inverter S3-W18KLRD1;LG;1;quente_frio;Loja Online LG;2;4847.48
+18000;Fujitsu Premium 18000 BTUs Quente/Frio Inverter ASBG18KMBA / AOBG18KMCA;Fujitsu;1;quente_frio;Amazon;3;4962.99
+18000;Daikin 18000 BTUs Quente/Frio Inverter FTHC18T5VL;Daikin;1;quente_frio;Americanas;2;5023.04
+18000;LG Dual Inverter Voice Artcool UV Nano 18000 BTUs Quente/Frio Inverter S4-W18KLRXC;LG;1;quente_frio;Webcontinental;1;5029.0
+18000;Samsung WindFree Connect 18000 BTUs Quente/Frio Inverter AR18BSEAAWKNAZ / AR18BSEAAWKXAZ;Samsung;1;quente_frio;Webcontinental;1;5099.0
+18000;Gree G-Diamond 18000 BTUs Quente/Frio Inverter GWH18ACD / D3DNA1M;Gree;1;quente_frio;Fast Shop;1;5498.89
+18000;LG Dual Inverter Voice Artcool UV Nano 18000 BTUs Quente/Frio Inverter S4-W18KLRXB;LG;1;quente_frio;Fast Shop;1;5616.0
+24000;EOS 24000 BTUs Frio Master Comfort On/Off EASM24000FI/EASM24000FE;EOS;0;frio;Amazon;3;2609.1
+24000;Philco 24000 BTUs Quente/Frio PAC24QI;Philco;0;quente_frio;Amazon;4;2654.0
+24000;Philco 24000 BTUs Frio PAC24FI;Philco;0;frio;Americanas;5;2789.0
+24000;Philco 24000 BTUs Frio Inverter Eco PAC24FC;Philco;1;frio;Americanas;5;2888.16
+24000;Electrolux Color Adapt 24000 BTUs Frio Inverter YI24F / YE24F;Electrolux;1;frio;Webcontinental;6;3202.13
+24000;Philco 24000 BTUs Quente/Frio Inverter PAC24QC;Philco;1;quente_frio;Americanas;3;3248.08
+24000;Hitachi AirHome 600 24000 BTUs Frio Inverter SPK24C3IVF;Hitachi;1;frio;KaBuM!;4;3272.31
+24000;Electrolux Color Adapt 24000 BTUs Frio Inverter JI24F / JE24F;Electrolux;1;frio;Webcontinental;7;3291.1
+24000;Philco 24000 BTUs Frio Inverter PAC24FB;Philco;1;frio;Magazine Luiza;4;3299.99
+24000;Agratto Fit Top 24000 BTUs Frio Inverter FICST24F;Agratto;1;frio;Amazon;3;3446.1
+24000;Philco 24000 BTUs Quente/Frio Inverter PAC24000IQFM15;Philco;1;quente_frio;Amazon;5;3499.0
+24000;Electrolux Color Adapt 24000 BTUs Quente/Frio Inverter YI24R / YE24R;Electrolux;1;quente_frio;Webcontinental;6;3558.02
+24000;Elgin Eco II 24000 BTUs Frio Inverter 45HJFI24C2WB / 45HJFE24C2CB;Elgin;1;frio;Webcontinental;5;3619.0
+24000;Elgin Eco II 24000 BTUs Quente/Frio Inverter HJQI24C2WB / HJQE24C2CB;Elgin;1;quente_frio;Amazon;5;3673.14
+24000;Gree G-Top Auto 24000 BTUs Frio Inverter GWC24ATE-D6DNA1A;Gree;1;frio;Amazon;5;3734.91
+24000;Agratto LIV Top 24000 BTUs Inverter Controle Remoto Quente/Frio LCST24QF-02I;Agratto;1;quente_frio;Americanas;5;3798.08
+24000;TCL T-Pro 2.0 24000 BTUs Quente/Frio Inverter TAC-24CHTG2-INV;TCL;1;quente_frio;Webcontinental;4;3834.0
+24000;LG Dual Inverter AI Voice 24000 BTUs Frio Inverter S3-Q24K231C / S3UQ24K231C;LG;1;frio;KaBuM!;4;3860.91
+24000;Elgin Eco 24000 BTUs Frio Inverter 45HJFI24C2WC / 45HJFE24C2CC;Elgin;1;frio;Amazon;3;3899.0
+24000;TCL 24000 BTUs Frio Inverter TAC-24CTG3-INV;TCL;1;frio;Webcontinental;2;3899.0
+24000;TCL T-Pro 2.0 24000 BTUs Inverter Controle Remoto Frio TAC-24CTG2-INV;TCL;1;frio;Americanas;4;3918.64
+24000;Philco Eco 24000 BTUs Frio Inverter PAC24000IFM15;Philco;1;frio;Webcontinental;3;3939.0
+24000;Fujitsu 24000 BTUs Frio Inverter Airstage Essencial ASKA24CPBA / AOKA24CPBA;Fujitsu;1;frio;Americanas;3;4038.32
+24000;Gree G-Top Auto 24000 BTUs Quente/Frio Inverter GWH24ATE-D6DNA1A;Gree;1;quente_frio;Amazon;5;4049.9
+24000;Fujitsu 24000 BTUs Quente/Frio Inverter Airstage Essencial ASKA24KPBA / AOKA24KPBA;Fujitsu;1;quente_frio;Americanas;1;4115.76
+24000;Hitachi AirHome 600 24000 BTUs Quente/Frio Inverter SPK24C3IVQ;Hitachi;1;quente_frio;Americanas;4;4123.0
+24000;Springer Midea AI Ecomaster 24000 BTUs Frio Inverter 42EZVCA24M5 / 38EZVCA24M5;Midea;1;frio;Webcontinental;5;4139.1
+24000;Philco 24000 BTUs Quente/Frio Inverter PAC24QG;Philco;1;quente_frio;Webcontinental;3;4179.0
+24000;LG Dual Inverter AI Voice 24000 BTUs Frio Inverter S3-Q24K233C;LG;1;frio;Loja Online LG;2;4205.52
+24000;Samsung 24000 BTUs Inverter Controle Remoto Frio WindFree AI Pro F-AR60H24D1AW;Samsung;1;frio;Webcontinental;2;4299.01
+24000;Midea Xtreme Save Connect 24000 BTUs Quente/Frio Inverter Black Edition 42MGVQI24M5;Midea;1;quente_frio;Amazon;2;4319.1
+24000;Philco Eco 24000 BTUs Frio Inverter PAC24000IFM12W;Philco;1;frio;Amazon;2;4399.0
+24000;Agratto Neo 24000 BTUs Frio Inverter ICS24F-02;Agratto;1;frio;Amazon;1;4499.9
+24000;Samsung Ultra AI 24000 BTUs Frio Inverter F-AR50F24D1AH;Samsung;1;frio;Webcontinental;2;4513.52
+24000;Agratto 24000 BTUs Frio Inverter Liv Top LCST24F-02I;Agratto;1;frio;Magazine Luiza;1;4534.7
+24000;Samsung WindFree Black Edition 24000 BTUs Quente/Frio Inverter WiFi AR24CSECABT;Samsung;1;quente_frio;Amazon;2;4576.41
+24000;TCL 24000 BTUs Quente/Frio Inverter BreezeIN AI TAC-24CHTG3-INV;TCL;1;quente_frio;Webcontinental;2;4589.0
+24000;LG AI Dual Inverter Voice 24000 BTUs Quente/Frio Inverter S3-W24K231D;LG;1;quente_frio;Webcontinental;3;4599.0
+24000;Samsung 24000 BTUs Quente/Frio Inverter WindFree AI Pro F-AR60H24C1AWN;Samsung;1;quente_frio;Webcontinental;1;4599.01
+24000;LG AI Dual Inverter Voice 24000 BTUs Quente/Frio Inverter S3-W24K233;LG;1;quente_frio;Loja Online LG;1;4599.08
+24000;Samsung 24000 BTUs Quente/Frio Inverter F-AR60F24C1AW;Samsung;1;quente_frio;Webcontinental;2;4679.1
+24000;Elgin 24000 BTUs Frio Inverter Eco Dream HIFI24C2WA / HIFE24C2CA;Elgin;1;frio;Webcontinental;3;4699.0
+24000;TCL T-Pro 24000 BTUs Quente/Frio Inverter TAC-24CHTGG1-INV;TCL;1;quente_frio;Amazon;2;4699.0
+24000;Gree G-Classic 24000 BTUs Frio Inverter GWC24ATD-D6DNA2A;Gree;1;frio;Magazine Luiza;1;4699.06
+24000;Springer Midea AI Ecomaster 24000 BTUs Quente/Frio Inverter 42EZVQA24M5 / 38EZVQA24M5;Midea;1;quente_frio;Americanas;4;4815.55
+24000;LG Dual Inverter Voice 24000 BTUs Frio Inverter S4-Q24K231;LG;1;frio;Amazon;1;4919.0
+24000;Philco Eco 24000 BTUs Quente/Frio Inverter PAC24000IQFM12W;Philco;1;quente_frio;Magazine Luiza;1;4970.7
+24000;LG Dual Inverter Voice 24000 BTUs Controle Remoto Quente/Frio S3-W24K231A;LG;1;quente_frio;Americanas;3;5129.1
+24000;LG Dual Inverter Voice Artcool 24000 BTUs Frio S3-Q24K2R1C;LG;1;frio;Webcontinental;3;5189.0
+24000;LG Dual Inverter Voice Artcool 24000 BTUs Controle Remoto Frio S3-Q24K2R1B;LG;1;frio;Magazine Luiza;1;5319.0
+24000;Springer Midea Xtreme Save Connect 24000 BTUs Quente/Frio Inverter 42AGVQI24M5 / 38AGVQI24M5;Midea;1;quente_frio;Webcontinental;1;5319.01
+24000;Midea AI Ecomaster 24000 BTUs Quente/Frio Inverter 42EMVQA24M5 / 38EMVQA24M5;Midea;1;quente_frio;Webcontinental;1;5669.01
+24000;Daikin 24000 BTUs Frio Inverter RKC24T5VL / FTKC24T5VL;Daikin;1;frio;Americanas;3;5718.24
+24000;LG Dual Inverter Voice Artcool UV Nano 24000 BTUs Controle Remoto Quente/Frio S3-W24K2R7A;LG;1;quente_frio;Americanas;5;6079.92
+24000;Daikin 24000 BTUs Quente/Frio Inverter RHC24T5VL / FTHC24T5VL;Daikin;1;quente_frio;Americanas;2;6246.24
+24000;LG Dual Inverter Voice Artcool UV Nano 24000 BTUs Quente/Frio Inverter S4-W24K2RXE;LG;1;quente_frio;Amazon;2;7489.0
+30000;Philco 30000 BTUs Frio PAC30FI;Philco;0;frio;Magazine Luiza;4;4029.0
+30000;Philco 30000 BTUs Frio Inverter Eco PAC30FC;Philco;1;frio;Magazine Luiza;4;4044.02
+30000;Philco 30000 BTUs Quente/Frio Inverter PAC30000IQFM15W;Philco;1;quente_frio;Americanas;5;4212.0
+30000;Philco 30000 BTUs Quente/Frio Inverter PAC30QC;Philco;1;quente_frio;Americanas;5;4298.8
+30000;Agratto 30000 BTUs Frio Inverter Liv Top LCST30F-02I;Agratto;1;frio;Americanas;3;4309.0
+30000;HQ 30000 BTUs Frio Inverter HQI30F;HQ;1;frio;Magazine Luiza;2;4399.0
+30000;Agratto 30000 BTUs Frio Inverter KNICS30F-02;Agratto;1;frio;Webcontinental;2;4444.17
+30000;EOS 30000 BTUs Frio Inverter Master Comfort EASM30001IFI/EASM30001IFE;EOS;1;frio;Amazon;1;4679.1
+30000;Elgin Eco II 30000 BTUs Quente/Frio Inverter HJQI30C2WB / HJQE30C2CB;Elgin;1;quente_frio;Webcontinental;4;5199.0
+30000;Philco 30000 BTUs Frio Inverter PAC30000IFM15;Philco;1;frio;Magazine Luiza;3;5246.05
+30000;Agratto Fit Top 30000 BTUs Frio Inverter FICST30F;Agratto;1;frio;Fast Shop;1;5348.0
+30000;Gree G-Top Auto 30000 BTUs Quente/Frio Inverter GWH30ATEXF-S6DNA1A;Gree;1;quente_frio;Amazon;6;5669.1
+30000;Springer Midea Xtreme Save Connect C 30000 BTUs Quente/Frio Inverter 42AGVQC30M5 / 38AGVQC30M5;Midea;1;quente_frio;Americanas;2;5718.24
+30000;Gree 30000 BTUs Frio Inverter G-Top Auto CB574N09100;Gree;1;frio;Amazon;2;5799.59
+30000;Gree G-Top Auto 30000 BTUs Frio Inverter GWC30ATEXF-S6DNA1A;Gree;1;frio;Magazine Luiza;4;6235.2
+30000;Elgin Eco II 30000 BTUs Frio Inverter HJFE30C2CB / HJFI30C2WB;Elgin;1;frio;Amazon;1;6699.0
+30000;LG Dual Inverter Voice 30000 BTUs Quente/Frio Inverter S4-W30L43FA;LG;1;quente_frio;Amazon;4;6920.7
+30000;LG Dual Inverter AI Voice 30000 BTUs Frio S4-Q30R43FA;LG;1;frio;Webcontinental;4;7799.0

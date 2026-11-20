@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orçamento de Ar</title>
+<script src="dados/base.js"></script>
+<style>
+:root{--bg:#0B0B0C;--card:#151518;--ink:#F4F4F5;--mut:#A1A1AA;--line:#2A2A30;--acc:#22D3EE;--acc-ink:#04252B;--soft:#0E2A30;--warn:#FBBF24;--ok:#4ADE80;--bad:#F87171}
+:root[data-theme="light"]{--bg:#F4F4F5;--card:#FFFFFF;--ink:#111113;--mut:#5B5B66;--line:#E4E4E7;--acc:#0891B2;--acc-ink:#FFFFFF;--soft:#E0F7FB;--warn:#B45309;--ok:#15803D;--bad:#DC2626}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#F4F4F5;--card:#FFFFFF;--ink:#111113;--mut:#5B5B66;--line:#E4E4E7;--acc:#0891B2;--acc-ink:#FFFFFF;--soft:#E0F7FB;--warn:#B45309;--ok:#15803D;--bad:#DC2626}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums;padding-bottom:96px}
+.wrap{max-width:680px;margin:0 auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+h1{margin:0;font-size:22px;display:flex;align-items:center;gap:10px}
+h1 img{height:32px;width:auto;border-radius:6px}
+h2{margin:0 0 12px;font-size:17px}
+.sub{color:var(--mut);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:420px){.duas{grid-template-columns:1fr}}
+label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:46px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-1px}
+button{font:inherit;cursor:pointer;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:10px;min-height:46px;padding:8px 14px}
+button:disabled{opacity:.5;cursor:default}
+.pri{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);font-weight:700}
+.campo{margin-bottom:14px}
+.pergunta{font-weight:600;font-size:15px;margin-bottom:8px}
+/* abas */
+.abas{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:12px}
+.abas button{border:0;min-height:40px;border-radius:9px;color:var(--mut);font-weight:600}
+.abas button.on{background:var(--soft);color:var(--ink)}
+.aba{display:none}.aba.on{display:block}
+/* escolhas */
+.opcoes{display:grid;gap:8px}
+.opcoes.c5{grid-template-columns:repeat(5,1fr)}
+.opcoes.c4{grid-template-columns:repeat(2,1fr)}
+.opcoes.c3{grid-template-columns:repeat(3,1fr)}
+.op{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 4px;text-align:center;line-height:1.2}
+.op small{color:var(--mut);font-size:12px}
+.op.on{border-color:var(--acc);background:var(--soft);font-weight:600}
+.op.on small{color:var(--ink)}
+.op.ind::after{content:"indicado";font-size:10px;color:var(--acc);font-weight:600}
+.area{display:flex;align-items:center;gap:10px}
+.area input{font-size:22px;font-weight:600;max-width:120px;text-align:center}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:46px;padding:0;font-size:22px;line-height:1}
+.step output{min-width:56px;text-align:center;font-weight:600}
+.linha{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.linha:first-child{border-top:0}
+.linha .sub{display:block}
+.chk{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink);margin:0}
+input[type=checkbox]{width:22px;height:22px;min-height:0;accent-color:var(--acc);flex:none}
+.topo{display:flex;gap:8px;align-items:center;margin-bottom:14px}
+.topo input{font-weight:600}
+.x{border:0;color:var(--mut);min-height:40px;padding:4px 10px}
+.add{width:100%;border-style:dashed;color:var(--acc);font-weight:600;margin-bottom:12px}
+details>summary{cursor:pointer;color:var(--acc);font-size:14px;font-weight:600;list-style:none;padding:6px 0}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"+ "}
+details[open]>summary::before{content:"− "}
+.mais{margin-top:6px;padding-top:6px}
+.aviso{color:var(--warn);font-size:13px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+td.v,th.v{text-align:right;white-space:nowrap;padding-left:12px}
+tr.g td{border-bottom:0;padding-top:14px;font-weight:600;color:var(--mut);font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+tr.tot td{border-bottom:0;font-weight:700;font-size:20px;padding-top:12px}
+.mini{font-size:13px}.mini td,.mini th{padding:5px 4px}
+.rolar{overflow-x:auto}
+.fontes a{color:var(--acc);font-size:12px;word-break:break-all;display:block}
+/* assistente */
+.assist{border-color:var(--acc)}
+.caixa{display:flex;gap:8px;align-items:stretch}
+.caixa textarea{resize:none;flex:1}
+.caixa button{flex:none}
+.mic{width:46px;padding:0;font-size:20px}
+.mic.ouvindo{background:var(--bad);border-color:var(--bad);color:#fff}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chips button{min-height:34px;font-size:13px;padding:4px 10px;border-radius:999px;color:var(--mut)}
+.msg{padding:8px 12px;border-radius:12px;margin-bottom:8px;font-size:15px;max-width:92%}
+.msg.eu{background:var(--bg);border:1px solid var(--line);margin-left:auto}
+.msg.ia{background:var(--soft)}
+.msg.ia ul{margin:6px 0 0;padding-left:18px;color:var(--warn);font-size:14px}
+.msg.erro{background:transparent;border:1px solid var(--bad);color:var(--bad)}
+.pensando::after{content:"…";animation:pisca 1s infinite}
+@keyframes pisca{50%{opacity:.2}}
+/* opções e números */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.trio button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px;text-align:left;min-height:0}
+.trio button b{font-size:17px}
+.trio button.on{border-color:var(--acc);background:var(--soft)}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi b{display:block;font-size:20px}
+.kpi .sub{font-size:12px}
+.lucro b{color:var(--ok)}
+.tag{display:inline-block;font-size:12px;padding:2px 10px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}
+.tag.enviado{border-color:var(--acc);color:var(--acc)}
+.tag.aprovado{border-color:var(--ok);color:var(--ok)}
+.tag.perdido{border-color:var(--bad);color:var(--bad)}
+.cli{border-top:1px solid var(--line);padding:12px 0}
+.cli:first-child{border-top:0}
+.cli-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.cli-acoes{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.cli-acoes button,.cli-acoes select{min-height:36px;font-size:13px;padding:4px 10px;width:auto}
+.item-extra{display:grid;grid-template-columns:1fr 110px 40px;gap:8px;margin-bottom:8px}
+.preco{display:grid;grid-template-columns:1fr 110px;gap:8px;align-items:center;padding:4px 0;font-size:14px}
+.preco small{color:var(--mut);display:block;font-size:11px}
+.logo-prev{height:48px;border-radius:8px;display:block;margin-top:8px}
+/* barra */
+.barra{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);z-index:5}
+.barra .wrap{display:flex;align-items:center;gap:8px;padding:10px 16px}
+.barra .total{flex:1;min-width:0}
+.barra .total b{display:block;font-size:22px;color:var(--acc);letter-spacing:-.01em;white-space:nowrap}
+.barra button{flex:none;padding:8px 12px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+/* proposta impressa */
+#proposta{display:none}
+@media print{
+  @page{margin:14mm}
+  body{background:#fff;color:#111;padding:0;font-size:12pt}
+  body>*:not(#proposta){display:none!important}
+  #proposta{display:block}
+  .p-topo{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0891B2;padding-bottom:10px;margin-bottom:16px}
+  .p-topo img{max-height:60px}
+  .p-empresa{text-align:right;font-size:10pt;color:#444}
+  .p-titulo{font-size:20pt;font-weight:700;margin:0 0 4px}
+  .p-sec{margin:16px 0 6px;font-size:11pt;text-transform:uppercase;letter-spacing:.05em;color:#0891B2;font-weight:700}
+  #proposta table{font-size:11pt}
+  #proposta td,#proposta th{border-bottom:1px solid #ddd;padding:5px 0}
+  #proposta th{color:#666;font-weight:600}
+  .p-total{font-size:16pt;font-weight:700}
+  .p-assin{display:flex;gap:40px;margin-top:50px}
+  .p-assin div{flex:1;border-top:1px solid #333;padding-top:4px;text-align:center;font-size:10pt}
+  .p-peq{font-size:9.5pt;color:#555}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header>
+    <div>
+      <h1 id="marca">Orçamento de ar</h1>
+      <div class="sub" id="fonte"></div>
+    </div>
+    <button id="btnNovo">Novo</button>
+  </header>
+
+  <nav class="abas" role="tablist">
+    <button class="on" data-aba="orc">Orçamento</button>
+    <button data-aba="cli">Clientes</button>
+    <button data-aba="aju">Ajustes</button>
+  </nav>
+
+  <!-- ===================== ORÇAMENTO ===================== -->
+  <div class="aba on" id="aba-orc">
+    <section class="card assist">
+      <div class="pergunta">Fala o que o cliente precisa</div>
+      <div id="conversa"></div>
+      <div class="caixa">
+        <textarea id="pedido" rows="2" placeholder="Ex.: sala de 25 m² e quarto de 12, cliente quer o médio, uns 6 metros de cano na sala"></textarea>
+        <button class="mic" id="btnMic" aria-label="Falar" title="Falar">🎤</button>
+        <button class="pri" id="btnPedir">Montar</button>
+      </div>
+      <div class="chips" id="chips">
+        <button>Sala 20 m² e quarto 10 m², modelo médio</button>
+        <button>Só higienização de 3 aparelhos de 12 mil</button>
+        <button>Quantos metros de cano aguenta um 12 mil?</button>
+      </div>
+      <div class="sub" id="iaStatus"></div>
+    </section>
+
+    <section class="card">
+      <div class="duas">
+        <div><label for="cliNome">Cliente</label><input id="cliNome" placeholder="Nome do cliente"></div>
+        <div><label for="cliFone">WhatsApp do cliente</label><input id="cliFone" inputmode="tel" placeholder="54 99999-9999"></div>
+      </div>
+      <div class="campo" style="margin:10px 0 0"><label for="cliEnd">Endereço da obra</label><input id="cliEnd" placeholder="Rua, número, bairro"></div>
+    </section>
+
+    <div id="ambientes"></div>
+    <button class="add" id="btnAmb">+ Adicionar ar</button>
+
+    <section class="card">
+      <details id="detServ">
+        <summary>Limpeza, gás e outros serviços</summary>
+        <div class="mais" id="servicos"></div>
+      </details>
+      <details id="detItens">
+        <summary>Itens extras (furo em concreto, andaime…)</summary>
+        <div class="mais"><div id="itens"></div><button class="add" id="btnItem" style="margin:4px 0 0">+ Item</button></div>
+      </details>
+    </section>
+
+    <section class="card" id="cardOpcoes">
+      <h2>Três opções pro cliente</h2>
+      <div class="trio" id="trio"></div>
+      <label class="chk" style="margin-top:10px"><input type="checkbox" id="mandarOpcoes"> Mandar as três opções no WhatsApp e no PDF</label>
+    </section>
+
+    <section class="card" id="resumo">
+      <h2>Resumo</h2>
+      <div class="sub" id="cab"></div>
+      <table><tbody id="tabItens"></tbody></table>
+    </section>
+
+    <section class="card">
+      <h2>Pagamento</h2>
+      <div class="kpis" id="pagamento"></div>
+      <div class="duas" style="margin-top:12px">
+        <div><label for="desconto">Desconto (%)</label><input id="desconto" type="number" min="0" step="1"></div>
+        <div><label for="validade">Validade (dias)</label><input id="validade" type="number" min="1"></div>
+      </div>
+      <div class="campo" style="margin:10px 0 0">
+        <div class="pergunta" style="margin-top:6px">Preço do serviço</div>
+        <div class="opcoes c3" id="nivel"></div>
+      </div>
+    </section>
+
+    <section class="card" id="cardConsumo">
+      <h2>Conta de luz estimada</h2>
+      <div class="kpis" id="consumo"></div>
+      <p class="sub" id="consumoNota" style="margin-bottom:0"></p>
+    </section>
+
+    <section class="card">
+      <h2>Seu lucro <span class="sub">(só tu vê)</span></h2>
+      <div class="kpis lucro" id="lucro"></div>
+      <div class="campo" style="margin:12px 0 0"><label for="margemAp">Lucro sobre o aparelho (%)</label><input id="margemAp" type="number" step="1"></div>
+      <p class="sub" style="margin-bottom:0">Custo de material estimado, ajuste em Ajustes › Custos.</p>
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>Observações do orçamento</summary>
+        <div class="mais"><textarea id="obs" rows="3"></textarea></div>
+      </details>
+    </section>
+  </div>
+
+  <!-- ===================== CLIENTES ===================== -->
+  <div class="aba" id="aba-cli">
+    <section class="card">
+      <h2>Como estão os orçamentos</h2>
+      <div class="kpis" id="painel"></div>
+    </section>
+    <section class="card" id="cardLembretes">
+      <h2>Hora de chamar de novo</h2>
+      <div id="lembretes"></div>
+    </section>
+    <section class="card">
+      <div class="duas campo">
+        <input id="busca" placeholder="Buscar cliente">
+        <select id="filtro"><option value="">Todos</option><option>rascunho</option><option>enviado</option><option>aprovado</option><option>perdido</option></select>
+      </div>
+      <div id="listaClientes"></div>
+    </section>
+  </div>
+
+  <!-- ===================== AJUSTES ===================== -->
+  <div class="aba" id="aba-aju">
+    <section class="card">
+      <h2>Tua empresa</h2>
+      <div class="duas campo">
+        <div><label for="cfgNome">Nome</label><input id="cfgNome" data-cfg="nome"></div>
+        <div><label for="cfgFone">WhatsApp</label><input id="cfgFone" data-cfg="fone" inputmode="tel"></div>
+      </div>
+      <div class="duas campo">
+        <div><label for="cfgDoc">CNPJ ou CPF</label><input id="cfgDoc" data-cfg="doc"></div>
+        <div><label for="cfgCidade">Cidade</label><input id="cfgCidade" data-cfg="cidade"></div>
+      </div>
+      <div class="campo"><label for="cfgLogo">Logo (aparece no PDF)</label><input id="cfgLogo" type="file" accept="image/*"><img id="logoPrev" class="logo-prev" alt="" hidden></div>
+    </section>
+
+    <section class="card">
+      <h2>Pagamento e padrões</h2>
+      <div class="duas campo">
+        <div><label>Desconto no Pix (%)</label><input type="number" min="0" step="0.5" data-cfg="pix"></div>
+        <div><label>Parcelas no cartão</label><input type="number" min="1" max="24" data-cfg="parcelas"></div>
+      </div>
+      <div class="duas campo">
+        <div><label>Juros do cartão (% ao mês, 0 = sem juros)</label><input type="number" min="0" step="0.1" data-cfg="juros"></div>
+        <div><label>Validade padrão (dias)</label><input type="number" min="1" data-cfg="validade"></div>
+      </div>
+      <div class="campo"><label>Garantia e observações padrão</label><textarea rows="2" data-cfg="obs"></textarea></div>
+      <div class="duas campo">
+        <div><label>Tarifa de luz (R$/kWh)</label><input type="number" min="0" step="0.01" data-cfg="tarifa"></div>
+        <div><label>Horas de uso por dia</label><input type="number" min="1" max="24" data-cfg="horas"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Meus preços de serviço</h2>
+      <p class="sub">Começam no valor normal do mercado. Troca pelo que tu cobra.</p>
+      <div class="opcoes c3 campo" id="preencher">
+        <button data-p="min">Usar mínimo</button><button data-p="tipico">Usar normal</button><button data-p="max">Usar máximo</button>
+      </div>
+      <div id="tabPrecos"></div>
+    </section>
+
+    <section class="card">
+      <details>
+        <summary>Custos de material (pro cálculo do lucro)</summary>
+        <div class="mais" id="tabCustos"></div>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>Base de preços dos aparelhos</h2>
+      <div id="estat" class="rolar"></div>
+      <details><summary>De onde vêm os preços</summary><div class="fontes mais" id="fontes"></div></details>
+    </section>
+
+    <section class="card">
+      <h2>Cópia de segurança</h2>
+      <p class="sub">Tudo fica salvo neste navegador. Baixa uma cópia de vez em quando.</p>
+      <div class="duas">
+        <button id="btnExport">Baixar cópia</button>
+        <button id="btnImport">Restaurar cópia</button>
+      </div>
+      <input type="file" id="arqImport" accept="application/json" hidden>
+      <div class="campo" style="margin-top:12px"><button id="btnTema" style="width:100%">Trocar claro / escuro</button></div>
+    </section>
+  </div>
+</div>
+
+<div class="barra">
+  <div class="wrap">
+    <div class="total"><span class="sub">Total</span><b id="total">R$ 0</b></div>
+    <button id="btnSalvar">Salvar</button>
+    <button id="btnPdf">PDF</button>
+    <button class="pri" id="btnWhats">WhatsApp</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<div id="proposta"></div>
+
+<script>
+(function(){
+const B = window.BASE;
+const $ = id => document.getElementById(id);
+if(!B){ document.body.innerHTML='<p style="padding:16px">Base de preços não encontrada. Rode <code>python coletar_precos.py</code> na pasta do projeto.</p>'; return; }
+
+const TAM = [9000,12000,18000,24000,30000];
+const brl = v => (Math.round(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+const brl2 = v => (v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const mil = t => (t/1000)+' mil';
+const nf = v => (v||0).toLocaleString('pt-BR');
+const esc = s => String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dataBR = d => d.split('-').reverse().join('/');
+const ler = (k,p) => { try{ const v=localStorage.getItem(k); return v?JSON.parse(v):p; }catch(e){ return p; } };
+const gravar = (k,v) => { try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } };
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('on'),2400); }
+
+const TIPOS = {inverter_quente_frio:'Quente e frio (inverter)', inverter_frio:'Só frio (inverter)', on_off:'Convencional (mais barato)'};
+const FAIXAS = [['p25','Econômico'],['mediana','Médio'],['p75','Top'],['cliente','Cliente já tem']];
+const ROT = {p25:'econômico',mediana:'médio',p75:'top'};
+const NIVEIS = [['min','Amigo −15%',-15],['tipico','Normal',0],['max','Difícil +20%',20]];
+const ext = Object.fromEntries(B.servicos.extras.map(s=>[s.id,s]));
+const servs = B.servicos.servicos_avulsos;
+
+// consumo de referência Inmetro (kWh/mês, inverter, ~173 h/mês) e fator do convencional
+const KWH_REF = {9000:34,12000:42,18000:50,24000:66,30000:82}, FATOR_ONOFF = 1.55, HORAS_REF = 2080/12;
+
+// ---------------------------------------------------------------- configuração
+const PRECO_IDS = [...TAM.map(t=>'inst_'+t), 'metro_14_38','metro_14_12','suporte','eletrica', ...servs.map(s=>s.id)];
+function precoMercado(id, nivel){
+  if(id.startsWith('inst_')) return B.servicos.instalacao.por_btu[id.slice(5)][nivel];
+  const s = ext[id] || servs.find(x=>x.id===id); return s[nivel];
+}
+function nomePreco(id){
+  if(id.startsWith('inst_')) return 'Instalação '+mil(+id.slice(5))+' BTU';
+  return (ext[id]||servs.find(x=>x.id===id)).nome;
+}
+const CUSTOS_PADRAO = {inst_peq:260, inst_grande:350, metro_peq:65, metro_grande:90, suporte:60, eletrica:120, higienizacao:25, gas:90, outros:0};
+const CUSTOS_NOMES = {inst_peq:'Material da instalação até 12 mil (kit 3 m, cabo, dreno, fita)', inst_grande:'Material da instalação 18 mil ou mais', metro_peq:'Metro de tubo 1/4" + 3/8"', metro_grande:'Metro de tubo 1/4" + 1/2"', suporte:'Suporte da condensadora', eletrica:'Material do ponto elétrico', higienizacao:'Produtos por higienização', gas:'Gás por carga', outros:'Outros custos por orçamento'};
+function cfgPadrao(){
+  return {nome:'', fone:'', doc:'', cidade:'Caxias do Sul', logo:'', pix:5, parcelas:10, juros:0, validade:7, tarifa:1.20, horas:8,
+    obs:'Garantia de 90 dias na instalação. Aparelho com garantia de fábrica.',
+    precos:Object.fromEntries(PRECO_IDS.map(id=>[id,precoMercado(id,'tipico')])), custos:{...CUSTOS_PADRAO}};
+}
+let C = Object.assign(cfgPadrao(), ler('orcar-config',{}));
+C.precos = Object.assign(cfgPadrao().precos, C.precos||{}); C.custos = Object.assign({...CUSTOS_PADRAO}, C.custos||{});
+const salvarCfg = () => gravar('orcar-config', C);
+
+// ---------------------------------------------------------------- orçamento
+function arNovo(){ return {nome:'', area:'', pessoas:2, eletronicos:1, sol:false, btu:9000, manual:false, tipo:'inverter_quente_frio', faixa:'mediana', modelo:'', metros:3, suporte:true, eletrica:false}; }
+function novo(){ return {id:uid(), cliNome:'', cliFone:'', cliEnd:'', nivel:'tipico', desconto:0, margemAp:0, validade:C.validade, obs:C.obs, mandarOpcoes:false, ars:[arNovo()], serv:{}, itens:[]}; }
+let S = Object.assign(novo(), ler('orcar-v3', {}));
+
+function carga(a){
+  if(!(a.area>0)) return 0;
+  let c = a.area*600 + Math.max(0,a.pessoas-1)*600 + a.eletronicos*600;
+  if(a.sol) c *= 1.1;
+  return Math.round(c);
+}
+const indicado = c => TAM.find(t=>t>=c) || 30000;
+function est(btu,tipo){ const e = B.estatisticas[btu]||{}; return e[tipo]||e.todos; }
+function aparelho(a, faixa){
+  faixa = faixa || a.faixa;
+  if(faixa==='cliente') return null;
+  if(!faixaForcada && a.modelo!=='' && B.aparelhos[a.modelo]){ const m=B.aparelhos[a.modelo]; return {valor:m.preco, nome:m.nome}; }
+  const e = est(a.btu,a.tipo);
+  return {valor:e[faixa], nome:`Ar split ${mil(a.btu)} BTU ${TIPOS[a.tipo].toLowerCase().replace(' (mais barato)','')}, modelo ${ROT[faixa]}`};
+}
+let faixaForcada = null;
+const fatorNivel = () => 1 + (NIVEIS.find(n=>n[0]===S.nivel)||NIVEIS[1])[2]/100;
+const mo = id => Math.round(C.precos[id]*fatorNivel());
+
+function montar(faixa){
+  faixaForcada = faixa||null;
+  const itens=[]; let custo=0, baseAp=0;
+  S.ars.forEach((a,i)=>{
+    const g = a.nome || `Ar ${i+1}`, f = (faixa && a.faixa!=='cliente') ? faixa : a.faixa;
+    const ap = aparelho(a, f);
+    if(ap){ baseAp += ap.valor; itens.push({g, nome:ap.nome, valor:Math.round(ap.valor*(1+(S.margemAp||0)/100)), ap:true}); }
+    const grande = a.btu>=18000;
+    itens.push({g, nome:`Instalação completa ${mil(a.btu)} BTU (vácuo, teste e até 3 m)`, valor:mo('inst_'+a.btu)});
+    custo += grande? C.custos.inst_grande : C.custos.inst_peq;
+    const extra = Math.max(0,a.metros-3);
+    if(extra>0){ itens.push({g, nome:`Tubulação extra ${grande?'1/4" + 1/2"':'1/4" + 3/8"'} (${nf(extra)} m)`, valor:mo(grande?'metro_14_12':'metro_14_38')*extra}); custo += (grande?C.custos.metro_grande:C.custos.metro_peq)*extra; }
+    if(a.suporte){ itens.push({g, nome:'Suporte da condensadora', valor:mo('suporte')}); custo += C.custos.suporte; }
+    if(a.eletrica){ itens.push({g, nome:'Ponto elétrico exclusivo com disjuntor', valor:mo('eletrica')}); custo += C.custos.eletrica; }
+  });
+  servs.forEach(s=>{
+    const q=S.serv[s.id]||0; if(!q) return;
+    itens.push({g:'Serviços', nome:s.nome+(q>1?` (${q}×)`:''), valor:mo(s.id)*q});
+    if(s.id.startsWith('higien')||s.id==='limpeza_simples'||s.id==='preventiva') custo += C.custos.higienizacao*q;
+    if(s.id.startsWith('gas_')) custo += C.custos.gas*q;
+  });
+  (S.itens||[]).forEach(it=>{ if(it.nome && it.valor>0) itens.push({g:'Extras', nome:it.nome, valor:+it.valor}); });
+  custo += C.custos.outros||0;
+  faixaForcada = null;
+  const bruto = itens.reduce((t,i)=>t+i.valor,0), desc = Math.round(bruto*(S.desconto||0)/100), total = bruto-desc;
+  return {itens, bruto, desc, total, custo:custo+baseAp, lucro: total-custo-baseAp};
+}
+
+// ---------------------------------------------------------------- abas
+document.querySelector('.abas').addEventListener('click', e=>{
+  const b=e.target.closest('[data-aba]'); if(!b) return;
+  document.querySelectorAll('.abas button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.aba').forEach(x=>x.classList.toggle('on',x.id==='aba-'+b.dataset.aba));
+  if(b.dataset.aba==='cli') renderClientes();
+  window.scrollTo(0,0);
+});
+
+// ---------------------------------------------------------------- campos simples
+const CAMPOS = ['cliNome','cliFone','cliEnd','desconto','margemAp','validade','obs'];
+CAMPOS.forEach(k=>$(k).addEventListener('input',e=>{ S[k] = e.target.type==='number'? +e.target.value : e.target.value; atualizar(); }));
+$('mandarOpcoes').addEventListener('change', e=>{ S.mandarOpcoes=e.target.checked; atualizar(); });
+
+// ---------------------------------------------------------------- aparelhos
+function modelos(a){
+  const l = B.aparelhos.map((m,i)=>[m,i]).filter(([m])=>m.btu===a.btu && (a.tipo==='on_off'? !m.inverter : m.inverter && m.ciclo===(a.tipo==='inverter_frio'?'frio':'quente_frio')));
+  return `<option value="">Usar a linha escolhida (${l.length} modelos)</option>`+l.map(([m,i])=>`<option value="${i}" ${String(a.modelo)===String(i)?'selected':''}>${brl(m.preco)} · ${esc(m.nome)}</option>`).join('');
+}
+function renderArs(){
+  $('ambientes').innerHTML = S.ars.map((a,i)=>{
+    const c = carga(a), ind = indicado(c);
+    if(!a.manual && c) a.btu = ind;
+    return `<section class="card ar" data-i="${i}">
+      <div class="topo"><input data-k="nome" value="${esc(a.nome)}" placeholder="Ar ${i+1} (ex.: quarto, sala)" aria-label="Nome do cômodo">
+        <button class="x" data-del="${i}">Remover</button></div>
+      <div class="campo"><div class="pergunta">Tamanho do cômodo</div>
+        <div class="area"><input data-k="area" type="number" inputmode="decimal" min="0" step="0.5" value="${a.area??''}" placeholder="0"><span class="sub">m²<br>largura × comprimento</span></div></div>
+      <div class="campo"><div class="pergunta">Potência (BTU)</div>
+        <div class="opcoes c5">${TAM.map(t=>`<button class="op ${t===a.btu?'on':''} ${c&&t===ind?'ind':''}" data-btu="${t}">${mil(t)}</button>`).join('')}</div>
+        ${c&&a.btu<ind?'<div class="aviso">Fraco pra esse cômodo: vai ficar no máximo e não gelar.</div>':''}
+        ${c>30000?'<div class="aviso">Acima de 30 mil: divide em dois aparelhos ou usa piso-teto/cassete.</div>':''}</div>
+      <div class="campo"><div class="pergunta">Aparelho</div>
+        <div class="opcoes c4">${FAIXAS.map(([k,r])=>{ const e=est(a.btu,a.tipo); const p = k==='cliente'?'só instalação':brl(e[k]*(1+(S.margemAp||0)/100));
+          return `<button class="op ${a.faixa===k&&a.modelo===''?'on':''}" data-faixa="${k}">${r}<small>${p}</small></button>`; }).join('')}</div>
+        ${a.modelo!==''&&B.aparelhos[a.modelo]?`<div class="sub" style="margin-top:6px">Modelo: ${esc(B.aparelhos[a.modelo].nome)}</div>`:''}</div>
+      <div class="linha"><div>Distância entre as partes<span class="sub">até 3 m já vem na instalação${a.metros>15?' · <b style="color:var(--warn)">confere o máximo no manual e cobra gás extra</b>':''}</span></div>
+        <div class="step"><button data-m="-1" aria-label="Menos">−</button><output>${nf(a.metros)} m</output><button data-m="1" aria-label="Mais">+</button></div></div>
+      <div class="linha"><label class="chk"><input type="checkbox" data-k="suporte" ${a.suporte?'checked':''}> Suporte pra parte de fora</label></div>
+      <div class="linha"><label class="chk"><input type="checkbox" data-k="eletrica" ${a.eletrica?'checked':''}> Precisa de tomada/disjuntor novo</label></div>
+      <details class="mais" ${a.manual||a.tipo!=='inverter_quente_frio'||a.modelo!==''?'open':''}><summary>Mais opções</summary>
+        <div class="duas campo" style="margin-top:8px">
+          <div><label>Pessoas no cômodo</label><input data-k="pessoas" type="number" min="1" value="${a.pessoas}"></div>
+          <div><label>TV, PC e outros aparelhos</label><input data-k="eletronicos" type="number" min="0" value="${a.eletronicos}"></div>
+        </div>
+        <div class="campo"><label class="chk"><input type="checkbox" data-k="sol" ${a.sol?'checked':''}> Bate sol da tarde / embaixo do telhado</label></div>
+        <div class="campo"><label>Tipo</label><select data-k="tipo">${Object.entries(TIPOS).map(([k,v])=>`<option value="${k}" ${k===a.tipo?'selected':''}>${v}</option>`).join('')}</select></div>
+        <div class="campo"><label>Modelo específico (menor preço da internet)</label><select data-k="modelo">${modelos(a)}</select></div>
+      </details>
+    </section>`;
+  }).join('');
+}
+function redesenhar(foco){
+  renderArs(); atualizar();
+  if(foco){ const el=document.querySelector(`.ar[data-i="${foco.i}"] [data-k="${foco.k}"]`); if(el){ el.focus(); try{ el.setSelectionRange(el.value.length,el.value.length);}catch(e){} } }
+}
+$('ambientes').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  const card = b.closest('.ar'); if(!card) return; const a = S.ars[+card.dataset.i];
+  if(b.dataset.del!==undefined){ S.ars.splice(+b.dataset.del,1); }
+  else if(b.dataset.btu){ a.btu=+b.dataset.btu; a.manual = a.btu!==indicado(carga(a)) || !carga(a); a.modelo=''; }
+  else if(b.dataset.faixa){ a.faixa=b.dataset.faixa; a.modelo=''; }
+  else if(b.dataset.m){ a.metros=Math.max(0,a.metros+(+b.dataset.m)); }
+  else return;
+  redesenhar();
+});
+$('ambientes').addEventListener('input', e=>{
+  const el = e.target, k = el.dataset.k; if(!k) return;
+  const card = el.closest('.ar'), i = card.dataset.i, a = S.ars[+i];
+  a[k] = el.type==='checkbox'? el.checked : el.type==='number'? (el.value===''?'':+el.value) : el.value;
+  if(k==='modelo'){ a.modelo = el.value===''?'':+el.value; if(a.modelo!=='') a.faixa='mediana'; }
+  if(['area','pessoas','eletronicos','sol'].includes(k)) a.manual=false;
+  if(['tipo','area','pessoas','eletronicos','sol'].includes(k)) a.modelo='';
+  if(k==='nome'){ atualizar(); return; }
+  redesenhar(el.type==='number'||el.type==='text'? {i,k} : null);
+});
+$('btnAmb').onclick = ()=>{ S.ars.push(arNovo()); redesenhar(); document.querySelector('.ar:last-of-type [data-k="area"]')?.focus(); };
+
+// ---------------------------------------------------------------- serviços e itens extras
+function renderServ(){
+  $('servicos').innerHTML = servs.map(s=>`<div class="linha"><div>${esc(s.nome)}<span class="sub">${brl(mo(s.id))} cada</span></div>
+    <div class="step"><button data-s="${s.id}" data-d="-1" aria-label="Menos">−</button><output>${S.serv[s.id]||0}</output><button data-s="${s.id}" data-d="1" aria-label="Mais">+</button></div></div>`).join('');
+  if(Object.values(S.serv).some(q=>q>0)) $('detServ').open = true;
+}
+$('servicos').addEventListener('click', e=>{
+  const b=e.target.closest('button[data-s]'); if(!b) return;
+  S.serv[b.dataset.s] = Math.max(0,(S.serv[b.dataset.s]||0)+(+b.dataset.d)); renderServ(); atualizar();
+});
+function renderItens(){
+  $('itens').innerHTML = (S.itens||[]).map((it,i)=>`<div class="item-extra" data-i="${i}">
+    <input data-f="nome" value="${esc(it.nome)}" placeholder="Descrição"><input data-f="valor" type="number" min="0" value="${it.valor||''}" placeholder="R$">
+    <button class="x" data-del="${i}" aria-label="Remover">✕</button></div>`).join('');
+  if((S.itens||[]).length) $('detItens').open = true;
+}
+$('itens').addEventListener('input', e=>{ const r=e.target.closest('.item-extra'); if(!r) return; const it=S.itens[+r.dataset.i]; it[e.target.dataset.f] = e.target.dataset.f==='valor'? +e.target.value : e.target.value; atualizar(); });
+$('itens').addEventListener('click', e=>{ const d=e.target.dataset.del; if(d===undefined) return; S.itens.splice(+d,1); renderItens(); atualizar(); });
+$('btnItem').onclick = ()=>{ S.itens=S.itens||[]; S.itens.push({nome:'',valor:0}); renderItens(); document.querySelector('.item-extra:last-child input')?.focus(); };
+
+// ---------------------------------------------------------------- nível
+function renderNivel(){ $('nivel').innerHTML = NIVEIS.map(([k,r])=>`<button class="op ${S.nivel===k?'on':''}" data-n="${k}">${r}</button>`).join(''); }
+$('nivel').addEventListener('click', e=>{ const b=e.target.closest('[data-n]'); if(!b) return; S.nivel=b.dataset.n; renderNivel(); renderServ(); atualizar(); });
+
+// ---------------------------------------------------------------- pagamento, consumo, opções
+function parcela(total){
+  const n = Math.max(1, C.parcelas|0), i = (C.juros||0)/100;
+  if(!i) return {n, valor: total/n, total, semJuros:true};
+  const v = total*i/(1-Math.pow(1+i,-n)); return {n, valor:v, total:v*n, semJuros:false};
+}
+function consumo(){
+  let kwh=0, kwhOnOff=0, temInverter=false;
+  const fator = (C.horas||8)*30/HORAS_REF;
+  S.ars.forEach(a=>{ const ref=KWH_REF[a.btu]*fator; const inv = a.tipo!=='on_off';
+    kwh += inv? ref : ref*FATOR_ONOFF; kwhOnOff += ref*FATOR_ONOFF; if(inv) temInverter=true; });
+  return {kwh, reais:kwh*C.tarifa, economiaAno: temInverter? (kwhOnOff-kwh)*C.tarifa*12 : 0};
+}
+function renderTrio(o){
+  const comAp = S.ars.some(a=>a.faixa!=='cliente');
+  $('cardOpcoes').hidden = !comAp; if(!comAp) return;
+  const atual = S.ars.filter(a=>a.faixa!=='cliente').every(a=>a.faixa===S.ars.find(x=>x.faixa!=='cliente').faixa && a.modelo==='') ? S.ars.find(x=>x.faixa!=='cliente').faixa : '';
+  $('trio').innerHTML = ['p25','mediana','p75'].map(f=>{ const m=montar(f);
+    return `<button data-trio="${f}" class="${atual===f?'on':''}"><span class="sub">${{p25:'Econômico',mediana:'Médio',p75:'Top'}[f]}</span><b>${brl(m.total)}</b><span class="sub">${parcela(m.total).n}x ${brl(parcela(m.total).valor)}</span></button>`; }).join('');
+}
+$('trio').addEventListener('click', e=>{ const b=e.target.closest('[data-trio]'); if(!b) return; S.ars.forEach(a=>{ if(a.faixa!=='cliente'){ a.faixa=b.dataset.trio; a.modelo=''; } }); redesenhar(); });
+
+// ---------------------------------------------------------------- tela
+function atualizar(){
+  const o = montar(); window.__o = o;
+  $('total').textContent = brl(o.total);
+  $('cab').textContent = [S.cliNome && 'Cliente: '+S.cliNome, new Date().toLocaleDateString('pt-BR')].filter(Boolean).join(' · ');
+  let g='', h='';
+  o.itens.forEach(i=>{ if(i.g!==g){ g=i.g; h+=`<tr class="g"><td colspan="2">${esc(g)}</td></tr>`; } h+=`<tr><td>${esc(i.nome)}</td><td class="v">${brl(i.valor)}</td></tr>`; });
+  if(o.desc) h+=`<tr><td>Desconto de ${S.desconto}%</td><td class="v">− ${brl(o.desc)}</td></tr>`;
+  h+=`<tr class="tot"><td>Total</td><td class="v">${brl(o.total)}</td></tr>`;
+  $('tabItens').innerHTML = h;
+  const p = parcela(o.total), pix = o.total*(1-(C.pix||0)/100);
+  $('pagamento').innerHTML = `<div class="kpi"><span class="sub">No Pix${C.pix?` (−${nf(C.pix)}%)`:''}</span><b>${brl(pix)}</b></div>
+    <div class="kpi"><span class="sub">No cartão</span><b>${p.n}x ${brl2(p.valor)}</b><span class="sub">${p.semJuros?'sem juros':'total '+brl(p.total)}</span></div>`;
+  const c = consumo();
+  $('cardConsumo').hidden = !S.ars.length;
+  $('consumo').innerHTML = `<div class="kpi"><span class="sub">Por mês</span><b>${brl(c.reais)}</b><span class="sub">${nf(Math.round(c.kwh))} kWh</span></div>
+    <div class="kpi"><span class="sub">Economia do inverter</span><b>${brl(c.economiaAno)}/ano</b><span class="sub">contra convencional</span></div>`;
+  $('consumoNota').textContent = `Estimativa com ${C.horas} h de uso por dia e tarifa de ${brl2(C.tarifa)}/kWh, a partir da referência do Inmetro.`;
+  const pct = o.total? Math.round(o.lucro/o.total*100) : 0;
+  $('lucro').innerHTML = `<div class="kpi"><span class="sub">Lucro estimado</span><b>${brl(o.lucro)}</b><span class="sub">${pct}% do total</span></div>
+    <div class="kpi"><span class="sub">Custos (aparelho + material)</span><b style="color:var(--ink)">${brl(o.custo)}</b></div>`;
+  $('mandarOpcoes').checked = !!S.mandarOpcoes;
+  renderTrio(o);
+  gravar('orcar-v3', S);
+}
+
+// ---------------------------------------------------------------- textos
+function linhasItens(o){ const L=[]; let g=''; o.itens.forEach(i=>{ if(i.g!==g){ g=i.g; L.push('',`*${g}*`); } L.push(`• ${i.nome}: ${brl(i.valor)}`); }); return L; }
+function texto(){
+  const o=window.__o, p=parcela(o.total), L=[`*Orçamento de ar-condicionado*${C.nome?' · '+C.nome:''}`];
+  if(S.cliNome) L.push(`Cliente: ${S.cliNome}`);
+  L.push(...linhasItens(o), '');
+  if(o.desc) L.push(`Desconto: − ${brl(o.desc)}`);
+  L.push(`*Total: ${brl(o.total)}*`);
+  L.push(`No Pix: ${brl(o.total*(1-(C.pix||0)/100))}${C.pix?` (${nf(C.pix)}% de desconto)`:''}`);
+  L.push(`No cartão: ${p.n}x de ${brl2(p.valor)}${p.semJuros?' sem juros':''}`);
+  if(S.mandarOpcoes && S.ars.some(a=>a.faixa!=='cliente')){
+    L.push('', '*Outras opções de aparelho:*');
+    ['p25','mediana','p75'].forEach(f=>{ const m=montar(f); L.push(`• ${{p25:'Econômico',mediana:'Médio',p75:'Top'}[f]}: ${brl(m.total)} (${parcela(m.total).n}x ${brl2(parcela(m.total).valor)})`); });
+  }
+  const c=consumo(); if(S.ars.length) L.push('', `Conta de luz estimada: ${brl(c.reais)} por mês (${C.horas} h por dia).`);
+  L.push('', `Válido por ${S.validade} dias.`); if(S.obs) L.push(S.obs);
+  return L.join('\n');
+}
+function proposta(){
+  const o=window.__o, p=parcela(o.total), hoje=new Date(), val=new Date(hoje.getTime()+S.validade*864e5), c=consumo();
+  let rows='', g='';
+  o.itens.forEach(i=>{ if(i.g!==g){ g=i.g; rows+=`<tr><td colspan="2" style="padding-top:10px"><b>${esc(g)}</b></td></tr>`; } rows+=`<tr><td>${esc(i.nome)}</td><td style="text-align:right">${brl(i.valor)}</td></tr>`; });
+  if(o.desc) rows+=`<tr><td>Desconto de ${S.desconto}%</td><td style="text-align:right">− ${brl(o.desc)}</td></tr>`;
+  const opcoes = S.mandarOpcoes && S.ars.some(a=>a.faixa!=='cliente') ? `<div class="p-sec">Opções de aparelho</div><table><tr><th>Linha</th><th style="text-align:right">Total</th><th style="text-align:right">Cartão</th></tr>${['p25','mediana','p75'].map(f=>{const m=montar(f);return `<tr><td>${{p25:'Econômico',mediana:'Médio',p75:'Top'}[f]}</td><td style="text-align:right">${brl(m.total)}</td><td style="text-align:right">${parcela(m.total).n}x ${brl2(parcela(m.total).valor)}</td></tr>`;}).join('')}</table>` : '';
+  $('proposta').innerHTML = `
+    <div class="p-topo"><div>${C.logo?`<img src="${C.logo}" alt="">`:`<b style="font-size:16pt">${esc(C.nome||'Orçamento')}</b>`}</div>
+      <div class="p-empresa">${[C.nome,C.doc,C.fone,C.cidade].filter(Boolean).map(esc).join('<br>')}</div></div>
+    <p class="p-titulo">Proposta de climatização</p>
+    <div class="p-peq">Emitida em ${hoje.toLocaleDateString('pt-BR')} · válida até ${val.toLocaleDateString('pt-BR')}</div>
+    <div class="p-sec">Cliente</div>
+    <div>${esc(S.cliNome||'—')}${S.cliFone?' · '+esc(S.cliFone):''}${S.cliEnd?'<br>'+esc(S.cliEnd):''}</div>
+    <div class="p-sec">Itens</div>
+    <table>${rows}<tr><td class="p-total" style="padding-top:10px">Total</td><td class="p-total" style="text-align:right;padding-top:10px">${brl(o.total)}</td></tr></table>
+    ${opcoes}
+    <div class="p-sec">Pagamento</div>
+    <div>Pix: <b>${brl(o.total*(1-(C.pix||0)/100))}</b>${C.pix?` (${nf(C.pix)}% de desconto)`:''} · Cartão: <b>${p.n}x de ${brl2(p.valor)}</b>${p.semJuros?' sem juros':''}</div>
+    ${S.ars.length?`<div class="p-sec">Consumo estimado</div><div>Cerca de ${nf(Math.round(c.kwh))} kWh e ${brl(c.reais)} por mês com ${C.horas} h de uso por dia${c.economiaAno?`; o inverter economiza cerca de ${brl(c.economiaAno)} por ano em relação ao convencional`:''}.</div>`:''}
+    ${S.obs?`<div class="p-sec">Condições</div><div>${esc(S.obs).replace(/\n/g,'<br>')}</div>`:''}
+    <div class="p-peq" style="margin-top:8px">Instalação com vácuo, teste de estanqueidade e isolamento térmico. Preço do aparelho sujeito à disponibilidade do modelo na data da compra.</div>
+    <div class="p-assin"><div>${esc(C.nome||'Empresa')}</div><div>${esc(S.cliNome||'Cliente')}</div></div>`;
+}
+
+// ---------------------------------------------------------------- salvar, WhatsApp, PDF
+function registros(){ return ler('orcar-clientes', []); }
+function salvarAtual(status){
+  const l = registros(); const i = l.findIndex(r=>r.id===S.id); const agora = new Date().toISOString();
+  const r = {id:S.id, cliente:S.cliNome||'Sem nome', fone:S.cliFone, total:window.__o.total, lucro:window.__o.lucro, atualizado:agora,
+    criado: i>=0? l[i].criado : agora, status: status || (i>=0? l[i].status : 'rascunho'),
+    aprovadoEm: i>=0? l[i].aprovadoEm : null, estado: JSON.parse(JSON.stringify(S))};
+  if(status==='aprovado' && !r.aprovadoEm) r.aprovadoEm = agora;
+  if(i>=0) l[i]=r; else l.unshift(r);
+  return gravar('orcar-clientes', l);
+}
+$('btnSalvar').onclick = ()=>{ toast(salvarAtual()? 'Orçamento salvo em Clientes' : 'Não deu pra salvar neste navegador'); };
+async function copiar(t){
+  try{ await navigator.clipboard.writeText(t); return true; }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); const ok=document.execCommand('copy'); ta.remove(); return ok; }
+}
+function abrirWhats(fone, t){
+  let f=(fone||'').replace(/\D/g,''); if(f.length<10) return false;
+  if(!f.startsWith('55')) f='55'+f; window.open('https://wa.me/'+f+'?text='+encodeURIComponent(t),'_blank'); return true;
+}
+$('btnWhats').onclick = async ()=>{
+  const t=texto(); await copiar(t); salvarAtual('enviado');
+  toast(abrirWhats(S.cliFone,t)? 'Abrindo o WhatsApp do cliente' : 'Orçamento copiado. É só colar no WhatsApp.');
+};
+$('btnPdf').onclick = ()=>{ proposta(); salvarAtual(); setTimeout(()=>window.print(),50); };
+window.addEventListener('beforeprint', proposta);
+$('btnNovo').onclick = ()=>{ if(window.__o.total && !registros().some(r=>r.id===S.id) && !confirm('Começar outro orçamento? Este ainda não foi salvo.')) return;
+  S=novo(); conversa=[]; $('conversa').innerHTML=''; iniciar(); document.querySelector('[data-aba="orc"]').click(); };
+
+// ---------------------------------------------------------------- clientes
+const STATUS = ['rascunho','enviado','aprovado','perdido'];
+function renderClientes(){
+  const l = registros(), mes = new Date().toISOString().slice(0,7);
+  const doMes = l.filter(r=>r.criado.slice(0,7)===mes), apr = l.filter(r=>r.status==='aprovado'), env = l.filter(r=>r.status==='enviado');
+  const fechados = l.filter(r=>r.status==='aprovado'||r.status==='perdido');
+  $('painel').innerHTML = `<div class="kpi"><span class="sub">Orçamentos no mês</span><b>${doMes.length}</b><span class="sub">${brl(doMes.reduce((t,r)=>t+r.total,0))}</span></div>
+    <div class="kpi"><span class="sub">Esperando resposta</span><b>${env.length}</b><span class="sub">${brl(env.reduce((t,r)=>t+r.total,0))}</span></div>
+    <div class="kpi"><span class="sub">Aprovados</span><b>${apr.length}</b><span class="sub">${brl(apr.reduce((t,r)=>t+r.total,0))} · lucro ${brl(apr.reduce((t,r)=>t+(r.lucro||0),0))}</span></div>
+    <div class="kpi"><span class="sub">Taxa de fechamento</span><b>${fechados.length? Math.round(apr.length/fechados.length*100)+'%':'—'}</b><span class="sub">ticket médio ${brl(apr.length? apr.reduce((t,r)=>t+r.total,0)/apr.length:0)}</span></div>`;
+  const agora = Date.now(), dias = d => (agora-new Date(d).getTime())/864e5;
+  const lemb = [
+    ...env.filter(r=>dias(r.atualizado)>=2).map(r=>({r, tipo:'retorno', txt:`Mandou há ${Math.floor(dias(r.atualizado))} dias e não respondeu`})),
+    ...apr.filter(r=>r.aprovadoEm && dias(r.aprovadoEm)>=300).map(r=>({r, tipo:'higienizacao', txt:`Instalou há ${Math.floor(dias(r.aprovadoEm)/30)} meses: hora da higienização`}))];
+  $('cardLembretes').hidden = !lemb.length;
+  $('lembretes').innerHTML = lemb.map(x=>`<div class="cli"><div class="cli-top"><b>${esc(x.r.cliente)}</b><span class="sub">${brl(x.r.total)}</span></div>
+    <div class="sub">${x.txt}</div><div class="cli-acoes"><button data-lemb="${x.tipo}" data-id="${x.r.id}">Chamar no WhatsApp</button></div></div>`).join('');
+  const q = $('busca').value.toLowerCase(), f = $('filtro').value;
+  const lista = l.filter(r=>(!f||r.status===f) && (!q||r.cliente.toLowerCase().includes(q)));
+  $('listaClientes').innerHTML = lista.length? lista.map(r=>`<div class="cli" data-id="${r.id}">
+    <div class="cli-top"><b>${esc(r.cliente)}</b><b>${brl(r.total)}</b></div>
+    <div class="sub">${new Date(r.criado).toLocaleDateString('pt-BR')} · ${r.estado.ars.length? r.estado.ars.length+(r.estado.ars.length===1?' aparelho':' aparelhos') : 'só serviço'} <span class="tag ${r.status}">${r.status}</span></div>
+    <div class="cli-acoes">
+      <button data-acao="abrir">Abrir</button>
+      <select data-acao="status" aria-label="Situação">${STATUS.map(s=>`<option ${s===r.status?'selected':''}>${s}</option>`).join('')}</select>
+      ${r.fone?'<button data-acao="whats">WhatsApp</button>':''}
+      <button data-acao="dup">Duplicar</button>
+      <button data-acao="del" class="x">Excluir</button>
+    </div></div>`).join('') : '<p class="sub">Nenhum orçamento salvo ainda. Use o botão Salvar ou mande pelo WhatsApp.</p>';
+}
+$('busca').addEventListener('input', renderClientes); $('filtro').addEventListener('change', renderClientes);
+$('lembretes').addEventListener('click', e=>{
+  const b=e.target.closest('[data-lemb]'); if(!b) return; const r=registros().find(x=>x.id===b.dataset.id); if(!r) return;
+  const nome=(r.cliente||'').split(' ')[0];
+  const t = b.dataset.lemb==='retorno'
+    ? `Oi ${nome}, tudo bem? Passando pra saber se ficou alguma dúvida no orçamento do ar-condicionado. Se quiser, consigo ajustar alguma coisa.`
+    : `Oi ${nome}, tudo bem? Já faz quase um ano da instalação do teu ar. A higienização anual deixa ele gelando melhor e gastando menos luz. Quer que eu agende?`;
+  if(!abrirWhats(r.fone,t)) copiar(t).then(()=>toast('Mensagem copiada'));
+});
+$('listaClientes').addEventListener('click', e=>{
+  const b=e.target.closest('button[data-acao]'); if(!b) return;
+  const id=b.closest('.cli').dataset.id, l=registros(), i=l.findIndex(r=>r.id===id); if(i<0) return;
+  const a=b.dataset.acao;
+  if(a==='abrir'){ S=Object.assign(novo(), l[i].estado); iniciar(); document.querySelector('[data-aba="orc"]').click(); toast('Orçamento aberto'); }
+  if(a==='whats'){ const t=`Oi ${(l[i].cliente||'').split(' ')[0]}, tudo bem? Passando pra saber se ficou alguma dúvida no orçamento do ar-condicionado.`; if(!abrirWhats(l[i].fone,t)) toast('Sem telefone'); }
+  if(a==='dup'){ const c=JSON.parse(JSON.stringify(l[i])); c.id=c.estado.id=uid(); c.status='rascunho'; c.criado=c.atualizado=new Date().toISOString(); c.aprovadoEm=null; c.cliente+=' (cópia)'; c.estado.cliNome=c.cliente; l.unshift(c); gravar('orcar-clientes',l); renderClientes(); }
+  if(a==='del'){ if(!confirm('Excluir o orçamento de '+l[i].cliente+'?')) return; l.splice(i,1); gravar('orcar-clientes',l); renderClientes(); }
+});
+$('listaClientes').addEventListener('change', e=>{
+  if(e.target.dataset.acao!=='status') return; const id=e.target.closest('.cli').dataset.id, l=registros(), r=l.find(x=>x.id===id);
+  r.status=e.target.value; if(r.status==='aprovado' && !r.aprovadoEm) r.aprovadoEm=new Date().toISOString(); gravar('orcar-clientes',l); renderClientes();
+});
+
+// ---------------------------------------------------------------- ajustes
+function renderAjustes(){
+  document.querySelectorAll('[data-cfg]').forEach(el=>{ el.value = C[el.dataset.cfg] ?? ''; });
+  $('logoPrev').hidden = !C.logo; if(C.logo) $('logoPrev').src = C.logo;
+  $('tabPrecos').innerHTML = PRECO_IDS.map(id=>`<div class="preco"><div>${esc(nomePreco(id))}${id.startsWith('metro')?' (por metro)':''}<small>mercado ${brl(precoMercado(id,'min'))} a ${brl(precoMercado(id,'max'))}</small></div>
+    <input type="number" min="0" step="10" data-preco="${id}" value="${C.precos[id]}"></div>`).join('');
+  $('tabCustos').innerHTML = Object.keys(CUSTOS_PADRAO).map(k=>`<div class="preco"><div>${CUSTOS_NOMES[k]}</div><input type="number" min="0" step="5" data-custo="${k}" value="${C.custos[k]}"></div>`).join('');
+  $('marca').innerHTML = (C.logo?`<img src="${C.logo}" alt="">`:'') + esc(C.nome||'Orçamento de ar');
+}
+document.querySelectorAll('[data-cfg]').forEach(el=>el.addEventListener('input',()=>{
+  C[el.dataset.cfg] = el.type==='number'? +el.value : el.value; salvarCfg();
+  if(el.dataset.cfg==='nome') $('marca').innerHTML = (C.logo?`<img src="${C.logo}" alt="">`:'') + esc(C.nome||'Orçamento de ar');
+  atualizar();
+}));
+$('tabPrecos').addEventListener('input', e=>{ const id=e.target.dataset.preco; if(!id) return; C.precos[id]=+e.target.value; salvarCfg(); renderServ(); atualizar(); });
+$('tabCustos').addEventListener('input', e=>{ const k=e.target.dataset.custo; if(!k) return; C.custos[k]=+e.target.value; salvarCfg(); atualizar(); });
+$('preencher').addEventListener('click', e=>{ const n=e.target.dataset.p; if(!n) return; PRECO_IDS.forEach(id=>C.precos[id]=precoMercado(id,n)); salvarCfg(); renderAjustes(); renderServ(); atualizar(); toast('Preços atualizados'); });
+$('cfgLogo').addEventListener('change', e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const img=new Image(), rd=new FileReader();
+  rd.onload=()=>{ img.onload=()=>{ const s=Math.min(1, 240/img.height), cv=document.createElement('canvas'); cv.width=img.width*s; cv.height=img.height*s;
+    cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height); C.logo=cv.toDataURL('image/png'); salvarCfg(); renderAjustes(); toast('Logo salva'); }; img.src=rd.result; };
+  rd.readAsDataURL(f);
+});
+$('btnExport').onclick = ()=>{
+  const blob = new Blob([JSON.stringify({versao:1, config:C, clientes:registros(), atual:S},null,1)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`orcamentos-ar-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(a.href);
+};
+$('btnImport').onclick = ()=>$('arqImport').click();
+$('arqImport').addEventListener('change', e=>{
+  const f=e.target.files[0]; if(!f) return; const rd=new FileReader();
+  rd.onload=()=>{ try{ const d=JSON.parse(rd.result); if(!d.config||!Array.isArray(d.clientes)) throw 0;
+      if(!confirm(`Restaurar ${d.clientes.length} orçamentos e os ajustes? O que está aqui agora será substituído.`)) return;
+      C=Object.assign(cfgPadrao(), d.config); salvarCfg(); gravar('orcar-clientes', d.clientes); if(d.atual) S=Object.assign(novo(), d.atual);
+      iniciar(); renderAjustes(); toast('Cópia restaurada'); }
+    catch(x){ toast('Arquivo inválido'); } };
+  rd.readAsText(f); e.target.value='';
+});
+$('btnTema').onclick = ()=>{ const d=document.documentElement, escuro = d.dataset.theme? d.dataset.theme==='dark' : !matchMedia('(prefers-color-scheme: light)').matches;
+  d.dataset.theme = escuro?'light':'dark'; gravar('orcar-tema', d.dataset.theme); };
+{ const t=ler('orcar-tema',null); if(t) document.documentElement.dataset.theme=t; }
+(function(){
+  let h='<table class="mini"><tbody><tr><th>BTU</th><th class="v">Ofertas</th><th class="v">Econômico</th><th class="v">Médio</th><th class="v">Top</th></tr>';
+  TAM.forEach(t=>{ const e=B.estatisticas[t].todos; if(e) h+=`<tr><td>${mil(t)}</td><td class="v">${e.n}</td><td class="v">${brl(e.p25)}</td><td class="v">${brl(e.mediana)}</td><td class="v">${brl(e.p75)}</td></tr>`; });
+  $('estat').innerHTML = h+'</tbody></table>';
+  const fs=new Set(); [B.servicos.instalacao,...B.servicos.extras,...servs].forEach(x=>(x.fontes||[]).forEach(f=>fs.add(f)));
+  $('fontes').innerHTML = `<p class="sub">Aparelhos: ${B.aparelhos.length} ofertas reais (Zoom, menor preço entre lojas) em ${dataBR(B.coletado_em)}. Econômico, médio e top são os preços de 25%, 50% e 75% do mercado.</p><p class="sub">${esc(B.servicos.observacao)}</p>`+[...fs].map(f=>`<a href="${esc(f)}" target="_blank" rel="noopener">${esc(f)}</a>`).join('');
+})();
+$('fonte').textContent = 'Preços de '+dataBR(B.coletado_em);
+
+// ---------------------------------------------------------------- assistente
+let conversa = [];
+function estadoParaIA(){
+  return {cliNome:S.cliNome, nivel:S.nivel, desconto:S.desconto||0, margemAp:S.margemAp||0, pagto:`Pix com ${C.pix}% de desconto ou ${C.parcelas}x no cartão`, validade:S.validade, obs:S.obs,
+    ars:S.ars.map((a,i)=>({nome:a.nome||`Ar ${i+1}`, area:a.area===''?null:a.area, btu:a.manual?a.btu:0, tipo:a.tipo, faixa:a.faixa,
+      metros:a.metros, suporte:a.suporte, eletrica:a.eletrica, sol:a.sol, pessoas:a.pessoas, eletronicos:a.eletronicos})),
+    serv:Object.entries(S.serv).filter(([,q])=>q>0).map(([id,qtd])=>({id,qtd})), itens:(S.itens||[]).filter(i=>i.nome)};
+}
+function aplicarIA(e){
+  ['cliNome','nivel','desconto','margemAp','validade','obs'].forEach(k=>{ if(e[k]!==undefined) S[k]=e[k]; });
+  if(Array.isArray(e.ars)){
+    S.ars = e.ars.map(a=>{ const n = arNovo();
+      Object.assign(n,{nome:a.nome||'', area:a.area==null?'':a.area, tipo:a.tipo, faixa:a.faixa, metros:a.metros, suporte:a.suporte,
+        eletrica:a.eletrica, sol:a.sol, pessoas:a.pessoas||2, eletronicos:a.eletronicos??1});
+      if(a.btu){ n.btu=a.btu; n.manual=true; } return n; });
+  }
+  S.serv = Object.fromEntries((e.serv||[]).map(x=>[x.id,x.qtd]));
+  S.itens = (e.itens||[]).map(i=>({nome:i.nome, valor:i.valor}));
+  iniciar();
+}
+function bolha(cls,txt,alertas){
+  const d=document.createElement('div'); d.className='msg '+cls; d.textContent=txt;
+  if(alertas&&alertas.length){ const ul=document.createElement('ul'); alertas.forEach(a=>{ const li=document.createElement('li'); li.textContent=a; ul.appendChild(li); }); d.appendChild(ul); }
+  $('conversa').appendChild(d); return d;
+}
+async function pedir(texto){
+  texto = texto.trim(); if(!texto) return;
+  $('pedido').value=''; bolha('eu',texto); $('chips').hidden=true;
+  const esp = bolha('ia pensando','Pensando'); $('btnPedir').disabled=true;
+  try{
+    const r = await fetch('/api/assistente',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({texto, estado:estadoParaIA(), historico:conversa})});
+    const j = await r.json(); esp.remove();
+    if(j.erro){ bolha('erro', j.erro); return; }
+    const e=j.estado, resp = e.resposta || 'Pronto.';
+    if(e.modo!=='pergunta') aplicarIA(e);
+    bolha('ia', resp, e.alertas);
+    conversa.push({pergunta:texto, resposta:resp}); conversa = conversa.slice(-6);
+  }catch(err){ esp.remove(); bolha('erro','Não consegui falar com o assistente. O servidor está rodando? (python servidor.py)'); }
+  finally{ $('btnPedir').disabled=false; }
+}
+$('btnPedir').onclick = ()=>pedir($('pedido').value);
+$('pedido').addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); pedir($('pedido').value); } });
+$('chips').addEventListener('click', e=>{ if(e.target.tagName==='BUTTON') pedir(e.target.textContent); });
+// voz
+const Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+if(!Reco) $('btnMic').hidden = true;
+else {
+  let rec=null;
+  $('btnMic').onclick = ()=>{
+    if(rec){ rec.stop(); return; }
+    rec = new Reco(); rec.lang='pt-BR'; rec.interimResults=true; rec.continuous=false;
+    const antes = $('pedido').value ? $('pedido').value+' ' : '';
+    rec.onresult = ev=>{ $('pedido').value = antes + [...ev.results].map(r=>r[0].transcript).join(''); };
+    rec.onend = ()=>{ $('btnMic').classList.remove('ouvindo'); rec=null; if($('pedido').value.trim()) pedir($('pedido').value); };
+    rec.onerror = ev=>{ if(ev.error==='not-allowed') toast('Libera o microfone no navegador'); };
+    $('btnMic').classList.add('ouvindo'); rec.start();
+  };
+}
+fetch('/api/status').then(r=>r.json()).then(j=>{ if(!j.ia) $('iaStatus').textContent='Assistente desligado: falta a chave da API no servidor. O resto funciona normal.'; })
+  .catch(()=>{ $('iaStatus').textContent='O assistente só funciona abrindo pelo servidor (python servidor.py).'; });
+
+function iniciar(){ CAMPOS.forEach(k=>$(k).value=S[k]??''); renderNivel(); renderArs(); renderServ(); renderItens(); atualizar(); }
+renderAjustes(); iniciar();
+})();
+</script>
+</body>
+</html>
