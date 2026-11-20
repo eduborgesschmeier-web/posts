@@ -16,7 +16,8 @@ App de orçamento para instalação e serviço de split, com preços reais e um 
 
 ## Arquivos
 
-- `orcamento.html`: o app (tudo fica salvo no navegador).
+- `orcamento.html`: o app (tudo fica salvo no navegador). Com chave salva em Ajustes, chama o Gemini direto do navegador; sem chave, usa o `servidor.py`.
+- `dados/instrucoes.md` e `dados/esquema.json`: instruções e formato de resposta do assistente, usados pelo servidor e pelo navegador.
 - `servidor.py`: serve o app e liga o assistente.
 - `dados/conhecimento.md`: o que o especialista sabe. Edite para ensinar coisas novas.
 - `dados/exemplos.json`: exemplos de pedidos e do que fazer. Edite para corrigir manias.
@@ -24,7 +25,11 @@ App de orçamento para instalação e serviço de split, com preços reais e um 
 - `coletar_precos.py`: coleta os preços dos aparelhos no Zoom e grava o histórico em `dados/precos.sqlite`.
 - `dados/servicos.json`: faixas de mercado de mão de obra, com fontes.
 
-## Uso
+## No ar
+
+O app fica publicado em https://eduborgesschmeier-web.github.io/posts/ e se atualiza sozinho a cada mudança no main (`.github/workflows/orcamento-ar-pages.yml`). Para ligar o assistente no site, cada pessoa cria a chave grátis do Gemini em aistudio.google.com/apikey e cola em Ajustes › Assistente de IA. A chave fica só naquele aparelho.
+
+## Uso local
 
 ```powershell
 python servidor.py

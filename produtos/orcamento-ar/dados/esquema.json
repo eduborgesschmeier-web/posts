@@ -1,0 +1,189 @@
+{
+ "type": "object",
+ "properties": {
+  "modo": {
+   "type": "string",
+   "enum": [
+    "orcamento",
+    "pergunta"
+   ]
+  },
+  "resposta": {
+   "type": "string"
+  },
+  "alertas": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "cliNome": {
+   "type": "string"
+  },
+  "nivel": {
+   "type": "string",
+   "enum": [
+    "min",
+    "tipico",
+    "max"
+   ]
+  },
+  "desconto": {
+   "type": "number"
+  },
+  "margemAp": {
+   "type": "number"
+  },
+  "pagto": {
+   "type": "string"
+  },
+  "validade": {
+   "type": "integer"
+  },
+  "obs": {
+   "type": "string"
+  },
+  "ars": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "nome": {
+      "type": "string"
+     },
+     "area": {
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "btu": {
+      "type": "integer",
+      "enum": [
+       0,
+       9000,
+       12000,
+       18000,
+       24000,
+       30000
+      ]
+     },
+     "tipo": {
+      "type": "string",
+      "enum": [
+       "inverter_quente_frio",
+       "inverter_frio",
+       "on_off"
+      ]
+     },
+     "faixa": {
+      "type": "string",
+      "enum": [
+       "p25",
+       "mediana",
+       "p75",
+       "cliente"
+      ]
+     },
+     "metros": {
+      "type": "number"
+     },
+     "suporte": {
+      "type": "boolean"
+     },
+     "eletrica": {
+      "type": "boolean"
+     },
+     "sol": {
+      "type": "boolean"
+     },
+     "pessoas": {
+      "type": "integer"
+     },
+     "eletronicos": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "nome",
+     "area",
+     "btu",
+     "tipo",
+     "faixa",
+     "metros",
+     "suporte",
+     "eletrica",
+     "sol",
+     "pessoas",
+     "eletronicos"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "serv": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "enum": [
+       "limpeza_simples",
+       "higienizacao_ate12",
+       "higienizacao_18a30",
+       "higienizacao_cassete",
+       "preventiva",
+       "gas_r410a",
+       "gas_r32",
+       "desinstalacao",
+       "remanejamento"
+      ]
+     },
+     "qtd": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "id",
+     "qtd"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "itens": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "nome": {
+      "type": "string"
+     },
+     "valor": {
+      "type": "number"
+     }
+    },
+    "required": [
+     "nome",
+     "valor"
+    ],
+    "additionalProperties": false
+   }
+  }
+ },
+ "required": [
+  "modo",
+  "resposta",
+  "alertas",
+  "cliNome",
+  "nivel",
+  "desconto",
+  "margemAp",
+  "pagto",
+  "validade",
+  "obs",
+  "ars",
+  "serv",
+  "itens"
+ ],
+ "additionalProperties": false
+}

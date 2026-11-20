@@ -317,6 +317,16 @@ tr.tot td{border-bottom:0;font-weight:700;font-size:20px;padding-top:12px}
     </section>
 
     <section class="card">
+      <h2>Assistente de IA</h2>
+      <p class="sub">O assistente usa o Gemini do Google, de graça. Cria tua chave em <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--acc)">aistudio.google.com/apikey</a> e cola aqui. Ela fica só neste aparelho e não vai na cópia de segurança.</p>
+      <div class="duas">
+        <input id="chaveGemini" type="password" autocomplete="off" placeholder="Cola a chave aqui">
+        <button id="btnChave">Salvar chave</button>
+      </div>
+      <p class="sub" id="chaveStatus" style="margin-bottom:0"></p>
+    </section>
+
+    <section class="card">
       <h2>Cópia de segurança</h2>
       <p class="sub">Tudo fica salvo neste navegador. Baixa uma cópia de vez em quando.</p>
       <div class="duas">
@@ -795,15 +805,13 @@ async function pedir(texto){
   $('pedido').value=''; bolha('eu',texto); $('chips').hidden=true;
   const esp = bolha('ia pensando','Pensando'); $('btnPedir').disabled=true;
   try{
-    const r = await fetch('/api/assistente',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({texto, estado:estadoParaIA(), historico:conversa})});
-    const j = await r.json(); esp.remove();
+    const j = await perguntarIA(texto); esp.remove();
     if(j.erro){ bolha('erro', j.erro); return; }
     const e=j.estado, resp = e.resposta || 'Pronto.';
     if(e.modo!=='pergunta') aplicarIA(e);
     bolha('ia', resp, e.alertas);
     conversa.push({pergunta:texto, resposta:resp}); conversa = conversa.slice(-6);
-  }catch(err){ esp.remove(); bolha('erro','Não consegui falar com o assistente. O servidor está rodando? (python servidor.py)'); }
+  }catch(err){ esp.remove(); bolha('erro', err && err.message ? err.message : 'Não consegui falar com o assistente.'); }
   finally{ $('btnPedir').disabled=false; }
 }
 $('btnPedir').onclick = ()=>pedir($('pedido').value);
@@ -824,8 +832,92 @@ else {
     $('btnMic').classList.add('ouvindo'); rec.start();
   };
 }
-fetch('/api/status').then(r=>r.json()).then(j=>{ if(!j.ia) $('iaStatus').textContent='Assistente desligado: falta a chave da API no servidor. O resto funciona normal.'; })
-  .catch(()=>{ $('iaStatus').textContent='O assistente só funciona abrindo pelo servidor (python servidor.py).'; });
+// IA: com chave salva neste aparelho, chama o Gemini direto do navegador (site publicado);
+// sem chave, usa o servidor local (python servidor.py), que guarda a chave dele.
+const lerChave = () => { try{ return localStorage.getItem('orcar-gemini')||''; }catch(e){ return ''; } };
+let servidorIA = false;
+const MODELOS = ['gemini-flash-latest','gemini-flash-lite-latest','gemini-3.8-flash','gemini-3.5-flash-lite'];
+const PADRAO_IA = {cliNome:'', nivel:'tipico', desconto:0, margemAp:0, pagto:'', validade:7, obs:'', ars:[], serv:[], itens:[]};
+let pacoteIA = null;
+async function carregarPacote(){
+  if(pacoteIA) return pacoteIA;
+  const txt = u => fetch(u,{cache:'no-cache'}).then(r=>{ if(!r.ok) throw new Error(u); return r.text(); });
+  const [instr, conh, exs, esq] = await Promise.all([txt('dados/instrucoes.md'), txt('dados/conhecimento.md'), txt('dados/exemplos.json'), txt('dados/esquema.json')]);
+  const L = ['Preço de mercado do aparelho (R$, econômico / médio / top), por potência e tipo:'];
+  TAM.forEach(t=>{ const e=B.estatisticas[t]; L.push(`- ${t}: `+['inverter_quente_frio','inverter_frio','on_off'].map(k=>{ const g=e[k]||e.todos; return `${k} ${Math.round(g.p25)}/${Math.round(g.mediana)}/${Math.round(g.p75)}`; }).join('; ')); });
+  const inst=B.servicos.instalacao.por_btu;
+  L.push('Instalação padrão (mínimo/normal/máximo): '+Object.entries(inst).map(([b,v])=>`${b}: ${v.min}/${v.tipico}/${v.max}`).join('; '));
+  [...B.servicos.extras,...servs].forEach(s=>L.push(`- ${s.id}: ${s.nome}, ${s.min}/${s.tipico}/${s.max}`));
+  const exemplos = JSON.parse(exs).map(x=>`Pedido: ${x.pedido}\nO que fazer: ${x.como}`).join('\n\n');
+  pacoteIA = {sistema: instr.replace('{{conhecimento}}',conh).replace('{{precos}}',L.join('\n')).replace('{{exemplos}}',exemplos), esquema: JSON.parse(esq)};
+  return pacoteIA;
+}
+function normalizarIA(e, atual){
+  if(e.modo==='pergunta') Object.keys(PADRAO_IA).forEach(k=>{ e[k]=atual[k]; });
+  e.alertas = (e.alertas||[]).filter(a=>a && a.trim()).slice(0,3);
+  (e.ars||[]).forEach(a=>{ a.metros=Math.max(0,Math.min(60,a.metros??3)); if(a.area!=null && a.area<=0) a.area=null; });
+  e.serv = (e.serv||[]).filter(s=>s.qtd>0); e.itens = e.itens||[];
+  return e;
+}
+const espera = ms => new Promise(r=>setTimeout(r,ms));
+async function geminiNavegador(texto, chave){
+  const p = await carregarPacote(), atual = {...PADRAO_IA, ...estadoParaIA()};
+  const contents = [];
+  conversa.forEach(h=>{ contents.push({role:'user',parts:[{text:h.pergunta}]}); contents.push({role:'model',parts:[{text:h.resposta}]}); });
+  contents.push({role:'user',parts:[{text:`Orçamento atual:\n${JSON.stringify(atual)}\n\nPedido: ${texto}`}]});
+  const corpo = JSON.stringify({systemInstruction:{parts:[{text:p.sistema}]}, contents,
+    generationConfig:{responseMimeType:'application/json', responseJsonSchema:p.esquema, temperature:0.2}});
+  let ultimo = '';
+  for(let rodada=0; rodada<3; rodada++){
+    if(rodada) await espera(3000*rodada);
+    for(const m of MODELOS){
+      let r;
+      try{
+        const ctl = new AbortController(), t = setTimeout(()=>ctl.abort(), 30000);
+        r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`,
+          {method:'POST', headers:{'Content-Type':'application/json','x-goog-api-key':chave}, body:corpo, signal:ctl.signal});
+        clearTimeout(t);
+      }catch(err){ ultimo='rede'; continue; }
+      if(r.ok){
+        const j = await r.json(), c = (j.candidates||[{}])[0];
+        const partes = ((c.content||{}).parts||[]).filter(x=>!x.thought).map(x=>x.text||'').join('');
+        if(!partes) throw new Error('O assistente não conseguiu responder esse pedido. Tenta escrever de outro jeito.');
+        try{ return {estado: normalizarIA(JSON.parse(partes), atual)}; }
+        catch(e){ throw new Error('O assistente se enrolou na resposta. Tenta de novo.'); }
+      }
+      const corpoErro = await r.text();
+      if(r.status===400 && /API_KEY|api key/i.test(corpoErro) || r.status===401 || r.status===403) throw new Error('A chave do Gemini não foi aceita. Confere em Ajustes › Assistente de IA.');
+      if([404,429,500,503].includes(r.status)){ ultimo=r.status; continue; }
+      throw new Error(`O Gemini respondeu com erro ${r.status}. Tenta de novo.`);
+    }
+  }
+  if(ultimo===429) throw new Error('Passou do limite grátis do Google por agora. Espera um minuto e tenta de novo.');
+  if(ultimo==='rede') throw new Error('O Google não respondeu a tempo. Confere a internet e tenta de novo.');
+  throw new Error('O Google está sobrecarregado agora. Tenta de novo daqui a pouco.');
+}
+async function perguntarIA(texto){
+  const chave = lerChave();
+  if(chave) return geminiNavegador(texto, chave);
+  if(!servidorIA) throw new Error('Pra usar o assistente, coloca tua chave grátis do Gemini em Ajustes › Assistente de IA.');
+  const r = await fetch('/api/assistente',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({texto, estado:estadoParaIA(), historico:conversa})});
+  return r.json();
+}
+function statusIA(){
+  const chave = lerChave();
+  $('chaveStatus').textContent = chave ? 'Chave salva neste aparelho.' : 'Nenhuma chave salva neste aparelho.';
+  $('chaveGemini').value = ''; $('chaveGemini').placeholder = chave ? '•••••••• (salva)' : 'Cola a chave aqui';
+  $('btnChave').textContent = chave ? 'Trocar chave' : 'Salvar chave';
+  $('iaStatus').textContent = (chave || servidorIA) ? '' : 'Pra ligar o assistente, coloca tua chave grátis do Gemini em Ajustes. O resto funciona normal.';
+}
+$('btnChave').onclick = ()=>{
+  const v = $('chaveGemini').value.trim();
+  try{ if(v) localStorage.setItem('orcar-gemini', v); else if(lerChave() && confirm('Apagar a chave deste aparelho?')) localStorage.removeItem('orcar-gemini'); }
+  catch(e){ toast('Não deu pra salvar neste navegador'); }
+  statusIA(); if(v) toast('Chave salva');
+};
+fetch('/api/status').then(r=>r.ok?r.json():{}).then(j=>{ servidorIA = !!j.ia; statusIA(); }).catch(()=>statusIA());
+statusIA();
 
 function iniciar(){ CAMPOS.forEach(k=>$(k).value=S[k]??''); renderNivel(); renderArs(); renderServ(); renderItens(); atualizar(); }
 renderAjustes(); iniciar();
