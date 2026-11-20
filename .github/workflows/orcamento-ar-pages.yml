@@ -1,0 +1,41 @@
+name: Publicar orçamento de ar
+
+# Publica produtos/orcamento-ar no GitHub Pages a cada mudança no main.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "produtos/orcamento-ar/**"
+      - ".github/workflows/orcamento-ar-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Separar só o que vai pro site
+        run: |
+          mkdir -p site/dados
+          cp produtos/orcamento-ar/index.html produtos/orcamento-ar/orcamento.html site/
+          cp produtos/orcamento-ar/dados/base.js produtos/orcamento-ar/dados/instrucoes.md \
+             produtos/orcamento-ar/dados/conhecimento.md produtos/orcamento-ar/dados/exemplos.json \
+             produtos/orcamento-ar/dados/esquema.json site/dados/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
