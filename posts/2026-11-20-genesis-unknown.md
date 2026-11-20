@@ -2,7 +2,7 @@ Cruzar bases públicas gera muita correlação. Quase toda morre quando é testa
 
 Estou construindo o Genesis Unknown: um laboratório que cruza dados abertos (PNCP, Receita, PGFN e sanções da CGU), gera hipóteses e tenta refutá-las. A regra de decisão é escrita e publicada antes de ver os dados do corte.
 
-O que sobreviveu a dois testes independentes (2025 e 2026): fornecedor com empresa-irmã (mesmo sócio) já sancionada é sancionado cerca de 3,3 vezes mais do que o esperado, . É uma associação, não prova de conduta, e a marca é rara: 0,3% dos fornecedores.
+O que sobreviveu a dois testes independentes (2025 e 2026): fornecedor com empresa-irmã (mesmo sócio) já sancionada é sancionado cerca de 3,3 vezes mais do que o esperado. É uma associação, não prova de conduta, e a marca é rara: 0,3% dos fornecedores.
 
 O que não sobreviveu: um ganho que apareceu num teste e não se repetiu no seguinte. Está registrado.
 
