@@ -53,7 +53,7 @@ svg text{{font-family:Manrope,sans-serif}}
 <section class="cena" id="c5"><div class="rot r" data-at="0">Veredito, sem enfeite</div><h2 class="r" data-at="0.2">O registro diz o que <em>falhou</em>.</h2>
 <div style="margin-top:36px"><div class="chip r" data-at="1.2" style="border-color:#F4B24A"><b class="am">REPROVADO</b><span style="font-size:29px;color:rgba(244,247,248,.84)">como motor de descoberta autônomo</span></div>
 <div class="chip r" data-at="2.4" style="border-color:#35C6F4"><b style="color:#35C6F4">APROVADO</b><span style="font-size:29px;color:rgba(244,247,248,.84)">como laboratório de validação</span></div></div>
-<p class="r" data-at="3.8" style="font-size:31px">Projeto pausado. Nada rodando.</p></section>
+<p class="r" data-at="3.8" style="font-size:31px">Em pesquisa. <span style="color:#35C6F4">Em breve.</span></p></section>
 <section class="cena" id="c6"><div class="rot r" data-at="0">Para o futuro</div><h2 class="r" data-at="0.3" style="font-size:60px">A pergunta em aberto: gerar hipóteses <em>sem depender de pessoas</em>, e continuar só chamando de achado o que sobrevive ao teste.</h2>
 <p class="peq r" data-at="2.2" style="margin-top:44px">Dados públicos. Só agregados: nenhum nome de empresa.</p></section>
 <div class="rodape"><span id="lg">{logo}</span><span>Genesis Unknown · em pesquisa</span></div><div id="prog"></div>
