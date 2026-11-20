@@ -9,3 +9,4 @@
 
 Formato das imagens: 1080x1350 (retrato), exportadas em 2x. No LinkedIn, o carrossel vai como documento (PDF).
 Espaçar alguns dias entre posts. Estados: `rascunho`, `publicado`, `falhou`.
+| 5 | posts/2026-11-20-genesis-unknown.md | video/genesis-unknown/genesis-unknown.mp4 (46 s, 1080x1350, sem áudio) | rascunho (pedir OK do Thiago antes) | |
