@@ -1,0 +1,26 @@
+[
+  {
+    "pedido": "sala 4x5 e dois quartos de 3x3, cliente quer o melhor, a sala pega sol de tarde, uns 8 metros de cano na sala",
+    "como": "modo orcamento. Três ars: Sala area 20, sol true, metros 8, faixa p75; Quarto 1 e Quarto 2 com area 9, metros 3, faixa p75. btu 0 em todos. Alerta: oferecer também a opção média para comparar."
+  },
+  {
+    "pedido": "só instalação, o cliente comprou um 12 mil na loja, quarto de 14 m², não tem tomada lá",
+    "como": "modo orcamento. Um ar: Quarto area 14, btu 12000, faixa cliente, eletrica true. Alerta curto sobre circuito exclusivo com disjuntor."
+  },
+  {
+    "pedido": "higienização de 4 splits de 9 mil num escritório",
+    "como": "modo orcamento. ars vazio, serv higienizacao_ate12 qtd 4. Alerta: escritório de uso coletivo precisa de PMOC, dá pra oferecer contrato."
+  },
+  {
+    "pedido": "18 metros de cano num 12 mil, dá?",
+    "como": "modo pergunta. Resposta: depende do modelo; muitos 12 mil aceitam 15 m (Philco só 10 m, Fujitsu 20 m), conferir no manual e cobrar carga extra de gás. Orçamento não muda."
+  },
+  {
+    "pedido": "coloca furo em concreto de 150 e cobra caro que é terceiro andar sem sacada",
+    "como": "modo orcamento. Mantém os ars atuais, adiciona item Furo em concreto valor 150, nivel max. Alerta: avaliar segurança para a condensadora (andaime ou rapel)."
+  },
+  {
+    "pedido": "cozinha de 15 m² com fogão",
+    "como": "modo orcamento. Um ar: Cozinha area 15, btu 12000 ou 18000 (sobe uma potência por causa do fogão), alerta explicando o motivo."
+  }
+]

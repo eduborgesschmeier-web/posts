@@ -1,0 +1,55 @@
+{
+  "levantado_em": "2026-11-20",
+  "observacao": "Faixas de mercado em R$, de blogs de empresas, plataformas de orçamento e prestadores (não existe tabela oficial). 'tipico' é o valor central entre as fontes, puxado para a faixa de Caxias do Sul quando havia dado local. Ajuste à sua realidade no próprio orçamento.",
+  "instalacao": {
+    "descricao": "Instalação padrão de split hi-wall: até 3 m de tubulação, vácuo, teste e mão de obra. Suporte, ponto elétrico e metros extras são cobrados à parte.",
+    "por_btu": {
+      "9000":  {"min": 300, "tipico": 600,  "max": 900},
+      "12000": {"min": 350, "tipico": 750,  "max": 1100},
+      "18000": {"min": 450, "tipico": 950,  "max": 1300},
+      "24000": {"min": 600, "tipico": 1150, "max": 1700},
+      "30000": {"min": 800, "tipico": 1400, "max": 2000}
+    },
+    "referencia_caxias": "Caxias do Sul: instalação split de R$ 299 a R$ 849 por unidade (chamaopro, 2026); média de R$ 549, de R$ 330 a R$ 1.100 (habitissimo, 2024); R$ 450 a R$ 900 conforme BTU (arcondicionadospertodemim).",
+    "fontes": [
+      "https://www.wattsolucoes.com.br/blog/quanto-custa-instalar-ar-condicionado",
+      "https://www.tricebrasil.com.br/blog/quanto-custa-instalar-ar-condicionado-em-2026-veja-valores-atualizados-e-o-que-influencia-no-preco",
+      "https://monitordomercado.com.br/economia-2/404894-quanto-custa-instalar-um-ar-condicionado-split-em-2026-o-aparelho-barato-pode-dobrar-de-preco-quando-entram-tubulacao-eletrica-e-mao-de-obra/",
+      "https://www.casaeclima.com.br/blog/quanto-custa-instalacao-ar-condicionado",
+      "https://chamaopro.com.br/servicos/ar-condicionado-caxias-do-sul/",
+      "https://www.habitissimo.com.br/orcamentos/instalar-ar-condicionado/rio-grande-do-sul/caxias-do-sul",
+      "https://arcondicionadospertodemim.com.br/instalacao-caxias-do-sul/"
+    ]
+  },
+  "extras": [
+    {"id": "metro_14_38", "nome": "Metro extra de tubulação 1/4\" + 3/8\" (até 12.000 BTU)", "unidade": "m", "min": 35, "tipico": 90, "max": 140,
+     "nota": "Só o material (kit de cobre com isolamento) sai R$ 63 a R$ 74 por metro no varejo.",
+     "fontes": ["https://larpontual.com.br/portal/valor-instalacao-ar-condicionado", "https://refrimaq.org/quanto-cobrar-para-instalar-ar-condicionado", "https://www.fogemaq.com.br/kit-tubulacao-de-14-e-38-para-ar-condicionado-3-metros"]},
+    {"id": "metro_14_12", "nome": "Metro extra de tubulação 1/4\" + 1/2\" ou maior (18.000 BTU+)", "unidade": "m", "min": 70, "tipico": 140, "max": 180,
+     "fontes": ["https://refrimaq.org/quanto-cobrar-para-instalar-ar-condicionado"]},
+    {"id": "suporte", "nome": "Suporte de parede para a condensadora", "unidade": "un", "min": 80, "tipico": 160, "max": 280,
+     "fontes": ["https://precisodeumprofissional.com.br/blog/quanto-custa-instalacao-ar-condicionado-fortaleza", "https://precisodeumprofissional.com.br/blog/quanto-custa-instalacao-ar-condicionado-rio-de-janeiro"]},
+    {"id": "eletrica", "nome": "Ponto elétrico dedicado (disjuntor + cabo)", "unidade": "un", "min": 250, "tipico": 420, "max": 650,
+     "fontes": ["https://precisodeumprofissional.com.br/blog/quanto-custa-instalacao-ar-condicionado-fortaleza", "https://precisodeumprofissional.com.br/blog/quanto-custa-instalacao-ar-condicionado-rio-de-janeiro"]}
+  ],
+  "servicos_avulsos": [
+    {"id": "limpeza_simples", "nome": "Limpeza simples (filtros e evaporadora sem desmontar)", "min": 120, "tipico": 160, "max": 200,
+     "fontes": ["https://www.wattsolucoes.com.br/blog/quanto-custa-limpeza-higienizacao-ar-condicionado"]},
+    {"id": "higienizacao_ate12", "nome": "Higienização completa, até 12.000 BTU", "min": 150, "tipico": 250, "max": 350,
+     "fontes": ["https://www.wattsolucoes.com.br/blog/quanto-custa-limpeza-higienizacao-ar-condicionado", "https://www.casaeclima.com.br/blog/higienizacao-ar-condicionado-quanto-custa", "https://arcondicionadofloripa.com/blog/quanto-custa-higienizacao-de-ar-condicionado-em-florianopolis/"]},
+    {"id": "higienizacao_18a30", "nome": "Higienização completa, 18.000 a 30.000 BTU", "min": 180, "tipico": 330, "max": 450,
+     "fontes": ["https://refrimaq.org/quanto-cobrar-limpeza-de-ar-condicionado", "https://www.wattsolucoes.com.br/blog/quanto-custa-limpeza-higienizacao-ar-condicionado"]},
+    {"id": "higienizacao_cassete", "nome": "Higienização de piso-teto ou cassete", "min": 400, "tipico": 550, "max": 800,
+     "fontes": ["https://www.wattsolucoes.com.br/blog/quanto-custa-limpeza-higienizacao-ar-condicionado"]},
+    {"id": "preventiva", "nome": "Manutenção preventiva completa", "min": 150, "tipico": 280, "max": 450,
+     "fontes": ["https://refrimaq.org/quanto-cobrar-limpeza-de-ar-condicionado", "https://revistaoeste.com/oestegeral/2026/04/22/esses-sao-os-valores-que-um-tecnico-cobra-para-limpar-ar-condicionado-split-com-mau-cheiro-e-queda-de-desempenho/"]},
+    {"id": "gas_r410a", "nome": "Carga de gás R-410A (com vácuo)", "min": 250, "tipico": 360, "max": 500,
+     "fontes": ["https://www.refrigerebrasil.com.br/custo-para-colocar-gas-ar-condicionado/", "https://arcondicionadofloripa.com/blog/quanto-custa-carga-de-gas-de-ar-condicionado-em-florianopolis/"]},
+    {"id": "gas_r32", "nome": "Carga de gás R-32 (com vácuo)", "min": 200, "tipico": 320, "max": 450,
+     "fontes": ["https://www.refrigerebrasil.com.br/custo-para-colocar-gas-ar-condicionado/"]},
+    {"id": "desinstalacao", "nome": "Desinstalação com recolhimento de gás", "min": 150, "tipico": 300, "max": 500,
+     "fontes": ["https://tacontratado.com.br/ar-condicionado-instalacao-limpeza-conserto/", "https://directarcondicionado.com.br/blog/quanto-custa-instalar-ar-condicionado-joao-pessoa"]},
+    {"id": "remanejamento", "nome": "Remanejamento (desinstalar e reinstalar em outro lugar)", "min": 700, "tipico": 1000, "max": 1500,
+     "fontes": ["https://tacontratado.com.br/ar-condicionado-instalacao-limpeza-conserto/"]}
+  ]
+}
